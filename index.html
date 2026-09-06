@@ -27,6 +27,8 @@
             --transition: all 0.3s ease;
             --success: #48bb78;
             --error: #fc8181;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --logo-url: none;
         }
         
         /* ===== MODE SOMBRE ===== */
@@ -42,7 +44,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: var(--font-family);
             background: var(--bg);
             min-height: 100vh;
             padding: 20px;
@@ -127,6 +129,26 @@
             font-size: 15px;
         }
 
+        /* ===== STATUS BAR ===== */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 8px 15px;
+            background: var(--bg);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        
+        .status-bar .online { color: var(--success); }
+        .status-bar .offline { color: var(--error); }
+        .status-bar .user { font-weight: 600; color: var(--text); }
+
         /* ===== TOAST NOTIFICATIONS ===== */
         .toast-container {
             position: fixed;
@@ -156,6 +178,7 @@
         .toast.error { background: linear-gradient(135deg, #fc8181, #dc3545); }
         .toast.warning { background: linear-gradient(135deg, #ed8936, #c05621); }
         .toast.info { background: linear-gradient(135deg, #63b3ed, #3182ce); }
+        .toast.notification { background: linear-gradient(135deg, #9f7aea, #6b46c1); }
         
         .toast .icon { font-size: 24px; }
         .toast .message { flex: 1; }
@@ -198,6 +221,7 @@
             cursor: pointer;
             border-radius: 8px 8px 0 0;
             transition: var(--transition);
+            position: relative;
         }
         
         .tab-btn:hover {
@@ -209,6 +233,22 @@
             color: var(--primary);
             background: var(--primary-light);
             border-bottom: 3px solid var(--primary);
+        }
+        
+        .tab-btn .badge-notif {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--primary);
+            color: white;
+            font-size: 10px;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
         }
         
         .tab-content {
@@ -296,14 +336,6 @@
             color: var(--text-light);
             margin-top: 4px;
         }
-        
-        .stat-card .stat-change {
-            font-size: 12px;
-            margin-top: 4px;
-            font-weight: 600;
-        }
-        .stat-card .stat-change.up { color: var(--success); }
-        .stat-card .stat-change.down { color: var(--error); }
 
         .chart-container {
             background: var(--bg);
@@ -389,6 +421,47 @@
             display: block;
         }
 
+        /* ===== AUTO-COMPLETE ===== */
+        .autocomplete-wrapper {
+            position: relative;
+        }
+        
+        .autocomplete-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+        
+        .autocomplete-suggestions.active {
+            display: block;
+        }
+        
+        .autocomplete-suggestions .suggestion {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text);
+        }
+        
+        .autocomplete-suggestions .suggestion:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .autocomplete-suggestions .suggestion.highlighted {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
         /* ===== BUTTONS ===== */
         .btn {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -436,11 +509,6 @@
             color: var(--text);
         }
         .btn-secondary:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        
-        .btn-success {
-            background: linear-gradient(135deg, #48bb78, #276749);
-        }
-        .btn-success:hover { box-shadow: 0 8px 20px rgba(72, 187, 120, 0.4); }
         
         .btn-group { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
         .btn-group .btn { flex: 1; min-width: 120px; }
@@ -556,9 +624,9 @@
         /* ===== PROGRESS ===== */
         .progress-bar {
             width: 100%;
-            height: 6px;
+            height: 8px;
             background: var(--border);
-            border-radius: 3px;
+            border-radius: 4px;
             margin: 15px 0;
             overflow: hidden;
             display: none;
@@ -569,6 +637,16 @@
             transition: width 0.3s;
             width: 0%;
         }
+        
+        .progress-info {
+            display: none;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        .progress-info.visible { display: flex; }
+        .progress-info .time-remaining { font-weight: 600; color: var(--text); }
 
         /* ===== PREVIEW ===== */
         .sms-preview {
@@ -645,6 +723,74 @@
             margin-top: 6px;
         }
 
+        /* ===== SCHEDULER ===== */
+        .scheduler-box {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            margin-top: 10px;
+            display: none;
+        }
+        .scheduler-box.visible { display: block; }
+        .scheduler-box .row { margin-bottom: 10px; }
+
+        /* ===== PERSONNALISATION ===== */
+        .customization-box {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            margin-top: 10px;
+        }
+        .customization-box .color-picker {
+            width: 50px;
+            height: 40px;
+            padding: 0;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* ===== MULTI-USER ===== */
+        .user-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .user-selector select {
+            max-width: 200px;
+        }
+        .user-role {
+            font-size: 12px;
+            color: var(--text-light);
+            padding: 2px 10px;
+            background: var(--bg);
+            border-radius: 12px;
+        }
+
+        /* ===== SHORTCUTS HELP ===== */
+        .shortcuts-help {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+            margin-top: 10px;
+            font-size: 13px;
+            color: var(--text-light);
+            display: none;
+        }
+        .shortcuts-help.visible { display: block; }
+        .shortcuts-help kbd {
+            background: var(--border);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--text);
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 600px) {
             .container { padding: 20px; }
@@ -659,6 +805,7 @@
             .api-status { flex-direction: column; gap: 5px; text-align: center; }
             .tabs { flex-direction: column; }
             .tab-btn { text-align: center; }
+            .user-selector select { max-width: 100%; }
         }
     </style>
 </head>
@@ -680,10 +827,34 @@
         </div>
         <p class="subtitle">Protection bancaire - Alerte immédiate</p>
         
+        <!-- STATUS BAR -->
+        <div class="status-bar">
+            <span>
+                <span id="connectionStatus" class="online">● En ligne</span>
+                <span style="margin-left: 15px;">👤 <span class="user" id="currentUser">Admin</span></span>
+                <span class="user-role" id="currentRole" style="margin-left: 10px;">👑 Administrateur</span>
+            </span>
+            <span>
+                <span id="languageDisplay">🇫🇷 Français</span>
+                <button class="btn-secondary" style="padding: 4px 10px; font-size: 12px; margin-left: 10px;" onclick="toggleLanguage()">🌐 Langue</button>
+                <button class="btn-secondary" style="padding: 4px 10px; font-size: 12px; margin-left: 5px;" onclick="toggleShortcuts()">⌨️</button>
+            </span>
+        </div>
+        
+        <!-- SHORTCUTS HELP -->
+        <div class="shortcuts-help" id="shortcutsHelp">
+            <strong>⌨️ Raccourcis clavier :</strong>
+            <kbd>Ctrl+N</kbd> Nouveau contact · 
+            <kbd>Ctrl+S</kbd> Envoyer · 
+            <kbd>Ctrl+H</kbd> Historique · 
+            <kbd>Ctrl+E</kbd> Export · 
+            <kbd>Ctrl+Shift+P</kbd> Planifier
+        </div>
+        
         <!-- API STATUS -->
         <div class="api-status">
             <span>🔑 Clé API FraudeStop configurée : <span class="key-hidden">••••••••••••••••••••</span> ✅</span>
-            <span style="font-size: 12px;">v3.0 Pro</span>
+            <span style="font-size: 12px;">v4.0 Pro</span>
         </div>
 
         <!-- COUNTER DASHBOARD -->
@@ -715,6 +886,9 @@
             <button class="tab-btn" data-tab="tab-history">📜 Historique</button>
             <button class="tab-btn" data-tab="tab-dashboard">📊 Tableau de bord</button>
             <button class="tab-btn" data-tab="tab-export">📋 Export</button>
+            <button class="tab-btn" data-tab="tab-schedule">⏰ Planification</button>
+            <button class="tab-btn" data-tab="tab-customize">🎨 Personnalisation</button>
+            <button class="tab-btn" data-tab="tab-users">👥 Utilisateurs</button>
         </div>
 
         <!-- ===== TAB 1 : ENVOI ===== -->
@@ -779,9 +953,12 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                         <div class="validation-hint" id="phoneHint"></div>
                     </div>
                     
-                    <!-- Champs bancaires -->
+                    <!-- Champs bancaires avec auto-complétion -->
                     <div style="margin-top: 10px;">
-                        <input type="text" id="contactBanque" placeholder="Nom de la banque (ex: BNP Paribas)">
+                        <div class="autocomplete-wrapper">
+                            <input type="text" id="contactBanque" placeholder="Nom de la banque (ex: BNP Paribas)">
+                            <div class="autocomplete-suggestions" id="banqueSuggestions"></div>
+                        </div>
                         <div class="validation-hint" id="banqueHint"></div>
                     </div>
                     <div class="row" style="margin-top: 10px;">
@@ -839,17 +1016,22 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                     </div>
                 </div>
 
+                <!-- PROGRESS -->
+                <div class="progress-info" id="progressInfo">
+                    <span id="progressText">0%</span>
+                    <span class="time-remaining" id="timeRemaining">⏱️ Estimation...</span>
+                </div>
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress" id="progress"></div>
+                </div>
+
                 <!-- ACTIONS -->
                 <div class="btn-group">
                     <button type="submit" class="btn" id="sendBtn" disabled>
                         <span class="spinner"></span>
                         <span class="btn-text">📤 Envoyer les SMS (0 contact)</span>
                     </button>
-                </div>
-
-                <!-- PROGRESS -->
-                <div class="progress-bar" id="progressBar">
-                    <div class="progress" id="progress"></div>
+                    <button type="button" class="btn btn-secondary" id="scheduleBtn">⏰ Planifier</button>
                 </div>
 
                 <!-- STATS -->
@@ -877,7 +1059,9 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         <div class="tab-content" id="tab-history">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
                 <h3 style="color: var(--text);">📜 Historique des envois</h3>
-                <button class="btn btn-secondary" id="clearHistoryBtn" style="padding: 8px 15px; font-size: 13px;">🗑️ Effacer l'historique</button>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" id="clearHistoryBtn" style="padding: 8px 15px; font-size: 13px;">🗑️ Effacer</button>
+                </div>
             </div>
             <div id="historyContainer">
                 <div class="empty-state">
@@ -965,12 +1149,153 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             </div>
         </div>
 
+        <!-- ===== TAB 5 : PLANIFICATION ===== -->
+        <div class="tab-content" id="tab-schedule">
+            <h3 style="color: var(--text); margin-bottom: 15px;">⏰ Planification des envois</h3>
+            
+            <div class="scheduler-box visible">
+                <div class="row">
+                    <div class="col">
+                        <label>📅 Date d'envoi</label>
+                        <input type="date" id="scheduleDate">
+                    </div>
+                    <div class="col">
+                        <label>⏰ Heure d'envoi</label>
+                        <input type="time" id="scheduleTime">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label>🔁 Récurrence</label>
+                        <select id="scheduleRecurrence">
+                            <option value="none">Une seule fois</option>
+                            <option value="daily">Quotidien</option>
+                            <option value="weekly">Hebdomadaire</option>
+                            <option value="monthly">Mensuel</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label>📝 Note</label>
+                        <input type="text" id="scheduleNote" placeholder="Note pour cette planification">
+                    </div>
+                </div>
+                <div style="margin-top: 15px;">
+                    <button class="btn" id="addScheduleBtn">➕ Ajouter une planification</button>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h4 style="color: var(--text); margin-bottom: 10px;">📋 Envois planifiés</h4>
+                <div id="scheduleList">
+                    <div class="empty-state">
+                        <span class="icon">📭</span>
+                        <p>Aucune planification</p>
+                        <p style="font-size: 13px; color: var(--text-light);">Planifiez un envoi pour plus tard</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB 6 : PERSONNALISATION ===== -->
+        <div class="tab-content" id="tab-customize">
+            <h3 style="color: var(--text); margin-bottom: 15px;">🎨 Personnalisation avancée</h3>
+            
+            <div class="customization-box">
+                <div class="row">
+                    <div class="col">
+                        <label>🎨 Couleur primaire</label>
+                        <input type="color" id="primaryColor" value="#dc3545" class="color-picker">
+                    </div>
+                    <div class="col">
+                        <label>🎨 Couleur secondaire</label>
+                        <input type="color" id="secondaryColor" value="#8b0000" class="color-picker">
+                    </div>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label>🔤 Police de caractères</label>
+                    <select id="fontSelect">
+                        <option value="'Segoe UI', sans-serif">Segoe UI</option>
+                        <option value="'Arial', sans-serif">Arial</option>
+                        <option value="'Helvetica', sans-serif">Helvetica</option>
+                        <option value="'Georgia', serif">Georgia</option>
+                        <option value="'Courier New', monospace">Courier New</option>
+                        <option value="'Roboto', sans-serif">Roboto</option>
+                        <option value="'Open Sans', sans-serif">Open Sans</option>
+                    </select>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label>🖼️ Logo personnalisé (URL)</label>
+                    <input type="text" id="logoUrl" placeholder="https://exemple.com/logo.png">
+                </div>
+                <div style="margin-top: 15px;">
+                    <button class="btn btn-secondary" id="applyCustomizationBtn">✅ Appliquer la personnalisation</button>
+                    <button class="btn btn-secondary" id="resetCustomizationBtn" style="margin-left: 10px;">↩️ Réinitialiser</button>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);">
+                <p style="font-size: 14px; color: var(--text-light);">
+                    💡 Personnalisez l'apparence de votre outil FraudeStop selon votre charte graphique.
+                </p>
+            </div>
+        </div>
+
+        <!-- ===== TAB 7 : UTILISATEURS ===== -->
+        <div class="tab-content" id="tab-users">
+            <h3 style="color: var(--text); margin-bottom: 15px;">👥 Gestion des utilisateurs</h3>
+            
+            <div style="background: var(--bg); border-radius: 8px; padding: 15px; border: 1px solid var(--border); margin-bottom: 20px;">
+                <div class="row">
+                    <div class="col">
+                        <label>👤 Nom d'utilisateur</label>
+                        <input type="text" id="newUsername" placeholder="Nom d'utilisateur">
+                    </div>
+                    <div class="col">
+                        <label>🔑 Mot de passe</label>
+                        <input type="password" id="newPassword" placeholder="Mot de passe">
+                    </div>
+                </div>
+                <div style="margin-top: 10px;">
+                    <label>👑 Rôle</label>
+                    <select id="newRole">
+                        <option value="admin">Administrateur</option>
+                        <option value="agent">Agent</option>
+                        <option value="supervisor">Superviseur</option>
+                        <option value="viewer">Lecteur</option>
+                    </select>
+                </div>
+                <div style="margin-top: 15px;">
+                    <button class="btn btn-secondary" id="addUserBtn">➕ Ajouter un utilisateur</button>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h4 style="color: var(--text); margin-bottom: 10px;">📋 Utilisateurs existants</h4>
+                <div id="userList">
+                    <div class="queue-item">
+                        <span class="info">
+                            <strong>👑 Admin</strong>
+                            <span style="color: var(--text-light); margin-left: 10px;">Administrateur</span>
+                        </span>
+                        <span style="color: var(--success);">● Actif</span>
+                    </div>
+                    <div class="queue-item">
+                        <span class="info">
+                            <strong>👤 Agent1</strong>
+                            <span style="color: var(--text-light); margin-left: 10px;">Agent</span>
+                        </span>
+                        <span style="color: var(--success);">● Actif</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- ===== FOOTER ===== -->
         <div class="footer-brand">
-            <div class="brand-name">🛡️ FraudeStop</div>
+            <div class="brand-name" id="brandNameDisplay">🛡️ FraudeStop</div>
             <div class="brand-divider"></div>
             <div class="brand-slogan">Service Anti-Fraude Bancaire - Votre sécurité est notre priorité.</div>
-            <span class="version">v3.0 Pro</span>
+            <span class="version">v4.0 Pro</span>
         </div>
     </div>
 
@@ -982,6 +1307,88 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         const DAILY_LIMIT = 500;
         
         // ============================================================
+        // 🌍 MULTILINGUE
+        // ============================================================
+        let currentLanguage = 'fr';
+        const translations = {
+            fr: {
+                name: 'Français',
+                flag: '🇫🇷',
+                online: '● En ligne',
+                offline: '● Hors-ligne',
+                user: 'Utilisateur',
+                admin: 'Administrateur',
+                agent: 'Agent',
+                supervisor: 'Superviseur',
+                viewer: 'Lecteur',
+                send: 'Envoyer',
+                schedule: 'Planifier',
+                export: 'Exporter',
+                history: 'Historique',
+                dashboard: 'Tableau de bord',
+                customize: 'Personnalisation',
+                users: 'Utilisateurs'
+            },
+            en: {
+                name: 'English',
+                flag: '🇬🇧',
+                online: '● Online',
+                offline: '● Offline',
+                user: 'User',
+                admin: 'Administrator',
+                agent: 'Agent',
+                supervisor: 'Supervisor',
+                viewer: 'Viewer',
+                send: 'Send',
+                schedule: 'Schedule',
+                export: 'Export',
+                history: 'History',
+                dashboard: 'Dashboard',
+                customize: 'Customize',
+                users: 'Users'
+            },
+            es: {
+                name: 'Español',
+                flag: '🇪🇸',
+                online: '● En línea',
+                offline: '● Desconectado',
+                user: 'Usuario',
+                admin: 'Administrador',
+                agent: 'Agente',
+                supervisor: 'Supervisor',
+                viewer: 'Lector',
+                send: 'Enviar',
+                schedule: 'Programar',
+                export: 'Exportar',
+                history: 'Historial',
+                dashboard: 'Tablero',
+                customize: 'Personalizar',
+                users: 'Usuarios'
+            }
+        };
+
+        function toggleLanguage() {
+            const languages = ['fr', 'en', 'es'];
+            const currentIndex = languages.indexOf(currentLanguage);
+            currentLanguage = languages[(currentIndex + 1) % languages.length];
+            document.getElementById('languageDisplay').textContent = 
+                translations[currentLanguage].flag + ' ' + translations[currentLanguage].name;
+            showToast('🌐 Langue changée : ' + translations[currentLanguage].name, 'info', 2000);
+            applyLanguage();
+        }
+
+        function applyLanguage() {
+            const t = translations[currentLanguage];
+            // Mettre à jour les labels des tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                const key = btn.dataset.tab.replace('tab-', '');
+                if (t[key]) {
+                    btn.textContent = t[key];
+                }
+            });
+        }
+
+        // ============================================================
         // 📊 GESTION DES STATISTIQUES
         // ============================================================
         let todaySent = 0;
@@ -990,10 +1397,15 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         let failedCount = 0;
         let history = [];
         let chart = null;
+        let schedules = [];
+        let users = [];
+        let currentUser = 'Admin';
+        let currentRole = 'admin';
+        let startTime = 0;
         
         function loadStats() {
             const today = new Date().toDateString();
-            const saved = localStorage.getItem('fraudestop_stats_v3');
+            const saved = localStorage.getItem('fraudestop_stats_v4');
             if (saved) {
                 try {
                     const stats = JSON.parse(saved);
@@ -1003,26 +1415,49 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                     successCount = stats.success || 0;
                     failedCount = stats.failed || 0;
                     history = stats.history || [];
+                    schedules = stats.schedules || [];
+                    users = stats.users || [];
+                    currentUser = stats.currentUser || 'Admin';
+                    currentRole = stats.currentRole || 'admin';
                 } catch(e) { 
-                    todaySent = 0; totalSent = 0; successCount = 0; failedCount = 0; history = [];
+                    todaySent = 0; totalSent = 0; successCount = 0; failedCount = 0; 
+                    history = []; schedules = []; users = [];
                 }
             }
             updateCounterDisplay();
             updateHistoryDisplay();
             updateDashboard();
             updateChart();
+            updateSchedules();
+            updateUserList();
+            document.getElementById('currentUser').textContent = currentUser;
+            document.getElementById('currentRole').textContent = getRoleLabel(currentRole);
         }
         
         function saveStats() {
             const today = new Date().toDateString();
-            localStorage.setItem('fraudestop_stats_v3', JSON.stringify({
+            localStorage.setItem('fraudestop_stats_v4', JSON.stringify({
                 date: today,
                 today: todaySent,
                 total: totalSent,
                 success: successCount,
                 failed: failedCount,
-                history: history
+                history: history,
+                schedules: schedules,
+                users: users,
+                currentUser: currentUser,
+                currentRole: currentRole
             }));
+        }
+        
+        function getRoleLabel(role) {
+            const labels = {
+                admin: '👑 Administrateur',
+                agent: '👤 Agent',
+                supervisor: '👁️ Superviseur',
+                viewer: '📖 Lecteur'
+            };
+            return labels[role] || role;
         }
         
         function updateCounterDisplay() {
@@ -1069,10 +1504,36 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 note: note || contact.note || ''
             };
             history.unshift(entry);
-            // Garder seulement les 500 derniers
             if (history.length > 500) { history = history.slice(0, 500); }
             saveStats();
             updateHistoryDisplay();
+            
+            // Notification en temps réel
+            if (status === 'success') {
+                showNotification('✅ SMS envoyé à ' + contact.prenom + ' ' + contact.nom);
+            } else {
+                showNotification('❌ Échec d\'envoi pour ' + contact.prenom + ' ' + contact.nom);
+            }
+        }
+
+        // ============================================================
+        // 🔔 NOTIFICATIONS EN TEMPS RÉEL
+        // ============================================================
+        function showNotification(message) {
+            // Notification push
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('FraudeStop', {
+                    body: message,
+                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🛡️</text></svg>'
+                });
+            }
+            // Toast
+            showToast('🔔 ' + message, 'notification', 3000);
+        }
+
+        // Demander la permission de notifications
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
         }
 
         // ============================================================
@@ -1080,7 +1541,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         // ============================================================
         function showToast(message, type = 'info', duration = 4000) {
             const container = document.getElementById('toastContainer');
-            const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+            const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️', notification: '🔔' };
             
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -1112,12 +1573,75 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             document.body.classList.toggle('dark-mode');
             this.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
             localStorage.setItem('fraudestop_theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+            setTimeout(updateChart, 100);
         });
         
         if (localStorage.getItem('fraudestop_theme') === 'dark') {
             document.body.classList.add('dark-mode');
             document.getElementById('themeToggle').textContent = '☀️';
         }
+
+        // ============================================================
+        // ⌨️ RACCOURCIS CLAVIER
+        // ============================================================
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+N = Nouveau contact
+            if (e.ctrlKey && e.key === 'n') {
+                e.preventDefault();
+                document.getElementById('contactNom').focus();
+                showToast('⌨️ Focus sur le nom du contact', 'info', 1500);
+            }
+            // Ctrl+S = Envoyer
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                document.getElementById('sendBtn').click();
+            }
+            // Ctrl+H = Historique
+            if (e.ctrlKey && e.key === 'h') {
+                e.preventDefault();
+                document.querySelector('[data-tab="tab-history"]').click();
+                showToast('📜 Onglet Historique', 'info', 1500);
+            }
+            // Ctrl+E = Export
+            if (e.ctrlKey && e.key === 'e') {
+                e.preventDefault();
+                document.querySelector('[data-tab="tab-export"]').click();
+                showToast('📋 Onglet Export', 'info', 1500);
+            }
+            // Ctrl+Shift+P = Planifier
+            if (e.ctrlKey && e.shiftKey && e.key === 'P') {
+                e.preventDefault();
+                document.querySelector('[data-tab="tab-schedule"]').click();
+                showToast('⏰ Onglet Planification', 'info', 1500);
+            }
+            // Ctrl+D = Dashboard
+            if (e.ctrlKey && e.key === 'd') {
+                e.preventDefault();
+                document.querySelector('[data-tab="tab-dashboard"]').click();
+                showToast('📊 Onglet Dashboard', 'info', 1500);
+            }
+        });
+
+        function toggleShortcuts() {
+            const help = document.getElementById('shortcutsHelp');
+            help.classList.toggle('visible');
+        }
+
+        // ============================================================
+        // 🔌 MODE HORS-LIGNE
+        // ============================================================
+        window.addEventListener('online', function() {
+            document.getElementById('connectionStatus').textContent = '● En ligne';
+            document.getElementById('connectionStatus').className = 'online';
+            showToast('🔄 Connexion rétablie - Synchronisation en cours...', 'success', 3000);
+            loadStats();
+        });
+
+        window.addEventListener('offline', function() {
+            document.getElementById('connectionStatus').textContent = '● Hors-ligne';
+            document.getElementById('connectionStatus').className = 'offline';
+            showToast('⚠️ Mode hors-ligne - Les données sont sauvegardées localement', 'warning', 3000);
+        });
 
         // ============================================================
         // 📋 TEMPLATES
@@ -1252,6 +1776,58 @@ FraudeStop - Votre sécurité est notre priorité.`
             }
             return { valid: true, formatted: clean, message: '✅ BIC valide' };
         }
+
+        // ============================================================
+        // 🏦 AUTO-COMPLÉTION DES BANQUES
+        // ============================================================
+        const banquesList = [
+            'BNP Paribas', 'Société Générale', 'Crédit Agricole', 'LCL',
+            'Caisse d\'Epargne', 'Banque Populaire', 'La Banque Postale',
+            'HSBC France', 'CIC', 'Crédit Mutuel', 'Natixis', 'AXA Banque',
+            'ING Direct', 'Boursorama', 'Hello Bank', 'Fortuneo',
+            'Monabanq', 'Orange Bank', 'Revolut', 'N26'
+        ];
+
+        document.getElementById('contactBanque').addEventListener('input', function() {
+            const value = this.value.toLowerCase();
+            const suggestions = document.getElementById('banqueSuggestions');
+            
+            if (value.length < 2) {
+                suggestions.className = 'autocomplete-suggestions';
+                suggestions.innerHTML = '';
+                return;
+            }
+            
+            const matches = banquesList.filter(b => b.toLowerCase().includes(value));
+            
+            if (matches.length === 0) {
+                suggestions.className = 'autocomplete-suggestions';
+                suggestions.innerHTML = '';
+                return;
+            }
+            
+            suggestions.className = 'autocomplete-suggestions active';
+            suggestions.innerHTML = matches.map(m => 
+                `<div class="suggestion" data-value="${m}">${m}</div>`
+            ).join('');
+            
+            suggestions.querySelectorAll('.suggestion').forEach(el => {
+                el.addEventListener('click', function() {
+                    document.getElementById('contactBanque').value = this.dataset.value;
+                    suggestions.className = 'autocomplete-suggestions';
+                    suggestions.innerHTML = '';
+                    // Déclencher la validation
+                    document.getElementById('contactBanque').dispatchEvent(new Event('input'));
+                });
+            });
+        });
+
+        // Fermer les suggestions au clic ailleurs
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.autocomplete-wrapper')) {
+                document.getElementById('banqueSuggestions').className = 'autocomplete-suggestions';
+            }
+        });
 
         // ============================================================
         // 📱 VALIDATION EN TEMPS RÉEL
@@ -1404,6 +1980,9 @@ FraudeStop - Votre sécurité est notre priorité.`
         const resultsDiv = document.getElementById('results');
         const progressBar = document.getElementById('progressBar');
         const progress = document.getElementById('progress');
+        const progressInfo = document.getElementById('progressInfo');
+        const progressText = document.getElementById('progressText');
+        const timeRemaining = document.getElementById('timeRemaining');
         const statsContainer = document.getElementById('statsContainer');
         const statTotal = document.getElementById('statTotal');
         const statSuccess = document.getElementById('statSuccess');
@@ -1427,8 +2006,7 @@ FraudeStop - Votre sécurité est notre priorité.`
         function updateChart() {
             const ctx = document.getElementById('activityChart').getContext('2d');
             
-            // Préparer les données
-            const days = 30;
+            const days = parseInt(document.getElementById('chartPeriod').value) || 30;
             const labels = [];
             const data = [];
             const today = new Date();
@@ -1438,7 +2016,6 @@ FraudeStop - Votre sécurité est notre priorité.`
                 d.setDate(d.getDate() - i);
                 labels.push(d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }));
                 
-                // Compter les envois pour ce jour
                 const dayStr = d.toDateString();
                 const count = history.filter(h => new Date(h.date).toDateString() === dayStr).length;
                 data.push(count);
@@ -1479,14 +2056,13 @@ FraudeStop - Votre sécurité est notre priorité.`
                             ticks: { color: textColor, stepSize: 1 }
                         },
                         x: {
-                            ticks: { color: textColor }
+                            ticks: { color: textColor, maxTicksLimit: 15 }
                         }
                     }
                 }
             });
         }
 
-        // Période du graphique
         document.getElementById('chartPeriod').addEventListener('change', updateChart);
 
         // ============================================================
@@ -1508,7 +2084,7 @@ FraudeStop - Votre sécurité est notre priorité.`
             }
             
             let html = '';
-            history.forEach((entry, index) => {
+            history.slice(0, 100).forEach((entry) => {
                 const date = new Date(entry.date);
                 const dateStr = date.toLocaleDateString('fr-FR') + ' ' + date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
                 const statusClass = entry.status === 'success' ? 'success' : 'error';
@@ -1537,6 +2113,272 @@ FraudeStop - Votre sécurité est notre priorité.`
             }
         });
 
+        // ============================================================
+        // ⏰ PLANIFICATION
+        // ============================================================
+        function updateSchedules() {
+            const container = document.getElementById('scheduleList');
+            
+            if (schedules.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="icon">📭</span>
+                        <p>Aucune planification</p>
+                        <p style="font-size: 13px; color: var(--text-light);">Planifiez un envoi pour plus tard</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            schedules.forEach((schedule, index) => {
+                const date = new Date(schedule.date);
+                const dateStr = date.toLocaleDateString('fr-FR') + ' ' + date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                const recurrenceLabels = {
+                    none: 'Une fois',
+                    daily: 'Quotidien',
+                    weekly: 'Hebdomadaire',
+                    monthly: 'Mensuel'
+                };
+                html += `
+                    <div class="queue-item">
+                        <span class="info">
+                            <strong>📅 ${dateStr}</strong>
+                            <span style="color:var(--text-light);margin-left:10px;">${recurrenceLabels[schedule.recurrence] || 'Une fois'}</span>
+                            ${schedule.note ? `<span style="color:var(--text-light);margin-left:10px;">📝 ${schedule.note}</span>` : ''}
+                        </span>
+                        <button class="remove-btn" data-index="${index}" onclick="removeSchedule(${index})">✕</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function removeSchedule(index) {
+            schedules.splice(index, 1);
+            saveStats();
+            updateSchedules();
+            showToast('🗑️ Planification supprimée', 'info');
+        }
+
+        document.getElementById('addScheduleBtn').addEventListener('click', function() {
+            const date = document.getElementById('scheduleDate').value;
+            const time = document.getElementById('scheduleTime').value;
+            const recurrence = document.getElementById('scheduleRecurrence').value;
+            const note = document.getElementById('scheduleNote').value.trim();
+            
+            if (!date || !time) {
+                showToast('⚠️ Veuillez sélectionner une date et une heure', 'warning');
+                return;
+            }
+            
+            const scheduleDate = new Date(date + 'T' + time);
+            if (scheduleDate < new Date()) {
+                showToast('⚠️ La date doit être dans le futur', 'warning');
+                return;
+            }
+            
+            schedules.push({ date: scheduleDate.toISOString(), recurrence, note });
+            saveStats();
+            updateSchedules();
+            
+            document.getElementById('scheduleDate').value = '';
+            document.getElementById('scheduleTime').value = '';
+            document.getElementById('scheduleNote').value = '';
+            
+            showToast('✅ Planification ajoutée', 'success');
+            
+            // Planifier la vérification
+            checkSchedules();
+        });
+
+        function checkSchedules() {
+            const now = new Date();
+            schedules.forEach((schedule, index) => {
+                const scheduleDate = new Date(schedule.date);
+                if (scheduleDate <= now) {
+                    // Envoyer les SMS planifiés
+                    showNotification('⏰ Exécution de la planification ' + (index + 1));
+                    // Ici, vous pouvez déclencher l'envoi automatique
+                    if (contacts.length > 0) {
+                        document.getElementById('sendBtn').click();
+                    }
+                    // Supprimer si non récurrent
+                    if (schedule.recurrence === 'none') {
+                        schedules.splice(index, 1);
+                    } else {
+                        // Recréer la prochaine occurrence
+                        const newDate = new Date(scheduleDate);
+                        if (schedule.recurrence === 'daily') { newDate.setDate(newDate.getDate() + 1); }
+                        else if (schedule.recurrence === 'weekly') { newDate.setDate(newDate.getDate() + 7); }
+                        else if (schedule.recurrence === 'monthly') { newDate.setMonth(newDate.getMonth() + 1); }
+                        schedule.date = newDate.toISOString();
+                    }
+                    saveStats();
+                    updateSchedules();
+                }
+            });
+        }
+
+        // Vérifier les planifications toutes les minutes
+        setInterval(checkSchedules, 60000);
+
+        // ============================================================
+        // 👥 GESTION DES UTILISATEURS
+        // ============================================================
+        function updateUserList() {
+            const container = document.getElementById('userList');
+            
+            if (users.length === 0) {
+                // Utilisateur par défaut
+                users = [{ username: 'Admin', password: 'admin123', role: 'admin' }];
+                saveStats();
+            }
+            
+            let html = '';
+            users.forEach((user, index) => {
+                const roleLabels = {
+                    admin: '👑 Administrateur',
+                    agent: '👤 Agent',
+                    supervisor: '👁️ Superviseur',
+                    viewer: '📖 Lecteur'
+                };
+                const isCurrent = user.username === currentUser;
+                html += `
+                    <div class="queue-item" style="${isCurrent ? 'border-left-color: #48bb78;' : ''}">
+                        <span class="info">
+                            <strong>${isCurrent ? '⭐ ' : ''}${user.username}</strong>
+                            <span style="color:var(--text-light);margin-left:10px;">${roleLabels[user.role] || user.role}</span>
+                            ${isCurrent ? '<span style="color:var(--success);margin-left:10px;">● Actif</span>' : ''}
+                        </span>
+                        <div>
+                            ${!isCurrent ? `<button class="remove-btn" onclick="switchUser('${user.username}')" style="font-size:14px;color:#63b3ed;">🔑</button>` : ''}
+                            ${!isCurrent && users.length > 1 ? `<button class="remove-btn" onclick="removeUser(${index})">✕</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function switchUser(username) {
+            const user = users.find(u => u.username === username);
+            if (user) {
+                currentUser = user.username;
+                currentRole = user.role;
+                document.getElementById('currentUser').textContent = currentUser;
+                document.getElementById('currentRole').textContent = getRoleLabel(currentRole);
+                saveStats();
+                updateUserList();
+                showToast('👤 Changé pour : ' + username, 'success');
+            }
+        }
+
+        function removeUser(index) {
+            if (users[index].username === currentUser) {
+                showToast('⚠️ Impossible de supprimer l\'utilisateur actif', 'warning');
+                return;
+            }
+            if (confirm('⚠️ Supprimer l\'utilisateur ' + users[index].username + ' ?')) {
+                users.splice(index, 1);
+                saveStats();
+                updateUserList();
+                showToast('🗑️ Utilisateur supprimé', 'info');
+            }
+        }
+
+        document.getElementById('addUserBtn').addEventListener('click', function() {
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newPassword').value.trim();
+            const role = document.getElementById('newRole').value;
+            
+            if (!username || !password) {
+                showToast('⚠️ Veuillez remplir le nom et le mot de passe', 'warning');
+                return;
+            }
+            
+            if (username.length < 3) {
+                showToast('⚠️ Le nom doit faire au moins 3 caractères', 'warning');
+                return;
+            }
+            
+            if (password.length < 4) {
+                showToast('⚠️ Le mot de passe doit faire au moins 4 caractères', 'warning');
+                return;
+            }
+            
+            if (users.find(u => u.username === username)) {
+                showToast('⚠️ Cet utilisateur existe déjà', 'warning');
+                return;
+            }
+            
+            users.push({ username, password, role });
+            saveStats();
+            updateUserList();
+            
+            document.getElementById('newUsername').value = '';
+            document.getElementById('newPassword').value = '';
+            
+            showToast('✅ Utilisateur ' + username + ' ajouté', 'success');
+        });
+
+        // ============================================================
+        // 🎨 PERSONNALISATION
+        // ============================================================
+        document.getElementById('applyCustomizationBtn').addEventListener('click', function() {
+            const primary = document.getElementById('primaryColor').value;
+            const secondary = document.getElementById('secondaryColor').value;
+            const font = document.getElementById('fontSelect').value;
+            const logoUrl = document.getElementById('logoUrl').value.trim();
+            
+            document.documentElement.style.setProperty('--primary', primary);
+            document.documentElement.style.setProperty('--primary-dark', secondary);
+            document.documentElement.style.setProperty('--font-family', font);
+            
+            if (logoUrl) {
+                document.documentElement.style.setProperty('--logo-url', 'url(' + logoUrl + ')');
+                document.querySelector('.logo').innerHTML = '<img src="' + logoUrl + '" style="height:30px;"> FraudeStop';
+            }
+            
+            localStorage.setItem('fraudestop_custom', JSON.stringify({ primary, secondary, font, logoUrl }));
+            showToast('✅ Personnalisation appliquée', 'success');
+        });
+
+        document.getElementById('resetCustomizationBtn').addEventListener('click', function() {
+            document.documentElement.style.setProperty('--primary', '#dc3545');
+            document.documentElement.style.setProperty('--primary-dark', '#8b0000');
+            document.documentElement.style.setProperty('--font-family', "'Segoe UI', sans-serif");
+            document.querySelector('.logo').innerHTML = '🛡️ FraudeStop';
+            
+            document.getElementById('primaryColor').value = '#dc3545';
+            document.getElementById('secondaryColor').value = '#8b0000';
+            document.getElementById('fontSelect').value = "'Segoe UI', sans-serif";
+            document.getElementById('logoUrl').value = '';
+            
+            localStorage.removeItem('fraudestop_custom');
+            showToast('↩️ Personnalisation réinitialisée', 'info');
+        });
+
+        // Charger la personnalisation sauvegardée
+        const savedCustom = localStorage.getItem('fraudestop_custom');
+        if (savedCustom) {
+            try {
+                const custom = JSON.parse(savedCustom);
+                document.documentElement.style.setProperty('--primary', custom.primary);
+                document.documentElement.style.setProperty('--primary-dark', custom.secondary);
+                document.documentElement.style.setProperty('--font-family', custom.font);
+                document.getElementById('primaryColor').value = custom.primary;
+                document.getElementById('secondaryColor').value = custom.secondary;
+                document.getElementById('fontSelect').value = custom.font;
+                if (custom.logoUrl) {
+                    document.querySelector('.logo').innerHTML = '<img src="' + custom.logoUrl + '" style="height:30px;"> FraudeStop';
+                }
+            } catch(e) {}
+        }
+
+        // ============================================================
+        // 📋 GESTION DE LA FILE D'ATTENTE (suite)
+        // ============================================================
         function updateQueue() {
             queueCount.textContent = contacts.length;
             
@@ -1756,6 +2598,14 @@ FraudeStop - Votre sécurité est notre priorité.`
         });
 
         // ============================================================
+        // ⏰ PLANIFICATION - Bouton
+        // ============================================================
+        document.getElementById('scheduleBtn').addEventListener('click', function() {
+            document.querySelector('[data-tab="tab-schedule"]').click();
+            showToast('⏰ Onglet Planification', 'info', 1500);
+        });
+
+        // ============================================================
         // 📤 ENVOI DES SMS
         // ============================================================
         document.getElementById('smsForm').addEventListener('submit', async function(e) {
@@ -1792,7 +2642,11 @@ FraudeStop - Votre sécurité est notre priorité.`
             
             resultsDiv.innerHTML = '';
             progressBar.style.display = 'block';
+            progressInfo.classList.add('visible');
             progress.style.width = '0%';
+            progressText.textContent = '0%';
+            timeRemaining.textContent = '⏱️ Calcul...';
+            
             statsContainer.style.display = 'flex';
             statTotal.textContent = toSend;
             statSuccess.textContent = '0';
@@ -1801,6 +2655,7 @@ FraudeStop - Votre sécurité est notre priorité.`
             let successTotal = 0, errorTotal = 0;
             const apiUrl = 'https://api.smsfactor.com/send';
             const contactsToSend = contacts.slice(0, toSend);
+            startTime = Date.now();
             
             for (let i = 0; i < contactsToSend.length; i++) {
                 const contact = contactsToSend[i];
@@ -1863,7 +2718,19 @@ FraudeStop - Votre sécurité est notre priorité.`
                 
                 statSuccess.textContent = successTotal;
                 statError.textContent = errorTotal;
-                progress.style.width = `${((i + 1) / contactsToSend.length) * 100}%`;
+                
+                // Barre de progression avancée
+                const percent = ((i + 1) / contactsToSend.length) * 100;
+                progress.style.width = percent + '%';
+                progressText.textContent = Math.round(percent) + '%';
+                
+                // Temps estimé restant
+                const elapsed = (Date.now() - startTime) / 1000;
+                const avgTime = elapsed / (i + 1);
+                const remainingTime = (contactsToSend.length - (i + 1)) * avgTime;
+                const minutes = Math.floor(remainingTime / 60);
+                const seconds = Math.floor(remainingTime % 60);
+                timeRemaining.textContent = `⏱️ ${minutes}m ${seconds}s restant`;
             }
             
             contacts = contacts.slice(toSend);
@@ -1882,7 +2749,10 @@ FraudeStop - Votre sécurité est notre priorité.`
             
             showToast(`✅ Envoi terminé ! ${successTotal} succès`, successTotal > 0 ? 'success' : 'warning');
             
-            setTimeout(() => { progressBar.style.display = 'none'; }, 2000);
+            setTimeout(() => { 
+                progressBar.style.display = 'none';
+                progressInfo.classList.remove('visible');
+            }, 2000);
             
             isSending = false;
             sendBtn.classList.remove('loading');
@@ -1991,24 +2861,19 @@ FraudeStop - Votre sécurité est notre priorité.`
                         </tbody>
                     </table>
                     <p style="margin-top: 20px; color: #718096; font-size: 12px;">
-                        Rapport généré par FraudeStop v3.0 Pro - ${history.length} entrées
+                        Rapport généré par FraudeStop v4.0 Pro - ${history.length} entrées
                     </p>
                 </body>
                 </html>
             `;
             
-            const blob = new Blob([html], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'fraudestop_rapport.html';
-            a.click();
-            URL.revokeObjectURL(url);
+            downloadFile(html, 'fraudestop_rapport.html', 'text/html');
             showToast('✅ Export PDF HTML terminé !', 'success');
         }
 
         function exportStats() {
             const stats = {
+                version: '4.0 Pro',
                 date: new Date().toISOString(),
                 totalSent: totalSent,
                 successCount: successCount,
@@ -2017,6 +2882,10 @@ FraudeStop - Votre sécurité est notre priorité.`
                 todaySent: todaySent,
                 dailyLimit: DAILY_LIMIT,
                 historyCount: history.length,
+                schedulesCount: schedules.length,
+                usersCount: users.length,
+                currentUser: currentUser,
+                currentRole: currentRole,
                 lastEnvoi: history.length > 0 ? history[0].date : null
             };
             
@@ -2037,11 +2906,13 @@ FraudeStop - Votre sécurité est notre priorité.`
             URL.revokeObjectURL(url);
         }
 
-        // Exporter les fonctions pour les boutons onclick
         window.exportCSV = exportCSV;
         window.exportHistoryCSV = exportHistoryCSV;
         window.exportPDF = exportPDF;
         window.exportStats = exportStats;
+        window.removeSchedule = removeSchedule;
+        window.switchUser = switchUser;
+        window.removeUser = removeUser;
 
         // ============================================================
         // 📑 GESTION DES TABS
@@ -2053,7 +2924,6 @@ FraudeStop - Votre sécurité est notre priorité.`
                 this.classList.add('active');
                 document.getElementById(this.dataset.tab).classList.add('active');
                 
-                // Mettre à jour le graphique si on va sur le dashboard
                 if (this.dataset.tab === 'tab-dashboard') {
                     setTimeout(updateChart, 100);
                 }
@@ -2069,7 +2939,6 @@ FraudeStop - Votre sécurité est notre priorité.`
         updateCounterDisplay();
         updateDashboard();
         
-        // Initialiser le graphique après un court délai
         setTimeout(updateChart, 500);
         
         setInterval(loadStats, 60000);
