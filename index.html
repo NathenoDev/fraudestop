@@ -1378,6 +1378,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             
             try {
                 const data = JSON.parse(session);
+                // Vérifier que l'utilisateur existe toujours et n'est pas banni
                 const user = users.find(u => u.id === data.userId && !u.banned);
                 if (user && data.version === APP_VERSION) {
                     currentUser = user;
@@ -1394,6 +1395,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         // 🔑 FONCTION DE CONNEXION
         // ============================================================
         function login(username, password) {
+            // Recherche dans la base de données des utilisateurs
             const user = users.find(u => 
                 u.username.toLowerCase() === username.toLowerCase() && 
                 u.password === password &&
@@ -1437,8 +1439,10 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             if (user && user.id !== 'admin') {
                 user.banned = true;
                 localStorage.setItem('fraudestop_users', JSON.stringify(users));
+                // Si l'utilisateur banni est connecté, le déconnecter
                 if (currentUser && currentUser.id === userId) {
                     logout();
+                    showToast('🚫 Vous avez été banni', 'error');
                 }
                 updateUserList();
                 showToast('🚫 Utilisateur banni', 'success');
@@ -1479,6 +1483,62 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             return perms[role] || [];
         }
 
+        function switchUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user && !user.banned) {
+                currentUser = user;
+                isLoggedIn = true;
+                localStorage.setItem('fraudestop_session', JSON.stringify({
+                    userId: user.id,
+                    username: user.username,
+                    role: user.role,
+                    version: APP_VERSION,
+                    loginTime: Date.now()
+                }));
+                document.getElementById('currentUserDisplay').textContent = user.username;
+                document.getElementById('currentRoleDisplay').textContent = getRoleLabel(user.role);
+                updateUserList();
+                updateTabPermissions();
+                showToast('👤 Changé pour : ' + user.username, 'success');
+            } else if (user && user.banned) {
+                showToast('🚫 Cet utilisateur est banni', 'error');
+            }
+        }
+
+        function updateTabPermissions() {
+            const permissions = getRolePermissions(currentUser ? currentUser.role : 'viewer');
+            const tabs = document.querySelectorAll('.tab-btn');
+            const tabMap = {
+                'tab-send': 'send',
+                'tab-history': 'history',
+                'tab-dashboard': 'dashboard',
+                'tab-export': 'export',
+                'tab-schedule': 'schedule',
+                'tab-customize': 'customize',
+                'tab-users': 'users'
+            };
+            
+            tabs.forEach(tab => {
+                const key = tab.dataset.tab;
+                const perm = tabMap[key] || 'view';
+                if (permissions.includes(perm) || perm === 'view') {
+                    tab.style.display = '';
+                    tab.classList.remove('disabled');
+                } else {
+                    tab.style.display = 'none';
+                }
+            });
+            
+            // Si l'onglet actif est masqué, passer au premier visible
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab && activeTab.style.display === 'none') {
+                const firstVisible = document.querySelector('.tab-btn:not([style*="display: none"])');
+                if (firstVisible) {
+                    firstVisible.click();
+                }
+            }
+        }
+
         // ============================================================
         // 🔐 GESTION DU FORMULAIRE DE CONNEXION
         // ============================================================
@@ -1498,6 +1558,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 return;
             }
             
+            // Vérifier si l'utilisateur existe et est banni
             const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
             if (user && user.banned) {
                 errorMsg.textContent = '🚫 Ce compte a été banni par l\'administrateur';
@@ -2568,6 +2629,7 @@ FraudeStop - Votre sécurité est notre priorité.`
         window.unbanUser = unbanUser;
         window.logout = logout;
         window.toggleShortcuts = toggleShortcuts;
+        window.switchUser = switchUser;
 
         // ============================================================
         // ➕ AJOUTER UN CONTACT
@@ -2960,28 +3022,6 @@ FraudeStop - Votre sécurité est notre priorité.`
             container.innerHTML = html;
         }
 
-        function switchUser(userId) {
-            const user = users.find(u => u.id === userId);
-            if (user && !user.banned) {
-                currentUser = user;
-                isLoggedIn = true;
-                localStorage.setItem('fraudestop_session', JSON.stringify({
-                    userId: user.id,
-                    username: user.username,
-                    role: user.role,
-                    version: APP_VERSION,
-                    loginTime: Date.now()
-                }));
-                document.getElementById('currentUserDisplay').textContent = user.username;
-                document.getElementById('currentRoleDisplay').textContent = getRoleLabel(user.role);
-                updateUserList();
-                updateTabPermissions();
-                showToast('👤 Changé pour : ' + user.username, 'success');
-            } else if (user && user.banned) {
-                showToast('🚫 Cet utilisateur est banni', 'error');
-            }
-        }
-
         function updateTabPermissions() {
             const permissions = getRolePermissions(currentUser ? currentUser.role : 'viewer');
             const tabs = document.querySelectorAll('.tab-btn');
@@ -3006,7 +3046,6 @@ FraudeStop - Votre sécurité est notre priorité.`
                 }
             });
             
-            // Si l'onglet actif est masqué, passer au premier visible
             const activeTab = document.querySelector('.tab-content.active');
             if (activeTab && activeTab.style.display === 'none') {
                 const firstVisible = document.querySelector('.tab-btn:not([style*="display: none"])');
@@ -3016,6 +3055,9 @@ FraudeStop - Votre sécurité est notre priorité.`
             }
         }
 
+        // ============================================================
+        // ➕ AJOUTER UN UTILISATEUR (Admin)
+        // ============================================================
         document.getElementById('addUserBtn').addEventListener('click', function() {
             const username = document.getElementById('newUsername').value.trim();
             const password = document.getElementById('newPassword').value.trim();
@@ -3036,20 +3078,32 @@ FraudeStop - Votre sécurité est notre priorité.`
                 return;
             }
             
+            // Vérifier si l'utilisateur existe déjà
             if (users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
                 showToast('⚠️ Cet utilisateur existe déjà', 'warning');
                 return;
             }
             
             const newId = 'user' + Date.now();
-            users.push({ id: newId, username, password, role, banned: false });
+            const newUser = { 
+                id: newId, 
+                username: username, 
+                password: password, 
+                role: role, 
+                banned: false 
+            };
+            
+            users.push(newUser);
             localStorage.setItem('fraudestop_users', JSON.stringify(users));
             
             document.getElementById('newUsername').value = '';
             document.getElementById('newPassword').value = '';
             
             updateUserList();
-            showToast('✅ Utilisateur ' + username + ' ajouté', 'success');
+            showToast('✅ Utilisateur ' + username + ' ajouté avec succès !', 'success');
+            
+            // Afficher les coordonnées pour l'utilisateur
+            showToast('📋 ' + username + ' peut se connecter avec : ' + username + ' / ' + password, 'info', 5000);
         });
 
         // ============================================================
@@ -3072,11 +3126,9 @@ FraudeStop - Votre sécurité est notre priorité.`
         // 🚀 INITIALISATION DE L'APPLICATION
         // ============================================================
         function initializeApp() {
-            // Mettre à jour les infos utilisateur
             document.getElementById('currentUserDisplay').textContent = currentUser.username;
             document.getElementById('currentRoleDisplay').textContent = getRoleLabel(currentUser.role);
             
-            // Charger les données
             loadStats();
             updateQueue();
             updateSendButton();
@@ -3087,7 +3139,6 @@ FraudeStop - Votre sécurité est notre priorité.`
             
             setTimeout(updateChart, 500);
             
-            // Vérifier les sessions toutes les 30s
             setInterval(() => {
                 const session = localStorage.getItem('fraudestop_session');
                 if (!session) {
