@@ -260,15 +260,6 @@
         
         .row { display: flex; gap: 15px; }
         .row .col { flex: 1; }
-        
-        .validation-hint {
-            font-size: 12px;
-            margin-top: 4px;
-            display: none;
-        }
-        .validation-hint.visible { display: block; }
-        .validation-hint.valid { color: #48bb78; }
-        .validation-hint.invalid { color: #fc8181; }
 
         /* ===== BUTTONS ===== */
         .btn {
@@ -317,11 +308,6 @@
             color: var(--text);
         }
         .btn-secondary:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        
-        .btn-success {
-            background: linear-gradient(135deg, #48bb78, #276749);
-        }
-        .btn-success:hover { box-shadow: 0 8px 20px rgba(72, 187, 120, 0.4); }
         
         .btn-group { display: flex; gap: 10px; margin-top: 10px; }
         .btn-group .btn { flex: 1; }
@@ -556,11 +542,11 @@
             </div>
         </div>
 
-        <form id="smsForm">
+        <form id="smsForm" novalidate>
             <!-- TEMPLATE -->
             <div class="form-group">
                 <label>📝 Template du message</label>
-                <textarea id="messageTemplate" required>🚨 ALERTE FRAUDE - ACTION IMMÉDIATE REQUISE 🚨
+                <textarea id="messageTemplate">🚨 ALERTE FRAUDE - ACTION IMMÉDIATE REQUISE 🚨
 
 Bonjour {prenom} {nom},
 
@@ -591,35 +577,35 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 </div>
             </div>
 
-            <!-- SAISIE CONTACT -->
+            <!-- SAISIE CONTACT - SANS required -->
             <div class="form-group">
                 <label>👤 Saisie du destinataire</label>
                 <div class="row">
                     <div class="col">
-                        <input type="text" id="contactNom" placeholder="Nom du client" required>
+                        <input type="text" id="contactNom" placeholder="Nom du client">
                     </div>
                     <div class="col">
-                        <input type="text" id="contactPrenom" placeholder="Prénom du client" required>
+                        <input type="text" id="contactPrenom" placeholder="Prénom du client">
                     </div>
                 </div>
                 <div style="margin-top: 10px;">
-                    <input type="tel" id="contactTelephone" placeholder="Téléphone (ex: 33612345678)" required>
+                    <input type="tel" id="contactTelephone" placeholder="Téléphone (ex: 33612345678)">
                 </div>
                 
                 <!-- Nouveaux champs bancaires -->
                 <div style="margin-top: 10px;">
-                    <input type="text" id="contactBanque" placeholder="Nom de la banque (ex: BNP Paribas)" required>
+                    <input type="text" id="contactBanque" placeholder="Nom de la banque (ex: BNP Paribas)">
                 </div>
                 <div class="row" style="margin-top: 10px;">
                     <div class="col">
-                        <input type="text" id="contactIban" placeholder="IBAN (ex: FR7612345678901234567890123)" required>
+                        <input type="text" id="contactIban" placeholder="IBAN (ex: FR7612345678901234567890123)">
                     </div>
                     <div class="col">
-                        <input type="text" id="contactBic" placeholder="BIC (ex: BNPAFRPP)" required>
+                        <input type="text" id="contactBic" placeholder="BIC (ex: BNPAFRPP)">
                     </div>
                 </div>
                 <div style="margin-top: 10px;">
-                    <input type="text" id="contactMontant" placeholder="Montant suspect (ex: 1250,00)" required>
+                    <input type="text" id="contactMontant" placeholder="Montant suspect (ex: 1250,00)">
                 </div>
                 
                 <div class="btn-group" style="margin-top: 10px;">
@@ -918,7 +904,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             
             // Vérifier que tous les champs sont remplis
             if (!nom || !prenom || !telephone || !banque || !iban || !bic || !montant) {
-                showToast('Veuillez remplir tous les champs (Nom, Prénom, Téléphone, Banque, IBAN, BIC, Montant).', 'warning');
+                showToast('⚠️ Veuillez remplir TOUS les champs avant d\'ajouter.', 'warning');
                 return;
             }
             
@@ -928,21 +914,21 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             phone = phone.replace(/\D/g, '');
             
             if (phone.length < 11) {
-                showToast('Numéro de téléphone invalide. Format attendu : 336XXXXXXXX', 'error');
+                showToast('❌ Numéro invalide. Format: 336XXXXXXXX', 'error');
                 return;
             }
             
             // Validation IBAN
             const ibanClean = iban.toUpperCase().replace(/\s/g, '');
             if (!ibanClean.startsWith('FR') || ibanClean.length < 14) {
-                showToast('IBAN invalide. Doit commencer par FR et faire au moins 14 caractères.', 'error');
+                showToast('❌ IBAN invalide. Doit commencer par FR', 'error');
                 return;
             }
             
             // Validation BIC
             const bicClean = bic.toUpperCase().replace(/\s/g, '');
             if (bicClean.length < 8 || bicClean.length > 11) {
-                showToast('BIC invalide. Doit faire 8 ou 11 caractères.', 'error');
+                showToast('❌ BIC invalide. 8 ou 11 caractères', 'error');
                 return;
             }
             
@@ -957,7 +943,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 montant
             });
             
-            // Réinitialiser les champs
+            // ✅ Réinitialiser les champs IMMÉDIATEMENT
             resetFields();
             
             // Mettre à jour l'interface
@@ -966,10 +952,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             hideSmsPreview();
             
             // Notification de succès
-            showToast(`${prenom} ${nom} ajouté à la file d'attente ✅`, 'success', 2000);
-            
-            // AUTO-ENVOI : Si c'est le premier contact, on peut l'envoyer immédiatement
-            // Mais on laisse l'utilisateur décider
+            showToast(`✅ ${prenom} ${nom} ajouté !`, 'success', 1500);
         });
 
         // ============================================================
@@ -1023,7 +1006,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 updateSendButton();
                 resultsDiv.innerHTML = '';
                 statsContainer.style.display = 'none';
-                showToast('File d\'attente vidée', 'info', 2000);
+                showToast('🗑️ File d\'attente vidée', 'info', 1500);
             }
         });
 
@@ -1034,12 +1017,12 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             e.preventDefault();
             
             if (contacts.length === 0) {
-                showToast('Ajoutez au moins un contact dans la file d\'attente.', 'warning');
+                showToast('⚠️ Ajoutez au moins un contact.', 'warning');
                 return;
             }
             
             if (isLimitReached()) {
-                showToast(`Limite journalière atteinte (${DAILY_LIMIT} SMS). Réessayez demain.`, 'error');
+                showToast(`⛔ Limite atteinte (${DAILY_LIMIT} SMS)`, 'error');
                 return;
             }
             
@@ -1049,7 +1032,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             const toSend = Math.min(contacts.length, remaining);
             
             if (toSend < contacts.length) {
-                if (!confirm(`⚠️ Limite journalière : ${remaining} SMS restants. Seuls ${toSend} contact(s) sur ${contacts.length} seront envoyés. Continuer ?`)) {
+                if (!confirm(`⚠️ Limite : ${remaining} SMS restants. Seuls ${toSend} sur ${contacts.length} seront envoyés.`)) {
                     return;
                 }
             }
@@ -1090,7 +1073,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 resultItem.className = 'result-item pending';
                 resultItem.innerHTML = `
                     <span class="name">${contact.prenom} ${contact.nom}</span>
-                    <span class="status">⏳ Envoi en cours...</span>
+                    <span class="status">⏳ Envoi...</span>
                 `;
                 resultsDiv.appendChild(resultItem);
                 
@@ -1137,18 +1120,17 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             updateQueue();
             updateSendButton();
             
-            // Résumé
             const summary = document.createElement('div');
             summary.className = 'result-item success';
             summary.style.marginTop = '15px';
             summary.style.fontWeight = 'bold';
             summary.innerHTML = `
                 ✅ Envoi terminé ! ${successTotal} succès, ${errorTotal} échecs sur ${contactsToSend.length} SMS.
-                ${isLimitReached() ? ' ⚠️ Limite journalière atteinte (500/500) !' : ` 📊 Reste ${DAILY_LIMIT - todaySent} SMS aujourd'hui`}
+                ${isLimitReached() ? ' ⚠️ Limite atteinte !' : ` 📊 Reste ${DAILY_LIMIT - todaySent} SMS`}
             `;
             resultsDiv.appendChild(summary);
             
-            showToast(`Envoi terminé ! ${successTotal} succès, ${errorTotal} échecs`, successTotal > 0 ? 'success' : 'warning');
+            showToast(`✅ Envoi terminé ! ${successTotal} succès`, successTotal > 0 ? 'success' : 'warning');
             
             setTimeout(() => { progressBar.style.display = 'none'; }, 2000);
             
