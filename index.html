@@ -28,7 +28,6 @@
             --success: #48bb78;
             --error: #fc8181;
             --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            --logo-url: none;
         }
         
         /* ===== MODE SOMBRE ===== */
@@ -52,7 +51,7 @@
         }
         
         .container {
-            max-width: 900px;
+            max-width: 950px;
             margin: 0 auto;
             background: var(--card-bg);
             border-radius: var(--radius);
@@ -148,6 +147,21 @@
         .status-bar .online { color: var(--success); }
         .status-bar .offline { color: var(--error); }
         .status-bar .user { font-weight: 600; color: var(--text); }
+        .status-bar .logout-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 4px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .status-bar .logout-btn:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
 
         /* ===== TOAST NOTIFICATIONS ===== */
         .toast-container {
@@ -249,6 +263,11 @@
             align-items: center;
             justify-content: center;
             font-weight: 700;
+        }
+        
+        .tab-btn.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
         }
         
         .tab-content {
@@ -453,11 +472,6 @@
         }
         
         .autocomplete-suggestions .suggestion:hover {
-            background: var(--primary-light);
-            color: var(--primary);
-        }
-        
-        .autocomplete-suggestions .suggestion.highlighted {
             background: var(--primary-light);
             color: var(--primary);
         }
@@ -733,7 +747,6 @@
             display: none;
         }
         .scheduler-box.visible { display: block; }
-        .scheduler-box .row { margin-bottom: 10px; }
 
         /* ===== PERSONNALISATION ===== */
         .customization-box {
@@ -750,24 +763,6 @@
             border: 2px solid var(--border);
             border-radius: 6px;
             cursor: pointer;
-        }
-
-        /* ===== MULTI-USER ===== */
-        .user-selector {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .user-selector select {
-            max-width: 200px;
-        }
-        .user-role {
-            font-size: 12px;
-            color: var(--text-light);
-            padding: 2px 10px;
-            background: var(--bg);
-            border-radius: 12px;
         }
 
         /* ===== SHORTCUTS HELP ===== */
@@ -805,7 +800,6 @@
             .api-status { flex-direction: column; gap: 5px; text-align: center; }
             .tabs { flex-direction: column; }
             .tab-btn { text-align: center; }
-            .user-selector select { max-width: 100%; }
         }
     </style>
 </head>
@@ -814,96 +808,137 @@
     <!-- ===== TOAST CONTAINER ===== -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <div class="container">
-        <!-- HEADER -->
-        <div class="header">
-            <h1>
-                <span class="logo">🛡️ FraudeStop</span>
-                <span class="badge">Pro</span>
-            </h1>
-            <div class="header-actions">
-                <button class="theme-toggle" id="themeToggle" title="Mode sombre/clair">🌙</button>
+    <!-- ===== PAGE DE CONNEXION ===== -->
+    <div id="loginPage" style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,#dc3545 0%,#8b0000 100%);">
+        <div style="max-width:420px;width:100%;background:#ffffff;border-radius:16px;padding:40px 35px;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:fadeIn 0.5s ease;">
+            <div style="text-align:center;margin-bottom:30px;">
+                <span style="font-size:60px;display:block;margin-bottom:10px;">🛡️</span>
+                <h1 style="font-size:32px;font-weight:800;color:#dc3545;letter-spacing:1px;">FraudeStop</h1>
+                <div style="font-size:14px;color:#718096;margin-top:4px;">Service Anti-Fraude Bancaire</div>
             </div>
+            
+            <div style="height:2px;background:linear-gradient(90deg,#dc3545,transparent);margin:20px 0;border-radius:2px;"></div>
+            
+            <div id="loginError" style="background:#fff5f5;color:#dc3545;padding:12px 15px;border-radius:8px;border-left:4px solid #dc3545;margin-bottom:15px;font-size:14px;display:none;animation:shake 0.4s ease;">
+                ❌ Identifiant ou mot de passe incorrect
+            </div>
+            
+            <form id="loginForm" autocomplete="off">
+                <div style="margin-bottom:20px;">
+                    <label style="display:block;font-weight:600;color:#2d3748;margin-bottom:6px;font-size:14px;">👤 Identifiant</label>
+                    <input type="text" id="loginUser" placeholder="Entrez votre identifiant" style="width:100%;padding:14px 18px;border:2px solid #e2e8f0;border-radius:10px;font-size:15px;transition:all 0.3s ease;background:#f7fafc;color:#2d3748;" autofocus>
+                </div>
+                
+                <div style="margin-bottom:20px;">
+                    <label style="display:block;font-weight:600;color:#2d3748;margin-bottom:6px;font-size:14px;">🔑 Mot de passe</label>
+                    <input type="password" id="loginPass" placeholder="Entrez votre mot de passe" style="width:100%;padding:14px 18px;border:2px solid #e2e8f0;border-radius:10px;font-size:15px;transition:all 0.3s ease;background:#f7fafc;color:#2d3748;">
+                </div>
+                
+                <button type="submit" id="loginBtn" style="width:100%;padding:14px;background:linear-gradient(135deg,#dc3545,#8b0000);color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.3s ease;letter-spacing:0.5px;">
+                    <span id="loginSpinner" style="display:none;width:20px;height:20px;border:3px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;"></span>
+                    <span id="loginText">🔐 Se connecter</span>
+                </button>
+            </form>
+            
+            <div style="background:#f7fafc;padding:12px 15px;border-radius:8px;font-size:12px;color:#718096;margin-top:15px;border:1px dashed #e2e8f0;text-align:center;">
+                💡 Contactez votre administrateur pour vos identifiants
+            </div>
+            
+            <div style="font-size:11px;color:#718096;text-align:center;margin-top:15px;">v4.0 Pro - Sécurisé</div>
         </div>
-        <p class="subtitle">Protection bancaire - Alerte immédiate</p>
-        
-        <!-- STATUS BAR -->
-        <div class="status-bar">
-            <span>
-                <span id="connectionStatus" class="online">● En ligne</span>
-                <span style="margin-left: 15px;">👤 <span class="user" id="currentUser">Admin</span></span>
-                <span class="user-role" id="currentRole" style="margin-left: 10px;">👑 Administrateur</span>
-            </span>
-            <span>
-                <span id="languageDisplay">🇫🇷 Français</span>
-                <button class="btn-secondary" style="padding: 4px 10px; font-size: 12px; margin-left: 10px;" onclick="toggleLanguage()">🌐 Langue</button>
-                <button class="btn-secondary" style="padding: 4px 10px; font-size: 12px; margin-left: 5px;" onclick="toggleShortcuts()">⌨️</button>
-            </span>
-        </div>
-        
-        <!-- SHORTCUTS HELP -->
-        <div class="shortcuts-help" id="shortcutsHelp">
-            <strong>⌨️ Raccourcis clavier :</strong>
-            <kbd>Ctrl+N</kbd> Nouveau contact · 
-            <kbd>Ctrl+S</kbd> Envoyer · 
-            <kbd>Ctrl+H</kbd> Historique · 
-            <kbd>Ctrl+E</kbd> Export · 
-            <kbd>Ctrl+Shift+P</kbd> Planifier
-        </div>
-        
-        <!-- API STATUS -->
-        <div class="api-status">
-            <span>🔑 Clé API FraudeStop configurée : <span class="key-hidden">••••••••••••••••••••</span> ✅</span>
-            <span style="font-size: 12px;">v4.0 Pro</span>
-        </div>
+    </div>
 
-        <!-- COUNTER DASHBOARD -->
-        <div class="counter-dashboard">
-            <div class="counter-item">
-                <span class="number today" id="todayCount">0</span>
-                <span class="label">📱 SMS aujourd'hui</span>
+    <!-- ===== APPLICATION PRINCIPALE ===== -->
+    <div id="mainApp" style="display:none;">
+        <div class="container">
+            <!-- HEADER -->
+            <div class="header">
+                <h1>
+                    <span class="logo">🛡️ FraudeStop</span>
+                    <span class="badge">Pro</span>
+                </h1>
+                <div class="header-actions">
+                    <button class="theme-toggle" id="themeToggle" title="Mode sombre/clair">🌙</button>
+                </div>
             </div>
-            <div class="counter-divider"></div>
-            <div class="counter-item">
-                <span class="number total" id="totalCountDisplay">0</span>
-                <span class="label">📊 Total SMS</span>
+            <p class="subtitle">Protection bancaire - Alerte immédiate</p>
+            
+            <!-- STATUS BAR -->
+            <div class="status-bar">
+                <span>
+                    <span id="connectionStatus" class="online">● En ligne</span>
+                    <span style="margin-left:15px;">👤 <span class="user" id="currentUserDisplay">Admin</span></span>
+                    <span id="currentRoleDisplay" style="margin-left:10px;background:#f7fafc;padding:2px 10px;border-radius:12px;font-size:12px;">👑 Administrateur</span>
+                </span>
+                <span style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                    <button class="btn-secondary" style="padding:4px 10px;font-size:12px;cursor:pointer;border:none;border-radius:6px;background:var(--border);" onclick="toggleShortcuts()">⌨️</button>
+                    <button class="logout-btn" onclick="logout()">🚪 Déconnexion</button>
+                </span>
             </div>
-            <div class="counter-divider"></div>
-            <div class="counter-item">
-                <span class="number success-rate" id="successRate">0%</span>
-                <span class="label">✅ Taux de succès</span>
+            
+            <!-- SHORTCUTS HELP -->
+            <div class="shortcuts-help" id="shortcutsHelp">
+                <strong>⌨️ Raccourcis clavier :</strong>
+                <kbd>Ctrl+N</kbd> Nouveau contact · 
+                <kbd>Ctrl+S</kbd> Envoyer · 
+                <kbd>Ctrl+H</kbd> Historique · 
+                <kbd>Ctrl+E</kbd> Export · 
+                <kbd>Ctrl+Shift+P</kbd> Planifier
             </div>
-            <div class="counter-divider"></div>
-            <div class="counter-item">
-                <span class="number limit" id="dailyLimitDisplay">500</span>
-                <span class="label">📈 Limite journalière</span>
+            
+            <!-- API STATUS -->
+            <div class="api-status">
+                <span>🔑 Clé API FraudeStop configurée : <span class="key-hidden">••••••••••••••••••••</span> ✅</span>
+                <span style="font-size:12px;">v4.0 Pro</span>
             </div>
-        </div>
 
-        <!-- ===== TABS ===== -->
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="tab-send">📤 Envoi</button>
-            <button class="tab-btn" data-tab="tab-history">📜 Historique</button>
-            <button class="tab-btn" data-tab="tab-dashboard">📊 Tableau de bord</button>
-            <button class="tab-btn" data-tab="tab-export">📋 Export</button>
-            <button class="tab-btn" data-tab="tab-schedule">⏰ Planification</button>
-            <button class="tab-btn" data-tab="tab-customize">🎨 Personnalisation</button>
-            <button class="tab-btn" data-tab="tab-users">👥 Utilisateurs</button>
-        </div>
+            <!-- COUNTER DASHBOARD -->
+            <div class="counter-dashboard">
+                <div class="counter-item">
+                    <span class="number today" id="todayCount">0</span>
+                    <span class="label">📱 SMS aujourd'hui</span>
+                </div>
+                <div class="counter-divider"></div>
+                <div class="counter-item">
+                    <span class="number total" id="totalCountDisplay">0</span>
+                    <span class="label">📊 Total SMS</span>
+                </div>
+                <div class="counter-divider"></div>
+                <div class="counter-item">
+                    <span class="number success-rate" id="successRate">0%</span>
+                    <span class="label">✅ Taux de succès</span>
+                </div>
+                <div class="counter-divider"></div>
+                <div class="counter-item">
+                    <span class="number limit" id="dailyLimitDisplay">500</span>
+                    <span class="label">📈 Limite journalière</span>
+                </div>
+            </div>
 
-        <!-- ===== TAB 1 : ENVOI ===== -->
-        <div class="tab-content active" id="tab-send">
-            <form id="smsForm" novalidate>
-                <!-- TEMPLATE SELECT -->
-                <div class="form-group">
-                    <label>📝 Template du message</label>
-                    <select id="templateSelect">
-                        <option value="urgence">🚨 Urgence max (recommandé)</option>
-                        <option value="standard">📋 Standard</option>
-                        <option value="relance">⏰ Relance</option>
-                        <option value="confirmation">✅ Confirmation</option>
-                    </select>
-                    <textarea id="messageTemplate">🚨 ALERTE FRAUDE - ACTION IMMÉDIATE REQUISE 🚨
+            <!-- ===== TABS ===== -->
+            <div class="tabs" id="tabContainer">
+                <button class="tab-btn active" data-tab="tab-send">📤 Envoi</button>
+                <button class="tab-btn" data-tab="tab-history">📜 Historique</button>
+                <button class="tab-btn" data-tab="tab-dashboard">📊 Tableau de bord</button>
+                <button class="tab-btn" data-tab="tab-export">📋 Export</button>
+                <button class="tab-btn" data-tab="tab-schedule">⏰ Planification</button>
+                <button class="tab-btn" data-tab="tab-customize">🎨 Personnalisation</button>
+                <button class="tab-btn" data-tab="tab-users" id="usersTab">👥 Utilisateurs</button>
+            </div>
+
+            <!-- ===== TAB 1 : ENVOI ===== -->
+            <div class="tab-content active" id="tab-send">
+                <form id="smsForm" novalidate>
+                    <!-- TEMPLATE SELECT -->
+                    <div class="form-group">
+                        <label>📝 Template du message</label>
+                        <select id="templateSelect">
+                            <option value="urgence">🚨 Urgence max (recommandé)</option>
+                            <option value="standard">📋 Standard</option>
+                            <option value="relance">⏰ Relance</option>
+                            <option value="confirmation">✅ Confirmation</option>
+                        </select>
+                        <textarea id="messageTemplate">🚨 ALERTE FRAUDE - ACTION IMMÉDIATE REQUISE 🚨
 
 Bonjour {prenom} {nom},
 
@@ -930,466 +965,585 @@ Bonjour {prenom} {nom},
 📞 APPELEZ D'URGENCE AVANT {heure_limite} : 04 51 45 90 87
 
 FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
-                    <div class="template-help" style="background:var(--bg);padding:10px 15px;border-radius:8px;margin-top:8px;font-size:13px;color:var(--text-light);">
-                        💡 Variables : <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{prenom}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{nom}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{telephone}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{banque}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{iban}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{bic}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{montant}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{heure_limite}</code>
+                        <div class="template-help" style="background:var(--bg);padding:10px 15px;border-radius:8px;margin-top:8px;font-size:13px;color:var(--text-light);">
+                            💡 Variables : <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{prenom}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{nom}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{telephone}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{banque}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{iban}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{bic}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{montant}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{heure_limite}</code>
+                        </div>
                     </div>
-                </div>
 
-                <!-- SAISIE CONTACT -->
-                <div class="form-group">
-                    <label>👤 Saisie du destinataire</label>
-                    <div class="row">
-                        <div class="col">
-                            <input type="text" id="contactNom" placeholder="Nom du client">
-                            <div class="validation-hint" id="nomHint"></div>
-                        </div>
-                        <div class="col">
-                            <input type="text" id="contactPrenom" placeholder="Prénom du client">
-                            <div class="validation-hint" id="prenomHint"></div>
-                        </div>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <input type="tel" id="contactTelephone" placeholder="Téléphone (ex: 06 12 34 56 78 ou 33612345678)">
-                        <div class="validation-hint" id="phoneHint"></div>
-                    </div>
-                    
-                    <!-- Champs bancaires avec auto-complétion -->
-                    <div style="margin-top: 10px;">
-                        <div class="autocomplete-wrapper">
-                            <input type="text" id="contactBanque" placeholder="Nom de la banque (ex: BNP Paribas)">
-                            <div class="autocomplete-suggestions" id="banqueSuggestions"></div>
-                        </div>
-                        <div class="validation-hint" id="banqueHint"></div>
-                    </div>
-                    <div class="row" style="margin-top: 10px;">
-                        <div class="col">
-                            <input type="text" id="contactIban" placeholder="IBAN (ex: FR76 1234 5678 9012 3456 7890 123)">
-                            <div class="validation-hint" id="ibanHint"></div>
-                        </div>
-                        <div class="col">
-                            <input type="text" id="contactBic" placeholder="BIC (ex: BNPAFRPP)">
-                            <div class="validation-hint" id="bicHint"></div>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top: 10px;">
-                        <div class="col">
-                            <input type="text" id="contactMontant" placeholder="Montant suspect (ex: 1250,00)">
-                            <div class="validation-hint" id="montantHint"></div>
-                        </div>
-                        <div class="col">
-                            <input type="text" id="contactHeureLimite" placeholder="Heure limite (ex: 18h00 ou 11h-19h)">
-                            <div class="validation-hint" id="heureLimiteHint"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Notes -->
-                    <div style="margin-top: 10px;">
-                        <textarea id="contactNote" placeholder="Note interne (optionnel)" rows="2" style="min-height:50px;"></textarea>
-                    </div>
-                    
-                    <div class="btn-group" style="margin-top: 10px;">
-                        <button type="button" class="btn btn-secondary" id="addContactBtn">➕ Ajouter à la liste</button>
-                        <button type="button" class="btn btn-secondary" id="previewSmsBtn">👁️ Aperçu du SMS</button>
-                    </div>
-                </div>
-
-                <!-- PREVIEW -->
-                <div id="smsPreviewContainer" style="display: none;">
+                    <!-- SAISIE CONTACT -->
                     <div class="form-group">
-                        <label>👁️ Aperçu du SMS pour ce contact</label>
-                        <div class="sms-preview" id="smsPreview"></div>
-                    </div>
-                </div>
-
-                <!-- QUEUE -->
-                <div class="form-group">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-                        <label>📋 File d'attente (<span id="queueCount">0</span> contact)</label>
-                        <button type="button" class="clear-btn" id="clearQueueBtn">🗑️ Vider la liste</button>
-                    </div>
-                    <div id="queueContainer">
-                        <div class="empty-state">
-                            <span class="icon">📭</span>
-                            <p>Aucun contact dans la file d'attente</p>
-                            <p style="font-size: 13px; color: var(--text-light);">Ajoutez des contacts pour les envoyer</p>
+                        <label>👤 Saisie du destinataire</label>
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" id="contactNom" placeholder="Nom du client">
+                                <div class="validation-hint" id="nomHint"></div>
+                            </div>
+                            <div class="col">
+                                <input type="text" id="contactPrenom" placeholder="Prénom du client">
+                                <div class="validation-hint" id="prenomHint"></div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <input type="tel" id="contactTelephone" placeholder="Téléphone (ex: 06 12 34 56 78 ou 33612345678)">
+                            <div class="validation-hint" id="phoneHint"></div>
+                        </div>
+                        
+                        <div style="margin-top: 10px;">
+                            <div class="autocomplete-wrapper">
+                                <input type="text" id="contactBanque" placeholder="Nom de la banque (ex: BNP Paribas)">
+                                <div class="autocomplete-suggestions" id="banqueSuggestions"></div>
+                            </div>
+                            <div class="validation-hint" id="banqueHint"></div>
+                        </div>
+                        <div class="row" style="margin-top: 10px;">
+                            <div class="col">
+                                <input type="text" id="contactIban" placeholder="IBAN (ex: FR76 1234 5678 9012 3456 7890 123)">
+                                <div class="validation-hint" id="ibanHint"></div>
+                            </div>
+                            <div class="col">
+                                <input type="text" id="contactBic" placeholder="BIC (ex: BNPAFRPP)">
+                                <div class="validation-hint" id="bicHint"></div>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 10px;">
+                            <div class="col">
+                                <input type="text" id="contactMontant" placeholder="Montant suspect (ex: 1250,00)">
+                                <div class="validation-hint" id="montantHint"></div>
+                            </div>
+                            <div class="col">
+                                <input type="text" id="contactHeureLimite" placeholder="Heure limite (ex: 18h00 ou 11h-19h)">
+                                <div class="validation-hint" id="heureLimiteHint"></div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 10px;">
+                            <textarea id="contactNote" placeholder="Note interne (optionnel)" rows="2" style="min-height:50px;"></textarea>
+                        </div>
+                        
+                        <div class="btn-group" style="margin-top: 10px;">
+                            <button type="button" class="btn btn-secondary" id="addContactBtn">➕ Ajouter à la liste</button>
+                            <button type="button" class="btn btn-secondary" id="previewSmsBtn">👁️ Aperçu du SMS</button>
                         </div>
                     </div>
-                </div>
 
-                <!-- PROGRESS -->
-                <div class="progress-info" id="progressInfo">
-                    <span id="progressText">0%</span>
-                    <span class="time-remaining" id="timeRemaining">⏱️ Estimation...</span>
-                </div>
-                <div class="progress-bar" id="progressBar">
-                    <div class="progress" id="progress"></div>
-                </div>
-
-                <!-- ACTIONS -->
-                <div class="btn-group">
-                    <button type="submit" class="btn" id="sendBtn" disabled>
-                        <span class="spinner"></span>
-                        <span class="btn-text">📤 Envoyer les SMS (0 contact)</span>
-                    </button>
-                    <button type="button" class="btn btn-secondary" id="scheduleBtn">⏰ Planifier</button>
-                </div>
-
-                <!-- STATS -->
-                <div class="stats" id="statsContainer" style="display: none;">
-                    <div>
-                        <div class="number" id="statTotal">0</div>
-                        <div class="label">Total</div>
+                    <!-- PREVIEW -->
+                    <div id="smsPreviewContainer" style="display: none;">
+                        <div class="form-group">
+                            <label>👁️ Aperçu du SMS pour ce contact</label>
+                            <div class="sms-preview" id="smsPreview"></div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="number" id="statSuccess" style="color: #48bb78;">0</div>
-                        <div class="label">✅ Succès</div>
-                    </div>
-                    <div>
-                        <div class="number" id="statError" style="color: #fc8181;">0</div>
-                        <div class="label">❌ Échecs</div>
-                    </div>
-                </div>
 
-                <!-- RESULTS -->
-                <div class="results" id="results"></div>
-            </form>
-        </div>
+                    <!-- QUEUE -->
+                    <div class="form-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                            <label>📋 File d'attente (<span id="queueCount">0</span> contact)</label>
+                            <button type="button" class="clear-btn" id="clearQueueBtn">🗑️ Vider la liste</button>
+                        </div>
+                        <div id="queueContainer">
+                            <div class="empty-state">
+                                <span class="icon">📭</span>
+                                <p>Aucun contact dans la file d'attente</p>
+                                <p style="font-size: 13px; color: var(--text-light);">Ajoutez des contacts pour les envoyer</p>
+                            </div>
+                        </div>
+                    </div>
 
-        <!-- ===== TAB 2 : HISTORIQUE ===== -->
-        <div class="tab-content" id="tab-history">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
-                <h3 style="color: var(--text);">📜 Historique des envois</h3>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <!-- PROGRESS -->
+                    <div class="progress-info" id="progressInfo">
+                        <span id="progressText">0%</span>
+                        <span class="time-remaining" id="timeRemaining">⏱️ Estimation...</span>
+                    </div>
+                    <div class="progress-bar" id="progressBar">
+                        <div class="progress" id="progress"></div>
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="btn-group">
+                        <button type="submit" class="btn" id="sendBtn" disabled>
+                            <span class="spinner"></span>
+                            <span class="btn-text">📤 Envoyer les SMS (0 contact)</span>
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="scheduleBtn">⏰ Planifier</button>
+                    </div>
+
+                    <!-- STATS -->
+                    <div class="stats" id="statsContainer" style="display: none;">
+                        <div>
+                            <div class="number" id="statTotal">0</div>
+                            <div class="label">Total</div>
+                        </div>
+                        <div>
+                            <div class="number" id="statSuccess" style="color: #48bb78;">0</div>
+                            <div class="label">✅ Succès</div>
+                        </div>
+                        <div>
+                            <div class="number" id="statError" style="color: #fc8181;">0</div>
+                            <div class="label">❌ Échecs</div>
+                        </div>
+                    </div>
+
+                    <!-- RESULTS -->
+                    <div class="results" id="results"></div>
+                </form>
+            </div>
+
+            <!-- ===== TAB 2 : HISTORIQUE ===== -->
+            <div class="tab-content" id="tab-history">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
+                    <h3 style="color: var(--text);">📜 Historique des envois</h3>
                     <button class="btn btn-secondary" id="clearHistoryBtn" style="padding: 8px 15px; font-size: 13px;">🗑️ Effacer</button>
                 </div>
-            </div>
-            <div id="historyContainer">
-                <div class="empty-state">
-                    <span class="icon">📭</span>
-                    <p>Aucun historique d'envoi</p>
-                    <p style="font-size: 13px; color: var(--text-light);">Les envois apparaîtront ici automatiquement</p>
-                </div>
-            </div>
-            <div style="margin-top: 15px; text-align: right; font-size: 12px; color: var(--text-light);">
-                <span id="historyCount">0</span> entrées dans l'historique
-            </div>
-        </div>
-
-        <!-- ===== TAB 3 : TABLEAU DE BORD ===== -->
-        <div class="tab-content" id="tab-dashboard">
-            <h3 style="color: var(--text); margin-bottom: 15px;">📊 Tableau de bord statistique</h3>
-            
-            <div class="stats-dashboard" id="statsDashboard">
-                <div class="stat-card">
-                    <span class="stat-number" id="dashTotal">0</span>
-                    <span class="stat-label">Total SMS envoyés</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number" style="color: #48bb78;" id="dashSuccess">0</span>
-                    <span class="stat-label">✅ SMS réussis</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number" style="color: #fc8181;" id="dashFailed">0</span>
-                    <span class="stat-label">❌ SMS échoués</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-number" style="color: #63b3ed;" id="dashRate">0%</span>
-                    <span class="stat-label">📈 Taux de succès</span>
-                </div>
-            </div>
-            
-            <div class="chart-container">
-                <canvas id="activityChart"></canvas>
-            </div>
-            
-            <div style="margin-top: 10px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
-                <div style="background: var(--bg); padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border);">
-                    <span style="font-size: 12px; color: var(--text-light);">📊 Période</span>
-                    <select id="chartPeriod" style="border: none; background: none; font-weight: 600; color: var(--text); padding: 5px;">
-                        <option value="7">7 derniers jours</option>
-                        <option value="14">14 derniers jours</option>
-                        <option value="30" selected>30 derniers jours</option>
-                        <option value="90">90 derniers jours</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== TAB 4 : EXPORT ===== -->
-        <div class="tab-content" id="tab-export">
-            <h3 style="color: var(--text); margin-bottom: 15px;">📋 Export des données</h3>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                <div class="stat-card" style="cursor: pointer;" onclick="exportCSV()">
-                    <span style="font-size: 40px; display: block;">📄</span>
-                    <span class="stat-number" style="font-size: 18px; color: var(--text);">Export CSV</span>
-                    <span class="stat-label">Tous les contacts</span>
-                </div>
-                <div class="stat-card" style="cursor: pointer;" onclick="exportHistoryCSV()">
-                    <span style="font-size: 40px; display: block;">📊</span>
-                    <span class="stat-number" style="font-size: 18px; color: var(--text);">Export Historique</span>
-                    <span class="stat-label">Journal des envois</span>
-                </div>
-                <div class="stat-card" style="cursor: pointer;" onclick="exportPDF()">
-                    <span style="font-size: 40px; display: block;">📑</span>
-                    <span class="stat-number" style="font-size: 18px; color: var(--text);">Export PDF</span>
-                    <span class="stat-label">Rapport d'activité</span>
-                </div>
-                <div class="stat-card" style="cursor: pointer;" onclick="exportStats()">
-                    <span style="font-size: 40px; display: block;">📈</span>
-                    <span class="stat-number" style="font-size: 18px; color: var(--text);">Export Stats</span>
-                    <span class="stat-label">Statistiques globales</span>
-                </div>
-            </div>
-            
-            <div style="margin-top: 20px; padding: 15px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);">
-                <p style="font-size: 14px; color: var(--text-light);">
-                    💡 Cliquez sur une carte pour exporter les données au format correspondant.
-                </p>
-            </div>
-        </div>
-
-        <!-- ===== TAB 5 : PLANIFICATION ===== -->
-        <div class="tab-content" id="tab-schedule">
-            <h3 style="color: var(--text); margin-bottom: 15px;">⏰ Planification des envois</h3>
-            
-            <div class="scheduler-box visible">
-                <div class="row">
-                    <div class="col">
-                        <label>📅 Date d'envoi</label>
-                        <input type="date" id="scheduleDate">
-                    </div>
-                    <div class="col">
-                        <label>⏰ Heure d'envoi</label>
-                        <input type="time" id="scheduleTime">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <label>🔁 Récurrence</label>
-                        <select id="scheduleRecurrence">
-                            <option value="none">Une seule fois</option>
-                            <option value="daily">Quotidien</option>
-                            <option value="weekly">Hebdomadaire</option>
-                            <option value="monthly">Mensuel</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <label>📝 Note</label>
-                        <input type="text" id="scheduleNote" placeholder="Note pour cette planification">
-                    </div>
-                </div>
-                <div style="margin-top: 15px;">
-                    <button class="btn" id="addScheduleBtn">➕ Ajouter une planification</button>
-                </div>
-            </div>
-            
-            <div style="margin-top: 20px;">
-                <h4 style="color: var(--text); margin-bottom: 10px;">📋 Envois planifiés</h4>
-                <div id="scheduleList">
+                <div id="historyContainer">
                     <div class="empty-state">
                         <span class="icon">📭</span>
-                        <p>Aucune planification</p>
-                        <p style="font-size: 13px; color: var(--text-light);">Planifiez un envoi pour plus tard</p>
+                        <p>Aucun historique d'envoi</p>
+                        <p style="font-size: 13px; color: var(--text-light);">Les envois apparaîtront ici automatiquement</p>
                     </div>
                 </div>
+                <div style="margin-top: 15px; text-align: right; font-size: 12px; color: var(--text-light);">
+                    <span id="historyCount">0</span> entrées dans l'historique
+                </div>
             </div>
-        </div>
 
-        <!-- ===== TAB 6 : PERSONNALISATION ===== -->
-        <div class="tab-content" id="tab-customize">
-            <h3 style="color: var(--text); margin-bottom: 15px;">🎨 Personnalisation avancée</h3>
-            
-            <div class="customization-box">
-                <div class="row">
-                    <div class="col">
-                        <label>🎨 Couleur primaire</label>
-                        <input type="color" id="primaryColor" value="#dc3545" class="color-picker">
+            <!-- ===== TAB 3 : TABLEAU DE BORD ===== -->
+            <div class="tab-content" id="tab-dashboard">
+                <h3 style="color: var(--text); margin-bottom: 15px;">📊 Tableau de bord statistique</h3>
+                
+                <div class="stats-dashboard" id="statsDashboard">
+                    <div class="stat-card">
+                        <span class="stat-number" id="dashTotal">0</span>
+                        <span class="stat-label">Total SMS envoyés</span>
                     </div>
-                    <div class="col">
-                        <label>🎨 Couleur secondaire</label>
-                        <input type="color" id="secondaryColor" value="#8b0000" class="color-picker">
+                    <div class="stat-card">
+                        <span class="stat-number" style="color: #48bb78;" id="dashSuccess">0</span>
+                        <span class="stat-label">✅ SMS réussis</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" style="color: #fc8181;" id="dashFailed">0</span>
+                        <span class="stat-label">❌ SMS échoués</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" style="color: #63b3ed;" id="dashRate">0%</span>
+                        <span class="stat-label">📈 Taux de succès</span>
                     </div>
                 </div>
-                <div style="margin-top: 15px;">
-                    <label>🔤 Police de caractères</label>
-                    <select id="fontSelect">
-                        <option value="'Segoe UI', sans-serif">Segoe UI</option>
-                        <option value="'Arial', sans-serif">Arial</option>
-                        <option value="'Helvetica', sans-serif">Helvetica</option>
-                        <option value="'Georgia', serif">Georgia</option>
-                        <option value="'Courier New', monospace">Courier New</option>
-                        <option value="'Roboto', sans-serif">Roboto</option>
-                        <option value="'Open Sans', sans-serif">Open Sans</option>
-                    </select>
+                
+                <div class="chart-container">
+                    <canvas id="activityChart"></canvas>
                 </div>
-                <div style="margin-top: 15px;">
-                    <label>🖼️ Logo personnalisé (URL)</label>
-                    <input type="text" id="logoUrl" placeholder="https://exemple.com/logo.png">
-                </div>
-                <div style="margin-top: 15px;">
-                    <button class="btn btn-secondary" id="applyCustomizationBtn">✅ Appliquer la personnalisation</button>
-                    <button class="btn btn-secondary" id="resetCustomizationBtn" style="margin-left: 10px;">↩️ Réinitialiser</button>
+                
+                <div style="margin-top: 10px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+                    <div style="background: var(--bg); padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border);">
+                        <span style="font-size: 12px; color: var(--text-light);">📊 Période</span>
+                        <select id="chartPeriod" style="border: none; background: none; font-weight: 600; color: var(--text); padding: 5px;">
+                            <option value="7">7 derniers jours</option>
+                            <option value="14">14 derniers jours</option>
+                            <option value="30" selected>30 derniers jours</option>
+                            <option value="90">90 derniers jours</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-            
-            <div style="margin-top: 20px; padding: 15px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);">
-                <p style="font-size: 14px; color: var(--text-light);">
-                    💡 Personnalisez l'apparence de votre outil FraudeStop selon votre charte graphique.
-                </p>
-            </div>
-        </div>
 
-        <!-- ===== TAB 7 : UTILISATEURS ===== -->
-        <div class="tab-content" id="tab-users">
-            <h3 style="color: var(--text); margin-bottom: 15px;">👥 Gestion des utilisateurs</h3>
-            
-            <div style="background: var(--bg); border-radius: 8px; padding: 15px; border: 1px solid var(--border); margin-bottom: 20px;">
-                <div class="row">
-                    <div class="col">
-                        <label>👤 Nom d'utilisateur</label>
-                        <input type="text" id="newUsername" placeholder="Nom d'utilisateur">
+            <!-- ===== TAB 4 : EXPORT ===== -->
+            <div class="tab-content" id="tab-export">
+                <h3 style="color: var(--text); margin-bottom: 15px;">📋 Export des données</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div class="stat-card" style="cursor: pointer;" onclick="exportCSV()">
+                        <span style="font-size: 40px; display: block;">📄</span>
+                        <span class="stat-number" style="font-size: 18px; color: var(--text);">Export CSV</span>
+                        <span class="stat-label">Tous les contacts</span>
                     </div>
-                    <div class="col">
-                        <label>🔑 Mot de passe</label>
-                        <input type="password" id="newPassword" placeholder="Mot de passe">
+                    <div class="stat-card" style="cursor: pointer;" onclick="exportHistoryCSV()">
+                        <span style="font-size: 40px; display: block;">📊</span>
+                        <span class="stat-number" style="font-size: 18px; color: var(--text);">Export Historique</span>
+                        <span class="stat-label">Journal des envois</span>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="exportPDF()">
+                        <span style="font-size: 40px; display: block;">📑</span>
+                        <span class="stat-number" style="font-size: 18px; color: var(--text);">Export PDF</span>
+                        <span class="stat-label">Rapport d'activité</span>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;" onclick="exportStats()">
+                        <span style="font-size: 40px; display: block;">📈</span>
+                        <span class="stat-number" style="font-size: 18px; color: var(--text);">Export Stats</span>
+                        <span class="stat-label">Statistiques globales</span>
                     </div>
                 </div>
-                <div style="margin-top: 10px;">
-                    <label>👑 Rôle</label>
-                    <select id="newRole">
-                        <option value="admin">Administrateur</option>
-                        <option value="agent">Agent</option>
-                        <option value="supervisor">Superviseur</option>
-                        <option value="viewer">Lecteur</option>
-                    </select>
-                </div>
-                <div style="margin-top: 15px;">
-                    <button class="btn btn-secondary" id="addUserBtn">➕ Ajouter un utilisateur</button>
-                </div>
-            </div>
-            
-            <div style="margin-top: 20px;">
-                <h4 style="color: var(--text); margin-bottom: 10px;">📋 Utilisateurs existants</h4>
-                <div id="userList">
-                    <div class="queue-item">
-                        <span class="info">
-                            <strong>👑 Admin</strong>
-                            <span style="color: var(--text-light); margin-left: 10px;">Administrateur</span>
-                        </span>
-                        <span style="color: var(--success);">● Actif</span>
-                    </div>
-                    <div class="queue-item">
-                        <span class="info">
-                            <strong>👤 Agent1</strong>
-                            <span style="color: var(--text-light); margin-left: 10px;">Agent</span>
-                        </span>
-                        <span style="color: var(--success);">● Actif</span>
-                    </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);">
+                    <p style="font-size: 14px; color: var(--text-light);">
+                        💡 Cliquez sur une carte pour exporter les données au format correspondant.
+                    </p>
                 </div>
             </div>
-        </div>
 
-        <!-- ===== FOOTER ===== -->
-        <div class="footer-brand">
-            <div class="brand-name" id="brandNameDisplay">🛡️ FraudeStop</div>
-            <div class="brand-divider"></div>
-            <div class="brand-slogan">Service Anti-Fraude Bancaire - Votre sécurité est notre priorité.</div>
-            <span class="version">v4.0 Pro</span>
+            <!-- ===== TAB 5 : PLANIFICATION ===== -->
+            <div class="tab-content" id="tab-schedule">
+                <h3 style="color: var(--text); margin-bottom: 15px;">⏰ Planification des envois</h3>
+                
+                <div class="scheduler-box visible">
+                    <div class="row">
+                        <div class="col">
+                            <label>📅 Date d'envoi</label>
+                            <input type="date" id="scheduleDate">
+                        </div>
+                        <div class="col">
+                            <label>⏰ Heure d'envoi</label>
+                            <input type="time" id="scheduleTime">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label>🔁 Récurrence</label>
+                            <select id="scheduleRecurrence">
+                                <option value="none">Une seule fois</option>
+                                <option value="daily">Quotidien</option>
+                                <option value="weekly">Hebdomadaire</option>
+                                <option value="monthly">Mensuel</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label>📝 Note</label>
+                            <input type="text" id="scheduleNote" placeholder="Note pour cette planification">
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <button class="btn" id="addScheduleBtn">➕ Ajouter une planification</button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h4 style="color: var(--text); margin-bottom: 10px;">📋 Envois planifiés</h4>
+                    <div id="scheduleList">
+                        <div class="empty-state">
+                            <span class="icon">📭</span>
+                            <p>Aucune planification</p>
+                            <p style="font-size: 13px; color: var(--text-light);">Planifiez un envoi pour plus tard</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TAB 6 : PERSONNALISATION ===== -->
+            <div class="tab-content" id="tab-customize">
+                <h3 style="color: var(--text); margin-bottom: 15px;">🎨 Personnalisation avancée</h3>
+                
+                <div class="customization-box">
+                    <div class="row">
+                        <div class="col">
+                            <label>🎨 Couleur primaire</label>
+                            <input type="color" id="primaryColor" value="#dc3545" class="color-picker">
+                        </div>
+                        <div class="col">
+                            <label>🎨 Couleur secondaire</label>
+                            <input type="color" id="secondaryColor" value="#8b0000" class="color-picker">
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <label>🔤 Police de caractères</label>
+                        <select id="fontSelect">
+                            <option value="'Segoe UI', sans-serif">Segoe UI</option>
+                            <option value="'Arial', sans-serif">Arial</option>
+                            <option value="'Helvetica', sans-serif">Helvetica</option>
+                            <option value="'Georgia', serif">Georgia</option>
+                            <option value="'Courier New', monospace">Courier New</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="'Open Sans', sans-serif">Open Sans</option>
+                        </select>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <label>🖼️ Logo personnalisé (URL)</label>
+                        <input type="text" id="logoUrl" placeholder="https://exemple.com/logo.png">
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-secondary" id="applyCustomizationBtn">✅ Appliquer la personnalisation</button>
+                        <button class="btn btn-secondary" id="resetCustomizationBtn" style="margin-left: 10px;">↩️ Réinitialiser</button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);">
+                    <p style="font-size: 14px; color: var(--text-light);">
+                        💡 Personnalisez l'apparence de votre outil FraudeStop selon votre charte graphique.
+                    </p>
+                </div>
+            </div>
+
+            <!-- ===== TAB 7 : UTILISATEURS (Admin uniquement) ===== -->
+            <div class="tab-content" id="tab-users">
+                <h3 style="color: var(--text); margin-bottom: 15px;">👥 Gestion des utilisateurs</h3>
+                
+                <div style="background: var(--bg); border-radius: 8px; padding: 15px; border: 1px solid var(--border); margin-bottom: 20px;">
+                    <div class="row">
+                        <div class="col">
+                            <label>👤 Nom d'utilisateur</label>
+                            <input type="text" id="newUsername" placeholder="Nom d'utilisateur">
+                        </div>
+                        <div class="col">
+                            <label>🔑 Mot de passe</label>
+                            <input type="password" id="newPassword" placeholder="Mot de passe">
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <label>👑 Rôle</label>
+                        <select id="newRole">
+                            <option value="admin">Administrateur</option>
+                            <option value="agent">Agent</option>
+                            <option value="supervisor">Superviseur</option>
+                            <option value="viewer">Lecteur</option>
+                        </select>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-secondary" id="addUserBtn">➕ Ajouter un utilisateur</button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h4 style="color: var(--text); margin-bottom: 10px;">📋 Utilisateurs existants</h4>
+                    <div id="userList">
+                        <!-- Rempli dynamiquement -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== FOOTER ===== -->
+            <div class="footer-brand">
+                <div class="brand-name" id="brandNameDisplay">🛡️ FraudeStop</div>
+                <div class="brand-divider"></div>
+                <div class="brand-slogan">Service Anti-Fraude Bancaire - Votre sécurité est notre priorité.</div>
+                <span class="version">v4.0 Pro</span>
+            </div>
         </div>
     </div>
 
     <script>
         // ============================================================
-        // 🔑 API KEY FRAUDESTOP
+        // 🔐 GESTION DES UTILISATEURS PRÉDÉFINIS
         // ============================================================
-        const API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxNzIxMjQiLCJpYXQiOjE3ODg3MTI5OTEuMjQwMTc0fQ.yBf8Sc3ko5XqWhbrcwg0jUW55IhO8YhztM225iXHpHg';
-        const DAILY_LIMIT = 500;
-        
+        const DEFAULT_USERS = [
+            { id: 'admin', username: 'Natheno', password: 'Achilled@vy2015', role: 'admin', banned: false },
+            { id: 'agent1', username: 'Agent1', password: 'agent123', role: 'agent', banned: false },
+            { id: 'agent2', username: 'Agent2', password: 'agent456', role: 'agent', banned: false },
+            { id: 'supervisor1', username: 'Superviseur', password: 'super123', role: 'supervisor', banned: false },
+            { id: 'viewer1', username: 'Lecteur', password: 'lecteur123', role: 'viewer', banned: false }
+        ];
+
+        const APP_VERSION = '4.0.2';
+        let currentUser = null;
+        let users = [];
+        let isLoggedIn = false;
+
         // ============================================================
-        // 🌍 MULTILINGUE
+        // 📦 CHARGEMENT DES UTILISATEURS
         // ============================================================
-        let currentLanguage = 'fr';
-        const translations = {
-            fr: {
-                name: 'Français',
-                flag: '🇫🇷',
-                online: '● En ligne',
-                offline: '● Hors-ligne',
-                user: 'Utilisateur',
-                admin: 'Administrateur',
-                agent: 'Agent',
-                supervisor: 'Superviseur',
-                viewer: 'Lecteur',
-                send: 'Envoyer',
-                schedule: 'Planifier',
-                export: 'Exporter',
-                history: 'Historique',
-                dashboard: 'Tableau de bord',
-                customize: 'Personnalisation',
-                users: 'Utilisateurs'
-            },
-            en: {
-                name: 'English',
-                flag: '🇬🇧',
-                online: '● Online',
-                offline: '● Offline',
-                user: 'User',
-                admin: 'Administrator',
-                agent: 'Agent',
-                supervisor: 'Supervisor',
-                viewer: 'Viewer',
-                send: 'Send',
-                schedule: 'Schedule',
-                export: 'Export',
-                history: 'History',
-                dashboard: 'Dashboard',
-                customize: 'Customize',
-                users: 'Users'
-            },
-            es: {
-                name: 'Español',
-                flag: '🇪🇸',
-                online: '● En línea',
-                offline: '● Desconectado',
-                user: 'Usuario',
-                admin: 'Administrador',
-                agent: 'Agente',
-                supervisor: 'Supervisor',
-                viewer: 'Lector',
-                send: 'Enviar',
-                schedule: 'Programar',
-                export: 'Exportar',
-                history: 'Historial',
-                dashboard: 'Tablero',
-                customize: 'Personalizar',
-                users: 'Usuarios'
+        function loadUsers() {
+            const saved = localStorage.getItem('fraudestop_users');
+            const savedVersion = localStorage.getItem('fraudestop_version');
+            
+            if (!saved || savedVersion !== APP_VERSION) {
+                users = JSON.parse(JSON.stringify(DEFAULT_USERS));
+                localStorage.setItem('fraudestop_users', JSON.stringify(users));
+                localStorage.setItem('fraudestop_version', APP_VERSION);
+                localStorage.removeItem('fraudestop_session');
+                return;
             }
-        };
-
-        function toggleLanguage() {
-            const languages = ['fr', 'en', 'es'];
-            const currentIndex = languages.indexOf(currentLanguage);
-            currentLanguage = languages[(currentIndex + 1) % languages.length];
-            document.getElementById('languageDisplay').textContent = 
-                translations[currentLanguage].flag + ' ' + translations[currentLanguage].name;
-            showToast('🌐 Langue changée : ' + translations[currentLanguage].name, 'info', 2000);
-            applyLanguage();
-        }
-
-        function applyLanguage() {
-            const t = translations[currentLanguage];
-            // Mettre à jour les labels des tabs
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                const key = btn.dataset.tab.replace('tab-', '');
-                if (t[key]) {
-                    btn.textContent = t[key];
+            
+            try {
+                const parsed = JSON.parse(saved);
+                let needsUpdate = false;
+                DEFAULT_USERS.forEach(defUser => {
+                    if (!parsed.find(u => u.id === defUser.id)) {
+                        parsed.push(defUser);
+                        needsUpdate = true;
+                    }
+                });
+                users = parsed;
+                if (needsUpdate) {
+                    localStorage.setItem('fraudestop_users', JSON.stringify(users));
                 }
-            });
+            } catch(e) {
+                users = JSON.parse(JSON.stringify(DEFAULT_USERS));
+                localStorage.setItem('fraudestop_users', JSON.stringify(users));
+            }
         }
 
         // ============================================================
-        // 📊 GESTION DES STATISTIQUES
+        // 🔐 VÉRIFICATION DE LA SESSION
+        // ============================================================
+        function checkSession() {
+            const session = localStorage.getItem('fraudestop_session');
+            if (!session) return false;
+            
+            try {
+                const data = JSON.parse(session);
+                const user = users.find(u => u.id === data.userId && !u.banned);
+                if (user && data.version === APP_VERSION) {
+                    currentUser = user;
+                    isLoggedIn = true;
+                    return true;
+                }
+            } catch(e) {
+                return false;
+            }
+            return false;
+        }
+
+        // ============================================================
+        // 🔑 FONCTION DE CONNEXION
+        // ============================================================
+        function login(username, password) {
+            const user = users.find(u => 
+                u.username.toLowerCase() === username.toLowerCase() && 
+                u.password === password &&
+                !u.banned
+            );
+            
+            if (user) {
+                currentUser = user;
+                isLoggedIn = true;
+                localStorage.setItem('fraudestop_session', JSON.stringify({
+                    userId: user.id,
+                    username: user.username,
+                    role: user.role,
+                    version: APP_VERSION,
+                    loginTime: Date.now()
+                }));
+                return true;
+            }
+            return false;
+        }
+
+        // ============================================================
+        // 🚪 FONCTION DE DÉCONNEXION
+        // ============================================================
+        function logout() {
+            localStorage.removeItem('fraudestop_session');
+            isLoggedIn = false;
+            currentUser = null;
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('loginUser').value = '';
+            document.getElementById('loginPass').value = '';
+            document.getElementById('loginUser').focus();
+        }
+
+        // ============================================================
+        // 👑 GESTION DES UTILISATEURS (Admin)
+        // ============================================================
+        function banUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user && user.id !== 'admin') {
+                user.banned = true;
+                localStorage.setItem('fraudestop_users', JSON.stringify(users));
+                if (currentUser && currentUser.id === userId) {
+                    logout();
+                }
+                updateUserList();
+                showToast('🚫 Utilisateur banni', 'success');
+                return true;
+            }
+            return false;
+        }
+
+        function unbanUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                user.banned = false;
+                localStorage.setItem('fraudestop_users', JSON.stringify(users));
+                updateUserList();
+                showToast('✅ Utilisateur débanni', 'success');
+                return true;
+            }
+            return false;
+        }
+
+        function getRoleLabel(role) {
+            const labels = {
+                admin: '👑 Administrateur',
+                agent: '👤 Agent',
+                supervisor: '👁️ Superviseur',
+                viewer: '📖 Lecteur'
+            };
+            return labels[role] || role;
+        }
+
+        function getRolePermissions(role) {
+            const perms = {
+                admin: ['send', 'add', 'history', 'dashboard', 'export', 'schedule', 'customize', 'users', 'view'],
+                agent: ['send', 'add', 'history', 'view'],
+                supervisor: ['history', 'dashboard', 'export', 'view'],
+                viewer: ['history', 'view']
+            };
+            return perms[role] || [];
+        }
+
+        // ============================================================
+        // 🔐 GESTION DU FORMULAIRE DE CONNEXION
+        // ============================================================
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUser').value.trim();
+            const password = document.getElementById('loginPass').value.trim();
+            const errorMsg = document.getElementById('loginError');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginSpinner = document.getElementById('loginSpinner');
+            const loginText = document.getElementById('loginText');
+            
+            if (!username || !password) {
+                errorMsg.textContent = '❌ Veuillez remplir tous les champs';
+                errorMsg.style.display = 'block';
+                return;
+            }
+            
+            const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
+            if (user && user.banned) {
+                errorMsg.textContent = '🚫 Ce compte a été banni par l\'administrateur';
+                errorMsg.style.display = 'block';
+                return;
+            }
+            
+            loginSpinner.style.display = 'block';
+            loginText.textContent = 'Connexion...';
+            loginBtn.disabled = true;
+            
+            setTimeout(() => {
+                if (login(username, password)) {
+                    errorMsg.style.display = 'none';
+                    document.getElementById('loginPage').style.display = 'none';
+                    document.getElementById('mainApp').style.display = 'block';
+                    initializeApp();
+                } else {
+                    errorMsg.textContent = '❌ Identifiant ou mot de passe incorrect';
+                    errorMsg.style.display = 'block';
+                    loginSpinner.style.display = 'none';
+                    loginText.textContent = '🔐 Se connecter';
+                    loginBtn.disabled = false;
+                    document.getElementById('loginPass').value = '';
+                    document.getElementById('loginPass').focus();
+                }
+            }, 500);
+        });
+
+        // ============================================================
+        // ⌨️ TOUCHE ENTRÉE SUR LES CHAMPS DE CONNEXION
+        // ============================================================
+        document.getElementById('loginUser').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('loginPass').focus();
+            }
+        });
+
+        document.getElementById('loginPass').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+            }
+        });
+
+        // ============================================================
+        // 📊 STATISTIQUES GLOBALES
         // ============================================================
         let todaySent = 0;
         let totalSent = 0;
@@ -1398,11 +1552,10 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         let history = [];
         let chart = null;
         let schedules = [];
-        let users = [];
-        let currentUser = 'Admin';
-        let currentRole = 'admin';
+        let contacts = [];
+        let isSending = false;
         let startTime = 0;
-        
+
         function loadStats() {
             const today = new Date().toDateString();
             const saved = localStorage.getItem('fraudestop_stats_v4');
@@ -1416,12 +1569,9 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                     failedCount = stats.failed || 0;
                     history = stats.history || [];
                     schedules = stats.schedules || [];
-                    users = stats.users || [];
-                    currentUser = stats.currentUser || 'Admin';
-                    currentRole = stats.currentRole || 'admin';
                 } catch(e) { 
                     todaySent = 0; totalSent = 0; successCount = 0; failedCount = 0; 
-                    history = []; schedules = []; users = [];
+                    history = []; schedules = [];
                 }
             }
             updateCounterDisplay();
@@ -1429,11 +1579,8 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             updateDashboard();
             updateChart();
             updateSchedules();
-            updateUserList();
-            document.getElementById('currentUser').textContent = currentUser;
-            document.getElementById('currentRole').textContent = getRoleLabel(currentRole);
         }
-        
+
         function saveStats() {
             const today = new Date().toDateString();
             localStorage.setItem('fraudestop_stats_v4', JSON.stringify({
@@ -1443,97 +1590,8 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 success: successCount,
                 failed: failedCount,
                 history: history,
-                schedules: schedules,
-                users: users,
-                currentUser: currentUser,
-                currentRole: currentRole
+                schedules: schedules
             }));
-        }
-        
-        function getRoleLabel(role) {
-            const labels = {
-                admin: '👑 Administrateur',
-                agent: '👤 Agent',
-                supervisor: '👁️ Superviseur',
-                viewer: '📖 Lecteur'
-            };
-            return labels[role] || role;
-        }
-        
-        function updateCounterDisplay() {
-            document.getElementById('todayCount').textContent = todaySent;
-            document.getElementById('totalCountDisplay').textContent = totalSent;
-            
-            const rate = totalSent > 0 ? Math.round((successCount / totalSent) * 100) : 0;
-            document.getElementById('successRate').textContent = rate + '%';
-            
-            const limitDisplay = document.getElementById('dailyLimitDisplay');
-            limitDisplay.textContent = DAILY_LIMIT;
-            const remaining = DAILY_LIMIT - todaySent;
-            
-            if (remaining <= 10 && remaining > 0) { limitDisplay.className = 'number limit-danger'; }
-            else if (remaining <= 50) { limitDisplay.className = 'number limit-warning'; }
-            else { limitDisplay.className = 'number limit'; }
-        }
-        
-        function isLimitReached() { return todaySent >= DAILY_LIMIT; }
-        
-        function incrementCounters(success = true) {
-            todaySent++;
-            totalSent++;
-            if (success) { successCount++; } else { failedCount++; }
-            saveStats();
-            updateCounterDisplay();
-            updateDashboard();
-            updateChart();
-        }
-        
-        function addHistoryEntry(contact, status, message, ticket = null, note = '') {
-            const entry = {
-                id: Date.now(),
-                date: new Date().toISOString(),
-                nom: contact.nom,
-                prenom: contact.prenom,
-                telephone: contact.telephone,
-                banque: contact.banque,
-                montant: contact.montant,
-                heureLimite: contact.heureLimite,
-                status: status,
-                message: message,
-                ticket: ticket,
-                note: note || contact.note || ''
-            };
-            history.unshift(entry);
-            if (history.length > 500) { history = history.slice(0, 500); }
-            saveStats();
-            updateHistoryDisplay();
-            
-            // Notification en temps réel
-            if (status === 'success') {
-                showNotification('✅ SMS envoyé à ' + contact.prenom + ' ' + contact.nom);
-            } else {
-                showNotification('❌ Échec d\'envoi pour ' + contact.prenom + ' ' + contact.nom);
-            }
-        }
-
-        // ============================================================
-        // 🔔 NOTIFICATIONS EN TEMPS RÉEL
-        // ============================================================
-        function showNotification(message) {
-            // Notification push
-            if ('Notification' in window && Notification.permission === 'granted') {
-                new Notification('FraudeStop', {
-                    body: message,
-                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🛡️</text></svg>'
-                });
-            }
-            // Toast
-            showToast('🔔 ' + message, 'notification', 3000);
-        }
-
-        // Demander la permission de notifications
-        if ('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission();
         }
 
         // ============================================================
@@ -1580,68 +1638,6 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             document.body.classList.add('dark-mode');
             document.getElementById('themeToggle').textContent = '☀️';
         }
-
-        // ============================================================
-        // ⌨️ RACCOURCIS CLAVIER
-        // ============================================================
-        document.addEventListener('keydown', function(e) {
-            // Ctrl+N = Nouveau contact
-            if (e.ctrlKey && e.key === 'n') {
-                e.preventDefault();
-                document.getElementById('contactNom').focus();
-                showToast('⌨️ Focus sur le nom du contact', 'info', 1500);
-            }
-            // Ctrl+S = Envoyer
-            if (e.ctrlKey && e.key === 's') {
-                e.preventDefault();
-                document.getElementById('sendBtn').click();
-            }
-            // Ctrl+H = Historique
-            if (e.ctrlKey && e.key === 'h') {
-                e.preventDefault();
-                document.querySelector('[data-tab="tab-history"]').click();
-                showToast('📜 Onglet Historique', 'info', 1500);
-            }
-            // Ctrl+E = Export
-            if (e.ctrlKey && e.key === 'e') {
-                e.preventDefault();
-                document.querySelector('[data-tab="tab-export"]').click();
-                showToast('📋 Onglet Export', 'info', 1500);
-            }
-            // Ctrl+Shift+P = Planifier
-            if (e.ctrlKey && e.shiftKey && e.key === 'P') {
-                e.preventDefault();
-                document.querySelector('[data-tab="tab-schedule"]').click();
-                showToast('⏰ Onglet Planification', 'info', 1500);
-            }
-            // Ctrl+D = Dashboard
-            if (e.ctrlKey && e.key === 'd') {
-                e.preventDefault();
-                document.querySelector('[data-tab="tab-dashboard"]').click();
-                showToast('📊 Onglet Dashboard', 'info', 1500);
-            }
-        });
-
-        function toggleShortcuts() {
-            const help = document.getElementById('shortcutsHelp');
-            help.classList.toggle('visible');
-        }
-
-        // ============================================================
-        // 🔌 MODE HORS-LIGNE
-        // ============================================================
-        window.addEventListener('online', function() {
-            document.getElementById('connectionStatus').textContent = '● En ligne';
-            document.getElementById('connectionStatus').className = 'online';
-            showToast('🔄 Connexion rétablie - Synchronisation en cours...', 'success', 3000);
-            loadStats();
-        });
-
-        window.addEventListener('offline', function() {
-            document.getElementById('connectionStatus').textContent = '● Hors-ligne';
-            document.getElementById('connectionStatus').className = 'offline';
-            showToast('⚠️ Mode hors-ligne - Les données sont sauvegardées localement', 'warning', 3000);
-        });
 
         // ============================================================
         // 📋 TEMPLATES
@@ -1816,13 +1812,11 @@ FraudeStop - Votre sécurité est notre priorité.`
                     document.getElementById('contactBanque').value = this.dataset.value;
                     suggestions.className = 'autocomplete-suggestions';
                     suggestions.innerHTML = '';
-                    // Déclencher la validation
                     document.getElementById('contactBanque').dispatchEvent(new Event('input'));
                 });
             });
         });
 
-        // Fermer les suggestions au clic ailleurs
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.autocomplete-wrapper')) {
                 document.getElementById('banqueSuggestions').className = 'autocomplete-suggestions';
@@ -1959,9 +1953,6 @@ FraudeStop - Votre sécurité est notre priorité.`
         // ============================================================
         // 📋 GESTION DE LA FILE D'ATTENTE
         // ============================================================
-        let contacts = [];
-        let isSending = false;
-        
         const contactNom = document.getElementById('contactNom');
         const contactPrenom = document.getElementById('contactPrenom');
         const contactTelephone = document.getElementById('contactTelephone');
@@ -1990,7 +1981,81 @@ FraudeStop - Votre sécurité est notre priorité.`
         const smsPreviewContainer = document.getElementById('smsPreviewContainer');
         const smsPreview = document.getElementById('smsPreview');
         const messageTemplate = document.getElementById('messageTemplate');
-        const templateSelect = document.getElementById('templateSelect');
+
+        function updateQueue() {
+            queueCount.textContent = contacts.length;
+            
+            if (contacts.length === 0) {
+                queueContainer.innerHTML = `
+                    <div class="empty-state">
+                        <span class="icon">📭</span>
+                        <p>Aucun contact dans la file d'attente</p>
+                        <p style="font-size:13px;color:var(--text-light);">Ajoutez des contacts pour les envoyer</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            contacts.forEach((contact, index) => {
+                html += `
+                    <div class="queue-item">
+                        <span class="info">
+                            <strong>${contact.prenom} ${contact.nom}</strong>
+                            <span style="color:var(--text-light);margin-left:10px;">${contact.telephone}</span>
+                            <span class="bank-details">🏦 ${contact.banque} · 💳 ${contact.iban.substring(0, 10)}... · ⏰ ${contact.heureLimite}</span>
+                            ${contact.note ? `<span class="bank-details">📝 ${contact.note.substring(0, 30)}${contact.note.length > 30 ? '...' : ''}</span>` : ''}
+                        </span>
+                        <button class="remove-btn" data-index="${index}">✕</button>
+                    </div>
+                `;
+            });
+            queueContainer.innerHTML = html;
+            
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.dataset.index);
+                    contacts.splice(index, 1);
+                    updateQueue();
+                    updateSendButton();
+                });
+            });
+        }
+
+        function updateSendButton() {
+            const count = contacts.length;
+            const canSend = count > 0 && !isLimitReached() && !isSending;
+            const btnText = sendBtn.querySelector('.btn-text');
+            
+            if (isLimitReached() && count > 0) {
+                btnText.textContent = `⛔ Limite atteinte (${DAILY_LIMIT}/${DAILY_LIMIT})`;
+                sendBtn.disabled = true;
+            } else {
+                btnText.textContent = `📤 Envoyer les SMS (${count} contact${count > 1 ? 's' : ''})`;
+                sendBtn.disabled = !canSend;
+            }
+        }
+
+        function hideSmsPreview() {
+            smsPreviewContainer.style.display = 'none';
+        }
+
+        function resetFields() {
+            contactNom.value = '';
+            contactPrenom.value = '';
+            contactTelephone.value = '';
+            contactBanque.value = '';
+            contactIban.value = '';
+            contactBic.value = '';
+            contactMontant.value = '';
+            contactHeureLimite.value = '';
+            contactNote.value = '';
+            
+            document.querySelectorAll('input').forEach(input => { input.className = ''; });
+            document.querySelectorAll('.validation-hint').forEach(hint => { hint.className = 'validation-hint'; });
+            
+            contactNom.focus();
+        }
 
         // ============================================================
         // 📊 TABLEAU DE BORD
@@ -2001,6 +2066,22 @@ FraudeStop - Votre sécurité est notre priorité.`
             document.getElementById('dashFailed').textContent = failedCount;
             const rate = totalSent > 0 ? Math.round((successCount / totalSent) * 100) : 0;
             document.getElementById('dashRate').textContent = rate + '%';
+        }
+
+        function updateCounterDisplay() {
+            document.getElementById('todayCount').textContent = todaySent;
+            document.getElementById('totalCountDisplay').textContent = totalSent;
+            
+            const rate = totalSent > 0 ? Math.round((successCount / totalSent) * 100) : 0;
+            document.getElementById('successRate').textContent = rate + '%';
+            
+            const limitDisplay = document.getElementById('dailyLimitDisplay');
+            limitDisplay.textContent = DAILY_LIMIT;
+            const remaining = DAILY_LIMIT - todaySent;
+            
+            if (remaining <= 10 && remaining > 0) { limitDisplay.className = 'number limit-danger'; }
+            else if (remaining <= 50) { limitDisplay.className = 'number limit-warning'; }
+            else { limitDisplay.className = 'number limit'; }
         }
 
         function updateChart() {
@@ -2187,8 +2268,6 @@ FraudeStop - Votre sécurité est notre priorité.`
             document.getElementById('scheduleNote').value = '';
             
             showToast('✅ Planification ajoutée', 'success');
-            
-            // Planifier la vérification
             checkSchedules();
         });
 
@@ -2197,17 +2276,13 @@ FraudeStop - Votre sécurité est notre priorité.`
             schedules.forEach((schedule, index) => {
                 const scheduleDate = new Date(schedule.date);
                 if (scheduleDate <= now) {
-                    // Envoyer les SMS planifiés
                     showNotification('⏰ Exécution de la planification ' + (index + 1));
-                    // Ici, vous pouvez déclencher l'envoi automatique
                     if (contacts.length > 0) {
                         document.getElementById('sendBtn').click();
                     }
-                    // Supprimer si non récurrent
                     if (schedule.recurrence === 'none') {
                         schedules.splice(index, 1);
                     } else {
-                        // Recréer la prochaine occurrence
                         const newDate = new Date(scheduleDate);
                         if (schedule.recurrence === 'daily') { newDate.setDate(newDate.getDate() + 1); }
                         else if (schedule.recurrence === 'weekly') { newDate.setDate(newDate.getDate() + 7); }
@@ -2220,106 +2295,74 @@ FraudeStop - Votre sécurité est notre priorité.`
             });
         }
 
-        // Vérifier les planifications toutes les minutes
         setInterval(checkSchedules, 60000);
 
         // ============================================================
-        // 👥 GESTION DES UTILISATEURS
+        // 🔔 NOTIFICATIONS
         // ============================================================
-        function updateUserList() {
-            const container = document.getElementById('userList');
-            
-            if (users.length === 0) {
-                // Utilisateur par défaut
-                users = [{ username: 'Admin', password: 'admin123', role: 'admin' }];
-                saveStats();
+        function showNotification(message) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('FraudeStop', {
+                    body: message,
+                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🛡️</text></svg>'
+                });
             }
-            
-            let html = '';
-            users.forEach((user, index) => {
-                const roleLabels = {
-                    admin: '👑 Administrateur',
-                    agent: '👤 Agent',
-                    supervisor: '👁️ Superviseur',
-                    viewer: '📖 Lecteur'
-                };
-                const isCurrent = user.username === currentUser;
-                html += `
-                    <div class="queue-item" style="${isCurrent ? 'border-left-color: #48bb78;' : ''}">
-                        <span class="info">
-                            <strong>${isCurrent ? '⭐ ' : ''}${user.username}</strong>
-                            <span style="color:var(--text-light);margin-left:10px;">${roleLabels[user.role] || user.role}</span>
-                            ${isCurrent ? '<span style="color:var(--success);margin-left:10px;">● Actif</span>' : ''}
-                        </span>
-                        <div>
-                            ${!isCurrent ? `<button class="remove-btn" onclick="switchUser('${user.username}')" style="font-size:14px;color:#63b3ed;">🔑</button>` : ''}
-                            ${!isCurrent && users.length > 1 ? `<button class="remove-btn" onclick="removeUser(${index})">✕</button>` : ''}
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
+            showToast('🔔 ' + message, 'notification', 3000);
         }
 
-        function switchUser(username) {
-            const user = users.find(u => u.username === username);
-            if (user) {
-                currentUser = user.username;
-                currentRole = user.role;
-                document.getElementById('currentUser').textContent = currentUser;
-                document.getElementById('currentRole').textContent = getRoleLabel(currentRole);
-                saveStats();
-                updateUserList();
-                showToast('👤 Changé pour : ' + username, 'success');
-            }
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
         }
 
-        function removeUser(index) {
-            if (users[index].username === currentUser) {
-                showToast('⚠️ Impossible de supprimer l\'utilisateur actif', 'warning');
-                return;
+        // ============================================================
+        // ⌨️ RACCOURCIS CLAVIER
+        // ============================================================
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'n') {
+                e.preventDefault();
+                document.getElementById('contactNom').focus();
+                showToast('⌨️ Focus sur le nom du contact', 'info', 1500);
             }
-            if (confirm('⚠️ Supprimer l\'utilisateur ' + users[index].username + ' ?')) {
-                users.splice(index, 1);
-                saveStats();
-                updateUserList();
-                showToast('🗑️ Utilisateur supprimé', 'info');
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                document.getElementById('sendBtn').click();
             }
+            if (e.ctrlKey && e.key === 'h') {
+                e.preventDefault();
+                document.querySelector('[data-tab="tab-history"]').click();
+            }
+            if (e.ctrlKey && e.key === 'e') {
+                e.preventDefault();
+                document.querySelector('[data-tab="tab-export"]').click();
+            }
+            if (e.ctrlKey && e.shiftKey && e.key === 'P') {
+                e.preventDefault();
+                document.querySelector('[data-tab="tab-schedule"]').click();
+            }
+            if (e.ctrlKey && e.key === 'd') {
+                e.preventDefault();
+                document.querySelector('[data-tab="tab-dashboard"]').click();
+            }
+        });
+
+        function toggleShortcuts() {
+            document.getElementById('shortcutsHelp').classList.toggle('visible');
         }
 
-        document.getElementById('addUserBtn').addEventListener('click', function() {
-            const username = document.getElementById('newUsername').value.trim();
-            const password = document.getElementById('newPassword').value.trim();
-            const role = document.getElementById('newRole').value;
-            
-            if (!username || !password) {
-                showToast('⚠️ Veuillez remplir le nom et le mot de passe', 'warning');
-                return;
-            }
-            
-            if (username.length < 3) {
-                showToast('⚠️ Le nom doit faire au moins 3 caractères', 'warning');
-                return;
-            }
-            
-            if (password.length < 4) {
-                showToast('⚠️ Le mot de passe doit faire au moins 4 caractères', 'warning');
-                return;
-            }
-            
-            if (users.find(u => u.username === username)) {
-                showToast('⚠️ Cet utilisateur existe déjà', 'warning');
-                return;
-            }
-            
-            users.push({ username, password, role });
-            saveStats();
-            updateUserList();
-            
-            document.getElementById('newUsername').value = '';
-            document.getElementById('newPassword').value = '';
-            
-            showToast('✅ Utilisateur ' + username + ' ajouté', 'success');
+        // ============================================================
+        // 🔌 MODE HORS-LIGNE
+        // ============================================================
+        window.addEventListener('online', function() {
+            document.getElementById('connectionStatus').textContent = '● En ligne';
+            document.getElementById('connectionStatus').className = 'online';
+            showToast('🔄 Connexion rétablie', 'success', 3000);
+            loadStats();
+        });
+
+        window.addEventListener('offline', function() {
+            document.getElementById('connectionStatus').textContent = '● Hors-ligne';
+            document.getElementById('connectionStatus').className = 'offline';
+            showToast('⚠️ Mode hors-ligne - Données sauvegardées localement', 'warning', 3000);
         });
 
         // ============================================================
@@ -2336,7 +2379,6 @@ FraudeStop - Votre sécurité est notre priorité.`
             document.documentElement.style.setProperty('--font-family', font);
             
             if (logoUrl) {
-                document.documentElement.style.setProperty('--logo-url', 'url(' + logoUrl + ')');
                 document.querySelector('.logo').innerHTML = '<img src="' + logoUrl + '" style="height:30px;"> FraudeStop';
             }
             
@@ -2359,7 +2401,6 @@ FraudeStop - Votre sécurité est notre priorité.`
             showToast('↩️ Personnalisation réinitialisée', 'info');
         });
 
-        // Charger la personnalisation sauvegardée
         const savedCustom = localStorage.getItem('fraudestop_custom');
         if (savedCustom) {
             try {
@@ -2377,82 +2418,156 @@ FraudeStop - Votre sécurité est notre priorité.`
         }
 
         // ============================================================
-        // 📋 GESTION DE LA FILE D'ATTENTE (suite)
+        // 📋 EXPORT
         // ============================================================
-        function updateQueue() {
-            queueCount.textContent = contacts.length;
-            
-            if (contacts.length === 0) {
-                queueContainer.innerHTML = `
-                    <div class="empty-state">
-                        <span class="icon">📭</span>
-                        <p>Aucun contact dans la file d'attente</p>
-                        <p style="font-size:13px;color:var(--text-light);">Ajoutez des contacts pour les envoyer</p>
-                    </div>
-                `;
+        function exportCSV() {
+            if (history.length === 0) {
+                showToast('Aucune donnée à exporter', 'warning');
                 return;
             }
             
-            let html = '';
-            contacts.forEach((contact, index) => {
-                html += `
-                    <div class="queue-item">
-                        <span class="info">
-                            <strong>${contact.prenom} ${contact.nom}</strong>
-                            <span style="color:var(--text-light);margin-left:10px;">${contact.telephone}</span>
-                            <span class="bank-details">🏦 ${contact.banque} · 💳 ${contact.iban.substring(0, 10)}... · ⏰ ${contact.heureLimite}</span>
-                            ${contact.note ? `<span class="bank-details">📝 ${contact.note.substring(0, 30)}${contact.note.length > 30 ? '...' : ''}</span>` : ''}
-                        </span>
-                        <button class="remove-btn" data-index="${index}">✕</button>
+            let csv = 'Nom,Prénom,Téléphone,Banque,IBAN,BIC,Montant,Heure Limite,Statut,Date,Note\n';
+            history.forEach(entry => {
+                csv += `"${entry.nom}","${entry.prenom}","${entry.telephone}","${entry.banque}","${entry.iban}","${entry.bic}","${entry.montant}","${entry.heureLimite}","${entry.status}","${new Date(entry.date).toLocaleString('fr-FR')}","${entry.note}"\n`;
+            });
+            
+            downloadFile(csv, 'fraudestop_contacts.csv', 'text/csv');
+            showToast('✅ Export CSV terminé !', 'success');
+        }
+
+        function exportHistoryCSV() {
+            if (history.length === 0) {
+                showToast('Aucun historique à exporter', 'warning');
+                return;
+            }
+            
+            let csv = 'Date,Destinataire,Statut,Ticket,Message\n';
+            history.forEach(entry => {
+                const date = new Date(entry.date).toLocaleString('fr-FR');
+                const message = entry.message.replace(/,/g, ';').replace(/\n/g, ' ');
+                csv += `"${date}","${entry.prenom} ${entry.nom}","${entry.status}","${entry.ticket || ''}","${message}"\n`;
+            });
+            
+            downloadFile(csv, 'fraudestop_historique.csv', 'text/csv');
+            showToast('✅ Export Historique CSV terminé !', 'success');
+        }
+
+        function exportPDF() {
+            if (history.length === 0) {
+                showToast('Aucune donnée à exporter', 'warning');
+                return;
+            }
+            
+            let html = `
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Rapport FraudeStop</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        h1 { color: #dc3545; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th { background: #dc3545; color: white; padding: 10px; text-align: left; }
+                        td { padding: 8px; border-bottom: 1px solid #e2e8f0; }
+                        .summary { margin: 20px 0; padding: 15px; background: #f7fafc; border-radius: 8px; }
+                        .success { color: #48bb78; }
+                        .error { color: #fc8181; }
+                    </style>
+                </head>
+                <body>
+                    <h1>🛡️ FraudeStop - Rapport d'activité</h1>
+                    <p>Généré le : ${new Date().toLocaleString('fr-FR')}</p>
+                    
+                    <div class="summary">
+                        <h3>📊 Résumé</h3>
+                        <p>Total SMS envoyés : <strong>${totalSent}</strong></p>
+                        <p>✅ Succès : <strong class="success">${successCount}</strong></p>
+                        <p>❌ Échecs : <strong class="error">${failedCount}</strong></p>
+                        <p>📈 Taux de succès : <strong>${totalSent > 0 ? Math.round((successCount / totalSent) * 100) : 0}%</strong></p>
                     </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Destinataire</th>
+                                <th>Statut</th>
+                                <th>Ticket</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            history.slice(0, 100).forEach(entry => {
+                const date = new Date(entry.date).toLocaleString('fr-FR');
+                const statusClass = entry.status === 'success' ? 'success' : 'error';
+                const statusText = entry.status === 'success' ? '✅ Succès' : '❌ Échec';
+                html += `
+                    <tr>
+                        <td>${date}</td>
+                        <td>${entry.prenom} ${entry.nom}</td>
+                        <td class="${statusClass}">${statusText}</td>
+                        <td>${entry.ticket || '-'}</td>
+                    </tr>
                 `;
             });
-            queueContainer.innerHTML = html;
             
-            document.querySelectorAll('.remove-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const index = parseInt(this.dataset.index);
-                    contacts.splice(index, 1);
-                    updateQueue();
-                    updateSendButton();
-                });
-            });
+            html += `
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 20px; color: #718096; font-size: 12px;">
+                        Rapport généré par FraudeStop v4.0 Pro - ${history.length} entrées
+                    </p>
+                </body>
+                </html>
+            `;
+            
+            downloadFile(html, 'fraudestop_rapport.html', 'text/html');
+            showToast('✅ Export PDF HTML terminé !', 'success');
         }
 
-        function updateSendButton() {
-            const count = contacts.length;
-            const canSend = count > 0 && !isLimitReached() && !isSending;
-            const btnText = sendBtn.querySelector('.btn-text');
+        function exportStats() {
+            const stats = {
+                version: '4.0 Pro',
+                date: new Date().toISOString(),
+                totalSent: totalSent,
+                successCount: successCount,
+                failedCount: failedCount,
+                successRate: totalSent > 0 ? Math.round((successCount / totalSent) * 100) : 0,
+                todaySent: todaySent,
+                dailyLimit: DAILY_LIMIT,
+                historyCount: history.length,
+                schedulesCount: schedules.length,
+                usersCount: users.length,
+                currentUser: currentUser ? currentUser.username : 'Aucun'
+            };
             
-            if (isLimitReached() && count > 0) {
-                btnText.textContent = `⛔ Limite atteinte (${DAILY_LIMIT}/${DAILY_LIMIT})`;
-                sendBtn.disabled = true;
-            } else {
-                btnText.textContent = `📤 Envoyer les SMS (${count} contact${count > 1 ? 's' : ''})`;
-                sendBtn.disabled = !canSend;
-            }
+            const json = JSON.stringify(stats, null, 2);
+            downloadFile(json, 'fraudestop_statistiques.json', 'application/json');
+            showToast('✅ Export Statistiques terminé !', 'success');
         }
 
-        function hideSmsPreview() {
-            smsPreviewContainer.style.display = 'none';
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType + ';charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
-        function resetFields() {
-            contactNom.value = '';
-            contactPrenom.value = '';
-            contactTelephone.value = '';
-            contactBanque.value = '';
-            contactIban.value = '';
-            contactBic.value = '';
-            contactMontant.value = '';
-            contactHeureLimite.value = '';
-            contactNote.value = '';
-            
-            document.querySelectorAll('input').forEach(input => { input.className = ''; });
-            document.querySelectorAll('.validation-hint').forEach(hint => { hint.className = 'validation-hint'; });
-            
-            contactNom.focus();
-        }
+        window.exportCSV = exportCSV;
+        window.exportHistoryCSV = exportHistoryCSV;
+        window.exportPDF = exportPDF;
+        window.exportStats = exportStats;
+        window.removeSchedule = removeSchedule;
+        window.banUser = banUser;
+        window.unbanUser = unbanUser;
+        window.logout = logout;
+        window.toggleShortcuts = toggleShortcuts;
 
         // ============================================================
         // ➕ AJOUTER UN CONTACT
@@ -2608,6 +2723,48 @@ FraudeStop - Votre sécurité est notre priorité.`
         // ============================================================
         // 📤 ENVOI DES SMS
         // ============================================================
+        const API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxNzIxMjQiLCJpYXQiOjE3ODg3MTI5OTEuMjQwMTc0fQ.yBf8Sc3ko5XqWhbrcwg0jUW55IhO8YhztM225iXHpHg';
+        const DAILY_LIMIT = 500;
+
+        function isLimitReached() { return todaySent >= DAILY_LIMIT; }
+
+        function incrementCounters(success = true) {
+            todaySent++;
+            totalSent++;
+            if (success) { successCount++; } else { failedCount++; }
+            saveStats();
+            updateCounterDisplay();
+            updateDashboard();
+            updateChart();
+        }
+
+        function addHistoryEntry(contact, status, message, ticket = null, note = '') {
+            const entry = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                nom: contact.nom,
+                prenom: contact.prenom,
+                telephone: contact.telephone,
+                banque: contact.banque,
+                montant: contact.montant,
+                heureLimite: contact.heureLimite,
+                status: status,
+                message: message,
+                ticket: ticket,
+                note: note || contact.note || ''
+            };
+            history.unshift(entry);
+            if (history.length > 500) { history = history.slice(0, 500); }
+            saveStats();
+            updateHistoryDisplay();
+            
+            if (status === 'success') {
+                showNotification('✅ SMS envoyé à ' + contact.prenom + ' ' + contact.nom);
+            } else {
+                showNotification('❌ Échec d\'envoi pour ' + contact.prenom + ' ' + contact.nom);
+            }
+        }
+
         document.getElementById('smsForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -2719,12 +2876,10 @@ FraudeStop - Votre sécurité est notre priorité.`
                 statSuccess.textContent = successTotal;
                 statError.textContent = errorTotal;
                 
-                // Barre de progression avancée
                 const percent = ((i + 1) / contactsToSend.length) * 100;
                 progress.style.width = percent + '%';
                 progressText.textContent = Math.round(percent) + '%';
                 
-                // Temps estimé restant
                 const elapsed = (Date.now() - startTime) / 1000;
                 const avgTime = elapsed / (i + 1);
                 const remainingTime = (contactsToSend.length - (i + 1)) * avgTime;
@@ -2763,156 +2918,139 @@ FraudeStop - Votre sécurité est notre priorité.`
         });
 
         // ============================================================
-        // 📋 EXPORT DES DONNÉES
+        // 👥 GESTION DES UTILISATEURS (Admin)
         // ============================================================
-        function exportCSV() {
-            if (history.length === 0) {
-                showToast('Aucune donnée à exporter', 'warning');
-                return;
+        function updateUserList() {
+            const container = document.getElementById('userList');
+            
+            if (users.length === 0) {
+                users = JSON.parse(JSON.stringify(DEFAULT_USERS));
+                localStorage.setItem('fraudestop_users', JSON.stringify(users));
             }
             
-            let csv = 'Nom,Prénom,Téléphone,Banque,IBAN,BIC,Montant,Heure Limite,Statut,Date,Note\n';
-            history.forEach(entry => {
-                csv += `"${entry.nom}","${entry.prenom}","${entry.telephone}","${entry.banque}","${entry.iban}","${entry.bic}","${entry.montant}","${entry.heureLimite}","${entry.status}","${new Date(entry.date).toLocaleString('fr-FR')}","${entry.note}"\n`;
-            });
-            
-            downloadFile(csv, 'fraudestop_contacts.csv', 'text/csv');
-            showToast('✅ Export CSV terminé !', 'success');
-        }
-
-        function exportHistoryCSV() {
-            if (history.length === 0) {
-                showToast('Aucun historique à exporter', 'warning');
-                return;
-            }
-            
-            let csv = 'Date,Destinataire,Statut,Ticket,Message\n';
-            history.forEach(entry => {
-                const date = new Date(entry.date).toLocaleString('fr-FR');
-                const message = entry.message.replace(/,/g, ';').replace(/\n/g, ' ');
-                csv += `"${date}","${entry.prenom} ${entry.nom}","${entry.status}","${entry.ticket || ''}","${message}"\n`;
-            });
-            
-            downloadFile(csv, 'fraudestop_historique.csv', 'text/csv');
-            showToast('✅ Export Historique CSV terminé !', 'success');
-        }
-
-        function exportPDF() {
-            if (history.length === 0) {
-                showToast('Aucune donnée à exporter', 'warning');
-                return;
-            }
-            
-            let html = `
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Rapport FraudeStop</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; }
-                        h1 { color: #dc3545; }
-                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                        th { background: #dc3545; color: white; padding: 10px; text-align: left; }
-                        td { padding: 8px; border-bottom: 1px solid #e2e8f0; }
-                        .summary { margin: 20px 0; padding: 15px; background: #f7fafc; border-radius: 8px; }
-                        .success { color: #48bb78; }
-                        .error { color: #fc8181; }
-                    </style>
-                </head>
-                <body>
-                    <h1>🛡️ FraudeStop - Rapport d'activité</h1>
-                    <p>Généré le : ${new Date().toLocaleString('fr-FR')}</p>
-                    
-                    <div class="summary">
-                        <h3>📊 Résumé</h3>
-                        <p>Total SMS envoyés : <strong>${totalSent}</strong></p>
-                        <p>✅ Succès : <strong class="success">${successCount}</strong></p>
-                        <p>❌ Échecs : <strong class="error">${failedCount}</strong></p>
-                        <p>📈 Taux de succès : <strong>${totalSent > 0 ? Math.round((successCount / totalSent) * 100) : 0}%</strong></p>
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Destinataire</th>
-                                <th>Statut</th>
-                                <th>Ticket</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-            
-            history.slice(0, 100).forEach(entry => {
-                const date = new Date(entry.date).toLocaleString('fr-FR');
-                const statusClass = entry.status === 'success' ? 'success' : 'error';
-                const statusText = entry.status === 'success' ? '✅ Succès' : '❌ Échec';
+            let html = '';
+            users.forEach((user) => {
+                const isCurrent = currentUser && user.id === currentUser.id;
+                const roleLabels = {
+                    admin: '👑 Administrateur',
+                    agent: '👤 Agent',
+                    supervisor: '👁️ Superviseur',
+                    viewer: '📖 Lecteur'
+                };
                 html += `
-                    <tr>
-                        <td>${date}</td>
-                        <td>${entry.prenom} ${entry.nom}</td>
-                        <td class="${statusClass}">${statusText}</td>
-                        <td>${entry.ticket || '-'}</td>
-                    </tr>
+                    <div class="queue-item" style="${isCurrent ? 'border-left-color: #48bb78;' : ''}">
+                        <span class="info">
+                            <strong>${isCurrent ? '⭐ ' : ''}${user.username}</strong>
+                            <span style="color:var(--text-light);margin-left:10px;">${roleLabels[user.role] || user.role}</span>
+                            ${user.banned ? '🚫 Banni' : '✅ Actif'}
+                            ${isCurrent ? '<span style="color:var(--success);margin-left:10px;">● Connecté</span>' : ''}
+                        </span>
+                        <div style="display:flex;gap:5px;flex-wrap:wrap;">
+                            ${!isCurrent && !user.banned ? `<button onclick="switchUser('${user.id}')" style="background:#63b3ed;color:white;border:none;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:12px;">🔑 Se connecter</button>` : ''}
+                            ${user.id !== 'admin' ? 
+                                (user.banned ? 
+                                    `<button onclick="unbanUser('${user.id}')" style="background:#48bb78;color:white;border:none;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:12px;">Débannir</button>` :
+                                    `<button onclick="banUser('${user.id}')" style="background:#dc3545;color:white;border:none;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:12px;">Bannir</button>`
+                                )
+                            : '<span style="font-size:12px;color:var(--text-light);">👑 Admin</span>'}
+                        </div>
+                    </div>
                 `;
             });
-            
-            html += `
-                        </tbody>
-                    </table>
-                    <p style="margin-top: 20px; color: #718096; font-size: 12px;">
-                        Rapport généré par FraudeStop v4.0 Pro - ${history.length} entrées
-                    </p>
-                </body>
-                </html>
-            `;
-            
-            downloadFile(html, 'fraudestop_rapport.html', 'text/html');
-            showToast('✅ Export PDF HTML terminé !', 'success');
+            container.innerHTML = html;
         }
 
-        function exportStats() {
-            const stats = {
-                version: '4.0 Pro',
-                date: new Date().toISOString(),
-                totalSent: totalSent,
-                successCount: successCount,
-                failedCount: failedCount,
-                successRate: totalSent > 0 ? Math.round((successCount / totalSent) * 100) : 0,
-                todaySent: todaySent,
-                dailyLimit: DAILY_LIMIT,
-                historyCount: history.length,
-                schedulesCount: schedules.length,
-                usersCount: users.length,
-                currentUser: currentUser,
-                currentRole: currentRole,
-                lastEnvoi: history.length > 0 ? history[0].date : null
+        function switchUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user && !user.banned) {
+                currentUser = user;
+                isLoggedIn = true;
+                localStorage.setItem('fraudestop_session', JSON.stringify({
+                    userId: user.id,
+                    username: user.username,
+                    role: user.role,
+                    version: APP_VERSION,
+                    loginTime: Date.now()
+                }));
+                document.getElementById('currentUserDisplay').textContent = user.username;
+                document.getElementById('currentRoleDisplay').textContent = getRoleLabel(user.role);
+                updateUserList();
+                updateTabPermissions();
+                showToast('👤 Changé pour : ' + user.username, 'success');
+            } else if (user && user.banned) {
+                showToast('🚫 Cet utilisateur est banni', 'error');
+            }
+        }
+
+        function updateTabPermissions() {
+            const permissions = getRolePermissions(currentUser ? currentUser.role : 'viewer');
+            const tabs = document.querySelectorAll('.tab-btn');
+            const tabMap = {
+                'tab-send': 'send',
+                'tab-history': 'history',
+                'tab-dashboard': 'dashboard',
+                'tab-export': 'export',
+                'tab-schedule': 'schedule',
+                'tab-customize': 'customize',
+                'tab-users': 'users'
             };
             
-            const json = JSON.stringify(stats, null, 2);
-            downloadFile(json, 'fraudestop_statistiques.json', 'application/json');
-            showToast('✅ Export Statistiques terminé !', 'success');
+            tabs.forEach(tab => {
+                const key = tab.dataset.tab;
+                const perm = tabMap[key] || 'view';
+                if (permissions.includes(perm) || perm === 'view') {
+                    tab.style.display = '';
+                    tab.classList.remove('disabled');
+                } else {
+                    tab.style.display = 'none';
+                }
+            });
+            
+            // Si l'onglet actif est masqué, passer au premier visible
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab && activeTab.style.display === 'none') {
+                const firstVisible = document.querySelector('.tab-btn:not([style*="display: none"])');
+                if (firstVisible) {
+                    firstVisible.click();
+                }
+            }
         }
 
-        function downloadFile(content, filename, mimeType) {
-            const blob = new Blob([content], { type: mimeType + ';charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        window.exportCSV = exportCSV;
-        window.exportHistoryCSV = exportHistoryCSV;
-        window.exportPDF = exportPDF;
-        window.exportStats = exportStats;
-        window.removeSchedule = removeSchedule;
-        window.switchUser = switchUser;
-        window.removeUser = removeUser;
+        document.getElementById('addUserBtn').addEventListener('click', function() {
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newPassword').value.trim();
+            const role = document.getElementById('newRole').value;
+            
+            if (!username || !password) {
+                showToast('⚠️ Veuillez remplir le nom et le mot de passe', 'warning');
+                return;
+            }
+            
+            if (username.length < 3) {
+                showToast('⚠️ Le nom doit faire au moins 3 caractères', 'warning');
+                return;
+            }
+            
+            if (password.length < 4) {
+                showToast('⚠️ Le mot de passe doit faire au moins 4 caractères', 'warning');
+                return;
+            }
+            
+            if (users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
+                showToast('⚠️ Cet utilisateur existe déjà', 'warning');
+                return;
+            }
+            
+            const newId = 'user' + Date.now();
+            users.push({ id: newId, username, password, role, banned: false });
+            localStorage.setItem('fraudestop_users', JSON.stringify(users));
+            
+            document.getElementById('newUsername').value = '';
+            document.getElementById('newPassword').value = '';
+            
+            updateUserList();
+            showToast('✅ Utilisateur ' + username + ' ajouté', 'success');
+        });
 
         // ============================================================
         // 📑 GESTION DES TABS
@@ -2931,17 +3069,58 @@ FraudeStop - Votre sécurité est notre priorité.`
         });
 
         // ============================================================
-        // 🚀 INITIALISATION
+        // 🚀 INITIALISATION DE L'APPLICATION
         // ============================================================
-        loadStats();
-        updateQueue();
-        updateSendButton();
-        updateCounterDisplay();
-        updateDashboard();
+        function initializeApp() {
+            // Mettre à jour les infos utilisateur
+            document.getElementById('currentUserDisplay').textContent = currentUser.username;
+            document.getElementById('currentRoleDisplay').textContent = getRoleLabel(currentUser.role);
+            
+            // Charger les données
+            loadStats();
+            updateQueue();
+            updateSendButton();
+            updateCounterDisplay();
+            updateDashboard();
+            updateUserList();
+            updateTabPermissions();
+            
+            setTimeout(updateChart, 500);
+            
+            // Vérifier les sessions toutes les 30s
+            setInterval(() => {
+                const session = localStorage.getItem('fraudestop_session');
+                if (!session) {
+                    logout();
+                }
+            }, 30000);
+        }
+
+        // ============================================================
+        // 🚀 INITIALISATION GLOBALE
+        // ============================================================
+        loadUsers();
         
-        setTimeout(updateChart, 500);
-        
-        setInterval(loadStats, 60000);
+        if (checkSession()) {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            initializeApp();
+        } else {
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('loginUser').focus();
+        }
+
+        // Vérifier les bans périodiquement
+        setInterval(() => {
+            if (isLoggedIn && currentUser) {
+                const user = users.find(u => u.id === currentUser.id);
+                if (!user || user.banned) {
+                    logout();
+                    showToast('🚫 Vous avez été banni par l\'administrateur', 'error');
+                }
+            }
+        }, 5000);
     </script>
 
 </body>
