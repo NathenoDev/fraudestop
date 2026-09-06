@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FraudeStop Pro - Service Anti-Fraude</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+    
+    <style>
+        /* ===== VARIABLES ===== */
+        :root {
+            --primary: #dc3545;
+            --primary-dark: #8b0000;
+            --primary-light: #fdf2f2;
+            --bg: #f7fafc;
+            --card-bg: #ffffff;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+            --shadow: 0 20px 60px rgba(0,0,0,0.15);
+            --radius: 16px;
+            --transition: all 0.3s ease;
+        }
+        
+        /* ===== MODE SOMBRE ===== */
+        body.dark-mode {
+            --bg: #1a202c;
+            --card-bg: #2d3748;
+            --text: #f7fafc;
+            --text-light: #a0aec0;
+            --border: #4a5568;
+            --shadow: 0 20px 60px rgba(0,0,0,0.6);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            padding: 20px;
+            transition: var(--transition);
+        }
+        
+        .container {
+            max-width: 750px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 35px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            color: var(--text);
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        h1 {
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text);
+        }
+        
+        h1 .logo {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .theme-toggle {
+            background: var(--border);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            margin-bottom: 25px;
+            font-size: 15px;
+        }
+
+        /* ===== TOAST NOTIFICATIONS ===== */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 350px;
+        }
+        
+        .toast {
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: slideInRight 0.4s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .toast.success { background: linear-gradient(135deg, #48bb78, #276749); }
+        .toast.error { background: linear-gradient(135deg, #fc8181, #dc3545); }
+        .toast.warning { background: linear-gradient(135deg, #ed8936, #c05621); }
+        .toast.info { background: linear-gradient(135deg, #63b3ed, #3182ce); }
+        
+        .toast .icon { font-size: 24px; }
+        .toast .message { flex: 1; }
+        .toast .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+        .toast .close-btn:hover { opacity: 1; }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100px); opacity: 0; }
+        }
+
+        /* ===== COUNTER ===== */
+        .counter-dashboard {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: var(--bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        
+        .counter-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .counter-item .number {
+            font-size: 28px;
+            font-weight: 800;
+            display: block;
+        }
+        .counter-item .number.today { color: var(--primary); }
+        .counter-item .number.total { color: var(--text); }
+        .counter-item .number.limit { color: #48bb78; }
+        .counter-item .number.limit-warning { color: #ed8936; }
+        .counter-item .number.limit-danger { color: #fc8181; }
+        .counter-item .label {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+        .counter-divider { width: 1px; background: var(--border); }
+
+        /* ===== FORM ===== */
+        .form-group { margin-bottom: 20px; }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+            background: var(--card-bg);
+            color: var(--text);
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        }
+        
+        input.is-valid {
+            border-color: #48bb78;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2348bb78' stroke-width='2'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+        
+        input.is-invalid {
+            border-color: #fc8181;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23fc8181' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+        
+        textarea { resize: vertical; min-height: 100px; font-family: inherit; }
+        
+        .row { display: flex; gap: 15px; }
+        .row .col { flex: 1; }
+        
+        .validation-hint {
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+        .validation-hint.visible { display: block; }
+        .validation-hint.valid { color: #48bb78; }
+        .validation-hint.invalid { color: #fc8181; }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+        }
+        
+        .btn.loading .spinner { display: inline-block; }
+        .btn.loading .btn-text { display: none; }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text);
+        }
+        .btn-secondary:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78, #276749);
+        }
+        .btn-success:hover { box-shadow: 0 8px 20px rgba(72, 187, 120, 0.4); }
+        
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-group .btn { flex: 1; }
+
+        /* ===== QUEUE ===== */
+        .queue-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: var(--bg);
+            border-radius: 6px;
+            margin-bottom: 6px;
+            border-left: 3px solid #63b3ed;
+        }
+        
+        .queue-item .info { font-size: 14px; color: var(--text); }
+        .queue-item .info strong { color: var(--text); }
+        .queue-item .remove-btn {
+            background: none;
+            border: none;
+            color: #fc8181;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0 5px;
+            transition: var(--transition);
+        }
+        .queue-item .remove-btn:hover { color: var(--primary); transform: scale(1.2); }
+        
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-light);
+        }
+        .empty-state .icon { font-size: 40px; display: block; margin-bottom: 10px; }
+        
+        .clear-btn {
+            background: none;
+            border: none;
+            color: #fc8181;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: underline;
+            padding: 5px;
+        }
+        .clear-btn:hover { color: var(--primary); }
+
+        /* ===== RESULTS ===== */
+        .results { margin-top: 25px; max-height: 400px; overflow-y: auto; }
+        
+        .result-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border-left: 4px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .result-item.success { background: #f0fff4; border-color: #48bb78; color: #22543d; }
+        .result-item.error { background: #fff5f5; border-color: #fc8181; color: #742a2a; }
+        .result-item.pending { background: #ebf8ff; border-color: #63b3ed; color: #2a4365; }
+        .result-item .name { font-weight: 600; }
+        .result-item .status { font-size: 13px; }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* ===== STATS ===== */
+        .stats {
+            margin: 15px 0;
+            padding: 15px;
+            background: var(--bg);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+        .stats div { flex: 1; }
+        .stats .number { font-size: 22px; font-weight: 700; color: var(--text); }
+        .stats .label { font-size: 13px; color: var(--text-light); }
+
+        /* ===== PROGRESS ===== */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            margin: 15px 0;
+            overflow: hidden;
+            display: none;
+        }
+        .progress-bar .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            transition: width 0.3s;
+            width: 0%;
+        }
+
+        /* ===== PREVIEW ===== */
+        .sms-preview {
+            background: var(--bg);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 13px;
+            border: 1px solid var(--border);
+            white-space: pre-wrap;
+            max-height: 150px;
+            overflow-y: auto;
+            color: var(--text);
+        }
+
+        /* ===== API STATUS ===== */
+        .api-status {
+            background: #f0fff4;
+            padding: 8px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #48bb78;
+            font-size: 14px;
+            color: #22543d;
+        }
+        .api-status .key-hidden {
+            background: var(--border);
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer-brand {
+            margin-top: 25px;
+            text-align: center;
+            color: var(--text-light);
+            font-size: 13px;
+            border-top: 1px solid var(--border);
+            padding-top: 18px;
+        }
+        .footer-brand strong { color: var(--primary); }
+        .footer-brand .version { font-size: 11px; background: var(--bg); padding: 2px 10px; border-radius: 12px; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            .counter-dashboard { flex-direction: column; gap: 10px; }
+            .counter-divider { display: none; }
+            .row { flex-direction: column; }
+            .header { flex-direction: column; gap: 10px; align-items: flex-start; }
+            h1 { font-size: 22px; flex-wrap: wrap; }
+            .btn-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>
+                <span class="logo">🛡️ FraudeStop</span>
+                <span class="badge">Pro</span>
+            </h1>
+            <div class="header-actions">
+                <button class="theme-toggle" id="themeToggle" title="Mode sombre/clair">🌙</button>
+            </div>
+        </div>
+        <p class="subtitle">Service Anti-Fraude Bancaire - Protection immédiate</p>
+        
+        <!-- API STATUS -->
+        <div class="api-status">
+            🔑 Clé API configurée : <span class="key-hidden">••••••••••••••••••••</span> ✅
+            <span style="float: right; font-size: 12px;">v2.0 Pro</span>
+        </div>
+
+        <!-- COUNTER -->
+        <div class="counter-dashboard">
+            <div class="counter-item">
+                <span class="number today" id="todayCount">0</span>
+                <span class="label">📱 SMS aujourd'hui</span>
+            </div>
+            <div class="counter-divider"></div>
+            <div class="counter-item">
+                <span class="number total" id="totalCountDisplay">0</span>
+                <span class="label">📊 Total SMS</span>
+            </div>
+            <div class="counter-divider"></div>
+            <div class="counter-item">
+                <span class="number limit" id="dailyLimitDisplay">500</span>
+                <span class="label">📈 Limite journalière</span>
+            </div>
+        </div>
+
+        <form id="smsForm">
+            <!-- TEMPLATE -->
+            <div class="form-group">
+                <label>📝 Template du message</label>
+                <textarea id="messageTemplate" required>Bonjour {prenom} {nom},
+
+Notre système FraudeStop a détecté une tentative d'utilisation frauduleuse de votre carte bancaire.
+
+🔒 Action requise : Confirmez immédiatement cette opération en appelant notre service au 04 51 45 90 87.
+
+⚠️ Si vous n'êtes pas à l'origine de cette transaction, merci de faire opposition sans délai.
+
+FraudeStop - Votre sécurité est notre priorité</textarea>
+                <div class="template-help" style="background:var(--bg);padding:10px 15px;border-radius:8px;margin-top:8px;font-size:13px;color:var(--text-light);">
+                    💡 Utilisez <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{prenom}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{nom}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{telephone}</code> pour personnaliser chaque SMS
+                </div>
+            </div>
+
+            <!-- SAISIE CONTACT -->
+            <div class="form-group">
+                <label>👤 Saisie du destinataire</label>
+                <div class="row">
+                    <div class="col">
+                        <input type="text" id="contactNom" placeholder="Nom" required>
+                    </div>
+                    <div class="col">
+                        <input type="text" id="contactPrenom" placeholder="Prénom" required>
+                    </div>
+                </div>
+                <div style="margin-top: 10px; position: relative;">
+                    <input type="tel" id="contactTelephone" placeholder="Téléphone (ex: 33612345678)" required>
+                    <div class="validation-hint" id="phoneHint"></div>
+                </div>
+                <div class="btn-group" style="margin-top: 10px;">
+                    <button type="button" class="btn btn-secondary" id="addContactBtn">➕ Ajouter à la liste</button>
+                    <button type="button" class="btn btn-secondary" id="previewSmsBtn">👁️ Aperçu du SMS</button>
+                </div>
+            </div>
+
+            <!-- PREVIEW -->
+            <div id="smsPreviewContainer" style="display: none;">
+                <div class="form-group">
+                    <label>👁️ Aperçu du SMS pour ce contact</label>
+                    <div class="sms-preview" id="smsPreview"></div>
+                </div>
+            </div>
+
+            <!-- QUEUE -->
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label>📋 File d'attente (<span id="queueCount">0</span> contact)</label>
+                    <button type="button" class="clear-btn" id="clearQueueBtn">🗑️ Vider la liste</button>
+                </div>
+                <div id="queueContainer">
+                    <div class="empty-state">
+                        <span class="icon">📭</span>
+                        <p>Aucun contact dans la file d'attente</p>
+                        <p style="font-size: 13px; color: var(--text-light);">Ajoutez des contacts pour les envoyer</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="btn-group">
+                <button type="submit" class="btn" id="sendBtn" disabled>
+                    <span class="spinner"></span>
+                    <span class="btn-text">📤 Envoyer les SMS (0 contact)</span>
+                </button>
+            </div>
+
+            <!-- PROGRESS -->
+            <div class="progress-bar" id="progressBar">
+                <div class="progress" id="progress"></div>
+            </div>
+
+            <!-- STATS -->
+            <div class="stats" id="statsContainer" style="display: none;">
+                <div>
+                    <div class="number" id="statTotal">0</div>
+                    <div class="label">Total</div>
+                </div>
+                <div>
+                    <div class="number" id="statSuccess" style="color: #48bb78;">0</div>
+                    <div class="label">✅ Succès</div>
+                </div>
+                <div>
+                    <div class="number" id="statError" style="color: #fc8181;">0</div>
+                    <div class="label">❌ Échecs</div>
+                </div>
+            </div>
+
+            <!-- RESULTS -->
+            <div class="results" id="results"></div>
+
+            <div class="footer-brand">
+                <strong>FraudeStop</strong> · Protection bancaire instantanée
+                <span class="version">v2.0 Pro</span>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // ============================================================
+        // 🔑 API KEY FRAUDESTOP
+        // ============================================================
+        const API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxNzE3MDAiLCJpYXQiOjE3ODg3MDE4MTIuNDg2NTY5fQ.IzXng4ZGIJVru1JI6iwAvRwJG3K5_c-LJtmCr0tY7bE';
+        const DAILY_LIMIT = 500;
+        
+        // ============================================================
+        // 📊 GESTION DES STATISTIQUES
+        // ============================================================
+        let todaySent = 0;
+        let totalSent = 0;
+        
+        function loadStats() {
+            const today = new Date().toDateString();
+            const saved = localStorage.getItem('fraudestop_stats');
+            if (saved) {
+                try {
+                    const stats = JSON.parse(saved);
+                    if (stats.date === today) { todaySent = stats.today || 0; } 
+                    else { todaySent = 0; }
+                    totalSent = stats.total || 0;
+                } catch(e) { todaySent = 0; totalSent = 0; }
+            }
+            updateCounterDisplay();
+        }
+        
+        function saveStats() {
+            const today = new Date().toDateString();
+            localStorage.setItem('fraudestop_stats', JSON.stringify({ date: today, today: todaySent, total: totalSent }));
+        }
+        
+        function updateCounterDisplay() {
+            document.getElementById('todayCount').textContent = todaySent;
+            document.getElementById('totalCountDisplay').textContent = totalSent;
+            
+            const limitDisplay = document.getElementById('dailyLimitDisplay');
+            limitDisplay.textContent = DAILY_LIMIT;
+            const remaining = DAILY_LIMIT - todaySent;
+            
+            if (remaining <= 10 && remaining > 0) { limitDisplay.className = 'number limit-danger'; }
+            else if (remaining <= 50) { limitDisplay.className = 'number limit-warning'; }
+            else { limitDisplay.className = 'number limit'; }
+        }
+        
+        function isLimitReached() { return todaySent >= DAILY_LIMIT; }
+        
+        function incrementCounters() {
+            todaySent++;
+            totalSent++;
+            saveStats();
+            updateCounterDisplay();
+        }
+        
+        loadStats();
+
+        // ============================================================
+        // 🍞 TOAST NOTIFICATIONS
+        // ============================================================
+        function showToast(message, type = 'info', duration = 4000) {
+            const container = document.getElementById('toastContainer');
+            const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span class="icon">${icons[type] || 'ℹ️'}</span>
+                <span class="message">${message}</span>
+                <button class="close-btn">✕</button>
+            `;
+            
+            toast.querySelector('.close-btn').addEventListener('click', () => {
+                toast.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            });
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.style.animation = 'slideOutRight 0.3s ease';
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, duration);
+        }
+
+        // ============================================================
+        // 🌙 MODE SOMBRE
+        // ============================================================
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            this.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            localStorage.setItem('fraudestop_theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        });
+        
+        // Charger le thème sauvegardé
+        if (localStorage.getItem('fraudestop_theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('themeToggle').textContent = '☀️';
+        }
+
+        // ============================================================
+        // 📱 VALIDATION EN TEMPS RÉEL DU NUMÉRO
+        // ============================================================
+        const phoneInput = document.getElementById('contactTelephone');
+        const phoneHint = document.getElementById('phoneHint');
+        
+        phoneInput.addEventListener('input', function() {
+            const value = this.value.trim();
+            if (value.length === 0) {
+                this.className = '';
+                phoneHint.className = 'validation-hint';
+                return;
+            }
+            
+            let phone = value.replace(/\s/g, '').replace(/^0+/, '');
+            if (!phone.startsWith('33')) { phone = '33' + phone.replace(/^0+/, ''); }
+            phone = phone.replace(/\D/g, '');
+            
+            if (phone.length >= 11) {
+                this.className = 'is-valid';
+                phoneHint.className = 'validation-hint valid visible';
+                phoneHint.textContent = '✅ Numéro valide';
+            } else if (phone.length >= 8) {
+                this.className = 'is-invalid';
+                phoneHint.className = 'validation-hint invalid visible';
+                phoneHint.textContent = `⏳ ${11 - phone.length} chiffre${11 - phone.length > 1 ? 's' : ''} restant${11 - phone.length > 1 ? 's' : ''}`;
+            } else {
+                this.className = '';
+                phoneHint.className = 'validation-hint';
+            }
+        });
+
+        // ============================================================
+        // 📋 GESTION DE LA FILE D'ATTENTE
+        // ============================================================
+        let contacts = [];
+        let isSending = false;
+        
+        const contactNom = document.getElementById('contactNom');
+        const contactPrenom = document.getElementById('contactPrenom');
+        const contactTelephone = document.getElementById('contactTelephone');
+        const addContactBtn = document.getElementById('addContactBtn');
+        const previewSmsBtn = document.getElementById('previewSmsBtn');
+        const queueContainer = document.getElementById('queueContainer');
+        const queueCount = document.getElementById('queueCount');
+        const clearQueueBtn = document.getElementById('clearQueueBtn');
+        const sendBtn = document.getElementById('sendBtn');
+        const resultsDiv = document.getElementById('results');
+        const progressBar = document.getElementById('progressBar');
+        const progress = document.getElementById('progress');
+        const statsContainer = document.getElementById('statsContainer');
+        const statTotal = document.getElementById('statTotal');
+        const statSuccess = document.getElementById('statSuccess');
+        const statError = document.getElementById('statError');
+        const smsPreviewContainer = document.getElementById('smsPreviewContainer');
+        const smsPreview = document.getElementById('smsPreview');
+        const messageTemplate = document.getElementById('messageTemplate');
+
+        function updateQueue() {
+            queueCount.textContent = contacts.length;
+            
+            if (contacts.length === 0) {
+                queueContainer.innerHTML = `
+                    <div class="empty-state">
+                        <span class="icon">📭</span>
+                        <p>Aucun contact dans la file d'attente</p>
+                        <p style="font-size:13px;color:var(--text-light);">Ajoutez des contacts pour les envoyer</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            contacts.forEach((contact, index) => {
+                html += `
+                    <div class="queue-item">
+                        <span class="info">
+                            <strong>${contact.prenom} ${contact.nom}</strong>
+                            <span style="color:var(--text-light);margin-left:10px;">${contact.telephone}</span>
+                        </span>
+                        <button class="remove-btn" data-index="${index}">✕</button>
+                    </div>
+                `;
+            });
+            queueContainer.innerHTML = html;
+            
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.dataset.index);
+                    contacts.splice(index, 1);
+                    updateQueue();
+                    updateSendButton();
+                });
+            });
+        }
+
+        function updateSendButton() {
+            const count = contacts.length;
+            const canSend = count > 0 && !isLimitReached() && !isSending;
+            const btnText = sendBtn.querySelector('.btn-text');
+            
+            if (isLimitReached() && count > 0) {
+                btnText.textContent = `⛔ Limite atteinte (${DAILY_LIMIT}/${DAILY_LIMIT})`;
+                sendBtn.disabled = true;
+            } else {
+                btnText.textContent = `📤 Envoyer les SMS (${count} contact${count > 1 ? 's' : ''})`;
+                sendBtn.disabled = !canSend;
+            }
+        }
+
+        function hideSmsPreview() {
+            smsPreviewContainer.style.display = 'none';
+        }
+
+        // ============================================================
+        // ➕ AJOUTER UN CONTACT
+        // ============================================================
+        addContactBtn.addEventListener('click', function() {
+            if (isLimitReached()) {
+                showToast(`Limite journalière atteinte (${DAILY_LIMIT} SMS). Réessayez demain.`, 'error');
+                return;
+            }
+            
+            const nom = contactNom.value.trim();
+            const prenom = contactPrenom.value.trim();
+            const telephone = contactTelephone.value.trim();
+            
+            if (!nom || !prenom || !telephone) {
+                showToast('Veuillez remplir tous les champs (Nom, Prénom, Téléphone).', 'warning');
+                return;
+            }
+            
+            let phone = telephone.replace(/\s/g, '').replace(/^0+/, '');
+            if (!phone.startsWith('33')) { phone = '33' + phone.replace(/^0+/, ''); }
+            phone = phone.replace(/\D/g, '');
+            
+            if (phone.length < 11) {
+                showToast('Numéro de téléphone invalide. Format attendu : 336XXXXXXXX', 'error');
+                return;
+            }
+            
+            contacts.push({ nom, prenom, telephone: phone });
+            
+            contactNom.value = '';
+            contactPrenom.value = '';
+            contactTelephone.value = '';
+            contactNom.focus();
+            phoneInput.className = '';
+            phoneHint.className = 'validation-hint';
+            
+            updateQueue();
+            updateSendButton();
+            hideSmsPreview();
+            showToast(`${prenom} ${nom} ajouté à la file d'attente ✅`, 'success', 2000);
+        });
+
+        // ============================================================
+        // 👁️ APERÇU DU SMS
+        // ============================================================
+        previewSmsBtn.addEventListener('click', function() {
+            const nom = contactNom.value.trim() || 'Dupont';
+            const prenom = contactPrenom.value.trim() || 'Jean';
+            const telephone = contactTelephone.value.trim() || '33612345678';
+            
+            let message = messageTemplate.value
+                .replace(/{nom}/g, nom)
+                .replace(/{prenom}/g, prenom)
+                .replace(/{telephone}/g, telephone);
+            
+            smsPreview.textContent = message;
+            smsPreviewContainer.style.display = 'block';
+        });
+
+        // ============================================================
+        // ⌨️ TOUCHE ENTRÉE
+        // ============================================================
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const active = document.activeElement;
+                if (active === contactNom || active === contactPrenom || active === contactTelephone) {
+                    e.preventDefault();
+                    addContactBtn.click();
+                }
+            }
+        });
+
+        // ============================================================
+        // 🗑️ VIDER LA LISTE
+        // ============================================================
+        clearQueueBtn.addEventListener('click', function() {
+            if (contacts.length === 0) return;
+            if (confirm('⚠️ Vider toute la file d\'attente ?')) {
+                contacts = [];
+                updateQueue();
+                updateSendButton();
+                resultsDiv.innerHTML = '';
+                statsContainer.style.display = 'none';
+                showToast('File d\'attente vidée', 'info', 2000);
+            }
+        });
+
+        // ============================================================
+        // 📤 ENVOI DES SMS
+        // ============================================================
+        document.getElementById('smsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (contacts.length === 0) {
+                showToast('Ajoutez au moins un contact dans la file d\'attente.', 'warning');
+                return;
+            }
+            
+            if (isLimitReached()) {
+                showToast(`Limite journalière atteinte (${DAILY_LIMIT} SMS). Réessayez demain.`, 'error');
+                return;
+            }
+            
+            if (isSending) return;
+            
+            const remaining = DAILY_LIMIT - todaySent;
+            const toSend = Math.min(contacts.length, remaining);
+            
+            if (toSend < contacts.length) {
+                if (!confirm(`⚠️ Limite journalière : ${remaining} SMS restants. Seuls ${toSend} contact(s) sur ${contacts.length} seront envoyés. Continuer ?`)) {
+                    return;
+                }
+            }
+            
+            if (!confirm(`📤 Envoyer ${toSend} SMS avec FraudeStop ?`)) {
+                return;
+            }
+            
+            isSending = true;
+            sendBtn.classList.add('loading');
+            sendBtn.disabled = true;
+            
+            resultsDiv.innerHTML = '';
+            progressBar.style.display = 'block';
+            progress.style.width = '0%';
+            statsContainer.style.display = 'flex';
+            statTotal.textContent = toSend;
+            statSuccess.textContent = '0';
+            statError.textContent = '0';
+            
+            let successTotal = 0, errorTotal = 0;
+            const apiUrl = 'https://api.smsfactor.com/send';
+            const contactsToSend = contacts.slice(0, toSend);
+            
+            for (let i = 0; i < contactsToSend.length; i++) {
+                const contact = contactsToSend[i];
+                
+                let message = messageTemplate.value
+                    .replace(/{nom}/g, contact.nom)
+                    .replace(/{prenom}/g, contact.prenom)
+                    .replace(/{telephone}/g, contact.telephone);
+                
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item pending';
+                resultItem.innerHTML = `
+                    <span class="name">${contact.prenom} ${contact.nom}</span>
+                    <span class="status">⏳ Envoi en cours...</span>
+                `;
+                resultsDiv.appendChild(resultItem);
+                
+                try {
+                    const params = new URLSearchParams({ text: message, to: contact.telephone, pushtype: 'alert' });
+                    const response = await fetch(`${apiUrl}?${params.toString()}`, {
+                        method: 'GET',
+                        headers: { 'Authorization': `Bearer ${API_KEY}`, 'Accept': 'application/json' }
+                    });
+                    const data = await response.json();
+                    
+                    if (data.status === 1) {
+                        resultItem.className = 'result-item success';
+                        resultItem.innerHTML = `
+                            <span class="name">✅ ${contact.prenom} ${contact.nom}</span>
+                            <span class="status">Ticket: ${data.ticket || 'OK'}</span>
+                        `;
+                        successTotal++;
+                        incrementCounters();
+                    } else {
+                        resultItem.className = 'result-item error';
+                        resultItem.innerHTML = `
+                            <span class="name">❌ ${contact.prenom} ${contact.nom}</span>
+                            <span class="status">Erreur: ${data.message || 'Échec'}</span>
+                        `;
+                        errorTotal++;
+                    }
+                } catch (error) {
+                    resultItem.className = 'result-item error';
+                    resultItem.innerHTML = `
+                        <span class="name">❌ ${contact.prenom} ${contact.nom}</span>
+                        <span class="status">Erreur réseau</span>
+                    `;
+                    errorTotal++;
+                }
+                
+                statSuccess.textContent = successTotal;
+                statError.textContent = errorTotal;
+                progress.style.width = `${((i + 1) / contactsToSend.length) * 100}%`;
+            }
+            
+            contacts = contacts.slice(toSend);
+            updateQueue();
+            updateSendButton();
+            
+            const summary = document.createElement('div');
+            summary.className = 'result-item success';
+            summary.style.marginTop = '15px';
+            summary.style.fontWeight = 'bold';
+            summary.innerHTML = `
+                ✅ Envoi terminé ! ${successTotal} succès, ${errorTotal} échecs sur ${contactsToSend.length} SMS.
+                ${isLimitReached() ? ' ⚠️ Limite journalière atteinte (500/500) !' : ` 📊 Reste ${DAILY_LIMIT - todaySent} SMS aujourd'hui`}
+            `;
+            resultsDiv.appendChild(summary);
+            
+            showToast(`Envoi terminé ! ${successTotal} succès, ${errorTotal} échecs`, successTotal > 0 ? 'success' : 'warning');
+            
+            setTimeout(() => { progressBar.style.display = 'none'; }, 2000);
+            
+            isSending = false;
+            sendBtn.classList.remove('loading');
+            sendBtn.disabled = false;
+            updateSendButton();
+        });
+
+        // ============================================================
+        // 🚀 INITIALISATION
+        // ============================================================
+        updateQueue();
+        updateSendButton();
+        updateCounterDisplay();
+        
+        // Rafraîchir le compteur toutes les minutes
+        setInterval(loadStats, 60000);
+    </script>
+
+</body>
+</html>
