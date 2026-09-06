@@ -22,6 +22,8 @@
             --shadow: 0 20px 60px rgba(0,0,0,0.15);
             --radius: 16px;
             --transition: all 0.3s ease;
+            --success: #48bb78;
+            --error: #fc8181;
         }
         
         /* ===== MODE SOMBRE ===== */
@@ -239,7 +241,7 @@
         }
         
         input.is-valid {
-            border-color: #48bb78;
+            border-color: var(--success);
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2348bb78' stroke-width='2'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 10px center;
@@ -248,8 +250,17 @@
         }
         
         input.is-invalid {
-            border-color: #fc8181;
+            border-color: var(--error);
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23fc8181' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+        
+        input.is-validating {
+            border-color: #63b3ed;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2363b3ed' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 10px center;
             background-size: 20px;
@@ -260,6 +271,30 @@
         
         .row { display: flex; gap: 15px; }
         .row .col { flex: 1; }
+        
+        .validation-hint {
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+        .validation-hint.visible { display: block; }
+        .validation-hint.valid { 
+            color: var(--success); 
+            background: #f0fff4;
+            display: block;
+        }
+        .validation-hint.invalid { 
+            color: var(--error); 
+            background: #fff5f5;
+            display: block;
+        }
+        .validation-hint.info {
+            color: #3182ce;
+            background: #ebf8ff;
+            display: block;
+        }
 
         /* ===== BUTTONS ===== */
         .btn {
@@ -577,35 +612,42 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 </div>
             </div>
 
-            <!-- SAISIE CONTACT - SANS required -->
+            <!-- SAISIE CONTACT -->
             <div class="form-group">
                 <label>👤 Saisie du destinataire</label>
                 <div class="row">
                     <div class="col">
                         <input type="text" id="contactNom" placeholder="Nom du client">
+                        <div class="validation-hint" id="nomHint"></div>
                     </div>
                     <div class="col">
                         <input type="text" id="contactPrenom" placeholder="Prénom du client">
+                        <div class="validation-hint" id="prenomHint"></div>
                     </div>
                 </div>
                 <div style="margin-top: 10px;">
-                    <input type="tel" id="contactTelephone" placeholder="Téléphone (ex: 33612345678)">
+                    <input type="tel" id="contactTelephone" placeholder="Téléphone (ex: 06 12 34 56 78 ou 33612345678)">
+                    <div class="validation-hint" id="phoneHint"></div>
                 </div>
                 
                 <!-- Nouveaux champs bancaires -->
                 <div style="margin-top: 10px;">
                     <input type="text" id="contactBanque" placeholder="Nom de la banque (ex: BNP Paribas)">
+                    <div class="validation-hint" id="banqueHint"></div>
                 </div>
                 <div class="row" style="margin-top: 10px;">
                     <div class="col">
-                        <input type="text" id="contactIban" placeholder="IBAN (ex: FR7612345678901234567890123)">
+                        <input type="text" id="contactIban" placeholder="IBAN (ex: FR76 1234 5678 9012 3456 7890 123)">
+                        <div class="validation-hint" id="ibanHint"></div>
                     </div>
                     <div class="col">
                         <input type="text" id="contactBic" placeholder="BIC (ex: BNPAFRPP)">
+                        <div class="validation-hint" id="bicHint"></div>
                     </div>
                 </div>
                 <div style="margin-top: 10px;">
                     <input type="text" id="contactMontant" placeholder="Montant suspect (ex: 1250,00)">
+                    <div class="validation-hint" id="montantHint"></div>
                 </div>
                 
                 <div class="btn-group" style="margin-top: 10px;">
@@ -780,6 +822,265 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         }
 
         // ============================================================
+        // 🔍 FONCTIONS DE VALIDATION INTELLIGENTES
+        // ============================================================
+        
+        // Validation du numéro de téléphone français
+        function validateFrenchPhone(phone) {
+            // Nettoyer le numéro
+            let clean = phone.replace(/\s/g, '').replace(/[^0-9+]/g, '');
+            
+            // Si commence par +33, remplacer par 33
+            if (clean.startsWith('+33')) {
+                clean = clean.substring(1);
+            }
+            
+            // Si commence par 0, remplacer par 33
+            if (clean.startsWith('0')) {
+                clean = '33' + clean.substring(1);
+            }
+            
+            // Si ne commence pas par 33, ajouter 33
+            if (!clean.startsWith('33')) {
+                clean = '33' + clean;
+            }
+            
+            // Vérifier la longueur (33 + 9 chiffres = 11)
+            if (clean.length !== 11) {
+                return { valid: false, formatted: clean, message: '❌ Le numéro doit faire 10 chiffres (ex: 0612345678)' };
+            }
+            
+            // Vérifier que tous les caractères sont des chiffres
+            if (!/^\d+$/.test(clean)) {
+                return { valid: false, formatted: clean, message: '❌ Le numéro ne doit contenir que des chiffres' };
+            }
+            
+            // Vérifier que le numéro commence par 33 (France)
+            if (!clean.startsWith('33')) {
+                return { valid: false, formatted: clean, message: '❌ Le numéro doit commencer par 33 (France)' };
+            }
+            
+            // Vérifier les indicatifs valides (06, 07, 01-05 pour fixes)
+            const prefix = clean.substring(2, 4);
+            const validPrefixes = ['60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59'];
+            
+            if (!validPrefixes.includes(prefix)) {
+                return { valid: false, formatted: clean, message: '❌ Indicatif téléphonique invalide' };
+            }
+            
+            return { valid: true, formatted: clean, message: '✅ Numéro français valide' };
+        }
+
+        // Validation de l'IBAN français
+        function validateFrenchIBAN(iban) {
+            // Nettoyer l'IBAN
+            let clean = iban.toUpperCase().replace(/\s/g, '');
+            
+            // Vérifier qu'il commence par FR
+            if (!clean.startsWith('FR')) {
+                return { valid: false, formatted: clean, message: '❌ L\'IBAN doit commencer par FR' };
+            }
+            
+            // Vérifier la longueur (IBAN français = 27 caractères)
+            if (clean.length !== 27) {
+                return { valid: false, formatted: clean, message: '❌ L\'IBAN français doit faire 27 caractères' };
+            }
+            
+            // Vérifier que les caractères sont alphanumériques
+            if (!/^[A-Z0-9]+$/.test(clean)) {
+                return { valid: false, formatted: clean, message: '❌ L\'IBAN ne doit contenir que des lettres et chiffres' };
+            }
+            
+            // Vérification de la clé de contrôle (2 premiers chiffres après FR)
+            const key = parseInt(clean.substring(2, 4));
+            if (isNaN(key) || key < 0 || key > 99) {
+                return { valid: false, formatted: clean, message: '❌ Clé de contrôle IBAN invalide' };
+            }
+            
+            return { valid: true, formatted: clean, message: '✅ IBAN français valide' };
+        }
+
+        // Validation du BIC
+        function validateBIC(bic) {
+            let clean = bic.toUpperCase().replace(/\s/g, '');
+            
+            // Vérifier la longueur (8 ou 11 caractères)
+            if (clean.length !== 8 && clean.length !== 11) {
+                return { valid: false, formatted: clean, message: '❌ Le BIC doit faire 8 ou 11 caractères' };
+            }
+            
+            // Vérifier le format
+            if (!/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(clean)) {
+                return { valid: false, formatted: clean, message: '❌ Format BIC invalide' };
+            }
+            
+            return { valid: true, formatted: clean, message: '✅ BIC valide' };
+        }
+
+        // ============================================================
+        // 📱 VALIDATION EN TEMPS RÉEL
+        // ============================================================
+        
+        // Téléphone
+        document.getElementById('contactTelephone').addEventListener('input', function() {
+            const value = this.value.trim();
+            const hint = document.getElementById('phoneHint');
+            
+            if (value.length === 0) {
+                this.className = '';
+                hint.className = 'validation-hint';
+                return;
+            }
+            
+            const result = validateFrenchPhone(value);
+            if (result.valid) {
+                this.className = 'is-valid';
+                hint.className = 'validation-hint valid visible';
+                hint.textContent = result.message;
+            } else {
+                this.className = 'is-invalid';
+                hint.className = 'validation-hint invalid visible';
+                hint.textContent = result.message;
+            }
+        });
+
+        // IBAN
+        document.getElementById('contactIban').addEventListener('input', function() {
+            const value = this.value.trim();
+            const hint = document.getElementById('ibanHint');
+            
+            if (value.length === 0) {
+                this.className = '';
+                hint.className = 'validation-hint';
+                return;
+            }
+            
+            const result = validateFrenchIBAN(value);
+            if (result.valid) {
+                this.className = 'is-valid';
+                hint.className = 'validation-hint valid visible';
+                hint.textContent = result.message;
+            } else {
+                this.className = 'is-invalid';
+                hint.className = 'validation-hint invalid visible';
+                hint.textContent = result.message;
+            }
+        });
+
+        // BIC
+        document.getElementById('contactBic').addEventListener('input', function() {
+            const value = this.value.trim();
+            const hint = document.getElementById('bicHint');
+            
+            if (value.length === 0) {
+                this.className = '';
+                hint.className = 'validation-hint';
+                return;
+            }
+            
+            const result = validateBIC(value);
+            if (result.valid) {
+                this.className = 'is-valid';
+                hint.className = 'validation-hint valid visible';
+                hint.textContent = result.message;
+            } else {
+                this.className = 'is-invalid';
+                hint.className = 'validation-hint invalid visible';
+                hint.textContent = result.message;
+            }
+        });
+
+        // Nom - validation simple
+        document.getElementById('contactNom').addEventListener('input', function() {
+            const value = this.value.trim();
+            const hint = document.getElementById('nomHint');
+            
+            if (value.length === 0) {
+                this.className = '';
+                hint.className = 'validation-hint';
+                return;
+            }
+            
+            if (value.length < 2) {
+                this.className = 'is-invalid';
+                hint.className = 'validation-hint invalid visible';
+                hint.textContent = '❌ Le nom doit faire au moins 2 caractères';
+            } else {
+                this.className = 'is-valid';
+                hint.className = 'validation-hint valid visible';
+                hint.textContent = '✅ Nom valide';
+            }
+        });
+
+        // Prénom - validation simple
+        document.getElementById('contactPrenom').addEventListener('input', function() {
+            const value = this.value.trim();
+            const hint = document.getElementById('prenomHint');
+            
+            if (value.length === 0) {
+                this.className = '';
+                hint.className = 'validation-hint';
+                return;
+            }
+            
+            if (value.length < 2) {
+                this.className = 'is-invalid';
+                hint.className = 'validation-hint invalid visible';
+                hint.textContent = '❌ Le prénom doit faire au moins 2 caractères';
+            } else {
+                this.className = 'is-valid';
+                hint.className = 'validation-hint valid visible';
+                hint.textContent = '✅ Prénom valide';
+            }
+        });
+
+        // Banque - validation simple
+        document.getElementById('contactBanque').addEventListener('input', function() {
+            const value = this.value.trim();
+            const hint = document.getElementById('banqueHint');
+            
+            if (value.length === 0) {
+                this.className = '';
+                hint.className = 'validation-hint';
+                return;
+            }
+            
+            if (value.length < 3) {
+                this.className = 'is-invalid';
+                hint.className = 'validation-hint invalid visible';
+                hint.textContent = '❌ Le nom de la banque doit faire au moins 3 caractères';
+            } else {
+                this.className = 'is-valid';
+                hint.className = 'validation-hint valid visible';
+                hint.textContent = '✅ Banque valide';
+            }
+        });
+
+        // Montant - validation simple
+        document.getElementById('contactMontant').addEventListener('input', function() {
+            const value = this.value.trim();
+            const hint = document.getElementById('montantHint');
+            
+            if (value.length === 0) {
+                this.className = '';
+                hint.className = 'validation-hint';
+                return;
+            }
+            
+            // Vérifier que c'est un nombre valide
+            const clean = value.replace(',', '.').replace(/[^0-9.]/g, '');
+            if (clean.length === 0 || isNaN(parseFloat(clean)) || parseFloat(clean) <= 0) {
+                this.className = 'is-invalid';
+                hint.className = 'validation-hint invalid visible';
+                hint.textContent = '❌ Montant invalide (ex: 1250,00)';
+            } else {
+                this.className = 'is-valid';
+                hint.className = 'validation-hint valid visible';
+                hint.textContent = '✅ Montant valide';
+            }
+        });
+
+        // ============================================================
         // 📋 GESTION DE LA FILE D'ATTENTE
         // ============================================================
         let contacts = [];
@@ -877,10 +1178,15 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             contactIban.value = '';
             contactBic.value = '';
             contactMontant.value = '';
-            // Enlever les classes de validation
+            
+            // Enlever les classes de validation et les hints
             document.querySelectorAll('input').forEach(input => {
                 input.className = '';
             });
+            document.querySelectorAll('.validation-hint').forEach(hint => {
+                hint.className = 'validation-hint';
+            });
+            
             // Mettre le focus sur le premier champ
             contactNom.focus();
         }
@@ -908,27 +1214,47 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 return;
             }
             
-            // Formater le téléphone
-            let phone = telephone.replace(/\s/g, '').replace(/^0+/, '');
-            if (!phone.startsWith('33')) { phone = '33' + phone.replace(/^0+/, ''); }
-            phone = phone.replace(/\D/g, '');
-            
-            if (phone.length < 11) {
-                showToast('❌ Numéro invalide. Format: 336XXXXXXXX', 'error');
+            // Valider le téléphone
+            const phoneResult = validateFrenchPhone(telephone);
+            if (!phoneResult.valid) {
+                showToast(`❌ ${phoneResult.message}`, 'error');
                 return;
             }
             
-            // Validation IBAN
-            const ibanClean = iban.toUpperCase().replace(/\s/g, '');
-            if (!ibanClean.startsWith('FR') || ibanClean.length < 14) {
-                showToast('❌ IBAN invalide. Doit commencer par FR', 'error');
+            // Valider l'IBAN
+            const ibanResult = validateFrenchIBAN(iban);
+            if (!ibanResult.valid) {
+                showToast(`❌ ${ibanResult.message}`, 'error');
                 return;
             }
             
-            // Validation BIC
-            const bicClean = bic.toUpperCase().replace(/\s/g, '');
-            if (bicClean.length < 8 || bicClean.length > 11) {
-                showToast('❌ BIC invalide. 8 ou 11 caractères', 'error');
+            // Valider le BIC
+            const bicResult = validateBIC(bic);
+            if (!bicResult.valid) {
+                showToast(`❌ ${bicResult.message}`, 'error');
+                return;
+            }
+            
+            // Valider le nom et prénom (au moins 2 caractères)
+            if (nom.length < 2) {
+                showToast('❌ Le nom doit faire au moins 2 caractères', 'error');
+                return;
+            }
+            if (prenom.length < 2) {
+                showToast('❌ Le prénom doit faire au moins 2 caractères', 'error');
+                return;
+            }
+            
+            // Valider le nom de la banque (au moins 3 caractères)
+            if (banque.length < 3) {
+                showToast('❌ Le nom de la banque doit faire au moins 3 caractères', 'error');
+                return;
+            }
+            
+            // Valider le montant
+            const montantClean = montant.replace(',', '.').replace(/[^0-9.]/g, '');
+            if (montantClean.length === 0 || isNaN(parseFloat(montantClean)) || parseFloat(montantClean) <= 0) {
+                showToast('❌ Montant invalide (ex: 1250,00)', 'error');
                 return;
             }
             
@@ -936,11 +1262,11 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             contacts.push({ 
                 nom, 
                 prenom, 
-                telephone: phone,
+                telephone: phoneResult.formatted,
                 banque,
-                iban: ibanClean,
-                bic: bicClean,
-                montant
+                iban: ibanResult.formatted,
+                bic: bicResult.formatted,
+                montant: montantClean
             });
             
             // ✅ Réinitialiser les champs IMMÉDIATEMENT
