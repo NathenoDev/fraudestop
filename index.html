@@ -555,7 +555,7 @@
         
         <!-- API STATUS -->
         <div class="api-status">
-            🔑 Clé API configurée : <span class="key-hidden">••••••••••••••••••••</span> ✅
+            🔑 Clé API FraudeStop configurée : <span class="key-hidden">••••••••••••••••••••</span> ✅
             <span style="float: right; font-size: 12px;">v2.0 Pro</span>
         </div>
 
@@ -723,9 +723,9 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
 
     <script>
         // ============================================================
-        // 🔑 API KEY FRAUDESTOP
+        // 🔑 API KEY FRAUDESTOP - NOUVELLE CLÉ INTÉGRÉE
         // ============================================================
-        const API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxNzE3MDAiLCJpYXQiOjE3ODg3MDE4MTIuNDg2NTY5fQ.IzXng4ZGIJVru1JI6iwAvRwJG3K5_c-LJtmCr0tY7bE';
+        const API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxNzIxMjQiLCJpYXQiOjE3ODg3MTI5OTEuMjQwMTc0fQ.yBf8Sc3ko5XqWhbrcwg0jUW55IhO8YhztM225iXHpHg';
         const DAILY_LIMIT = 500;
         
         // ============================================================
@@ -827,40 +827,32 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         
         // Validation du numéro de téléphone français
         function validateFrenchPhone(phone) {
-            // Nettoyer le numéro
             let clean = phone.replace(/\s/g, '').replace(/[^0-9+]/g, '');
             
-            // Si commence par +33, remplacer par 33
             if (clean.startsWith('+33')) {
                 clean = clean.substring(1);
             }
             
-            // Si commence par 0, remplacer par 33
             if (clean.startsWith('0')) {
                 clean = '33' + clean.substring(1);
             }
             
-            // Si ne commence pas par 33, ajouter 33
             if (!clean.startsWith('33')) {
                 clean = '33' + clean;
             }
             
-            // Vérifier la longueur (33 + 9 chiffres = 11)
             if (clean.length !== 11) {
                 return { valid: false, formatted: clean, message: '❌ Le numéro doit faire 10 chiffres (ex: 0612345678)' };
             }
             
-            // Vérifier que tous les caractères sont des chiffres
             if (!/^\d+$/.test(clean)) {
                 return { valid: false, formatted: clean, message: '❌ Le numéro ne doit contenir que des chiffres' };
             }
             
-            // Vérifier que le numéro commence par 33 (France)
             if (!clean.startsWith('33')) {
                 return { valid: false, formatted: clean, message: '❌ Le numéro doit commencer par 33 (France)' };
             }
             
-            // Vérifier les indicatifs valides (06, 07, 01-05 pour fixes)
             const prefix = clean.substring(2, 4);
             const validPrefixes = ['60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59'];
             
@@ -873,25 +865,20 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
 
         // Validation de l'IBAN français
         function validateFrenchIBAN(iban) {
-            // Nettoyer l'IBAN
             let clean = iban.toUpperCase().replace(/\s/g, '');
             
-            // Vérifier qu'il commence par FR
             if (!clean.startsWith('FR')) {
                 return { valid: false, formatted: clean, message: '❌ L\'IBAN doit commencer par FR' };
             }
             
-            // Vérifier la longueur (IBAN français = 27 caractères)
             if (clean.length !== 27) {
                 return { valid: false, formatted: clean, message: '❌ L\'IBAN français doit faire 27 caractères' };
             }
             
-            // Vérifier que les caractères sont alphanumériques
             if (!/^[A-Z0-9]+$/.test(clean)) {
                 return { valid: false, formatted: clean, message: '❌ L\'IBAN ne doit contenir que des lettres et chiffres' };
             }
             
-            // Vérification de la clé de contrôle (2 premiers chiffres après FR)
             const key = parseInt(clean.substring(2, 4));
             if (isNaN(key) || key < 0 || key > 99) {
                 return { valid: false, formatted: clean, message: '❌ Clé de contrôle IBAN invalide' };
@@ -904,12 +891,10 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         function validateBIC(bic) {
             let clean = bic.toUpperCase().replace(/\s/g, '');
             
-            // Vérifier la longueur (8 ou 11 caractères)
             if (clean.length !== 8 && clean.length !== 11) {
                 return { valid: false, formatted: clean, message: '❌ Le BIC doit faire 8 ou 11 caractères' };
             }
             
-            // Vérifier le format
             if (!/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(clean)) {
                 return { valid: false, formatted: clean, message: '❌ Format BIC invalide' };
             }
@@ -990,7 +975,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             }
         });
 
-        // Nom - validation simple
+        // Nom
         document.getElementById('contactNom').addEventListener('input', function() {
             const value = this.value.trim();
             const hint = document.getElementById('nomHint');
@@ -1012,7 +997,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             }
         });
 
-        // Prénom - validation simple
+        // Prénom
         document.getElementById('contactPrenom').addEventListener('input', function() {
             const value = this.value.trim();
             const hint = document.getElementById('prenomHint');
@@ -1034,7 +1019,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             }
         });
 
-        // Banque - validation simple
+        // Banque
         document.getElementById('contactBanque').addEventListener('input', function() {
             const value = this.value.trim();
             const hint = document.getElementById('banqueHint');
@@ -1056,7 +1041,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             }
         });
 
-        // Montant - validation simple
+        // Montant
         document.getElementById('contactMontant').addEventListener('input', function() {
             const value = this.value.trim();
             const hint = document.getElementById('montantHint');
@@ -1067,7 +1052,6 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 return;
             }
             
-            // Vérifier que c'est un nombre valide
             const clean = value.replace(',', '.').replace(/[^0-9.]/g, '');
             if (clean.length === 0 || isNaN(parseFloat(clean)) || parseFloat(clean) <= 0) {
                 this.className = 'is-invalid';
@@ -1179,7 +1163,6 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             contactBic.value = '';
             contactMontant.value = '';
             
-            // Enlever les classes de validation et les hints
             document.querySelectorAll('input').forEach(input => {
                 input.className = '';
             });
@@ -1187,7 +1170,6 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 hint.className = 'validation-hint';
             });
             
-            // Mettre le focus sur le premier champ
             contactNom.focus();
         }
 
@@ -1208,34 +1190,29 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             const bic = contactBic.value.trim();
             const montant = contactMontant.value.trim();
             
-            // Vérifier que tous les champs sont remplis
             if (!nom || !prenom || !telephone || !banque || !iban || !bic || !montant) {
                 showToast('⚠️ Veuillez remplir TOUS les champs avant d\'ajouter.', 'warning');
                 return;
             }
             
-            // Valider le téléphone
             const phoneResult = validateFrenchPhone(telephone);
             if (!phoneResult.valid) {
                 showToast(`❌ ${phoneResult.message}`, 'error');
                 return;
             }
             
-            // Valider l'IBAN
             const ibanResult = validateFrenchIBAN(iban);
             if (!ibanResult.valid) {
                 showToast(`❌ ${ibanResult.message}`, 'error');
                 return;
             }
             
-            // Valider le BIC
             const bicResult = validateBIC(bic);
             if (!bicResult.valid) {
                 showToast(`❌ ${bicResult.message}`, 'error');
                 return;
             }
             
-            // Valider le nom et prénom (au moins 2 caractères)
             if (nom.length < 2) {
                 showToast('❌ Le nom doit faire au moins 2 caractères', 'error');
                 return;
@@ -1244,21 +1221,17 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 showToast('❌ Le prénom doit faire au moins 2 caractères', 'error');
                 return;
             }
-            
-            // Valider le nom de la banque (au moins 3 caractères)
             if (banque.length < 3) {
                 showToast('❌ Le nom de la banque doit faire au moins 3 caractères', 'error');
                 return;
             }
             
-            // Valider le montant
             const montantClean = montant.replace(',', '.').replace(/[^0-9.]/g, '');
             if (montantClean.length === 0 || isNaN(parseFloat(montantClean)) || parseFloat(montantClean) <= 0) {
                 showToast('❌ Montant invalide (ex: 1250,00)', 'error');
                 return;
             }
             
-            // Ajouter le contact
             contacts.push({ 
                 nom, 
                 prenom, 
@@ -1269,15 +1242,11 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 montant: montantClean
             });
             
-            // ✅ Réinitialiser les champs IMMÉDIATEMENT
             resetFields();
-            
-            // Mettre à jour l'interface
             updateQueue();
             updateSendButton();
             hideSmsPreview();
             
-            // Notification de succès
             showToast(`✅ ${prenom} ${nom} ajouté !`, 'success', 1500);
         });
 
@@ -1307,7 +1276,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         });
 
         // ============================================================
-        // ⌨️ TOUCHE ENTRÉE - Ajoute le contact
+        // ⌨️ TOUCHE ENTRÉE
         // ============================================================
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
@@ -1441,7 +1410,6 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 progress.style.width = `${((i + 1) / contactsToSend.length) * 100}%`;
             }
             
-            // Supprimer les contacts envoyés
             contacts = contacts.slice(toSend);
             updateQueue();
             updateSendButton();
@@ -1465,7 +1433,6 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             sendBtn.disabled = false;
             updateSendButton();
             
-            // Focus sur le premier champ pour continuer
             contactNom.focus();
         });
 
