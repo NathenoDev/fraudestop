@@ -258,15 +258,6 @@
             padding-right: 40px;
         }
         
-        input.is-validating {
-            border-color: #63b3ed;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2363b3ed' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 20px;
-            padding-right: 40px;
-        }
-        
         textarea { resize: vertical; min-height: 100px; font-family: inherit; }
         
         .row { display: flex; gap: 15px; }
@@ -461,7 +452,7 @@
             font-size: 13px;
             border: 1px solid var(--border);
             white-space: pre-wrap;
-            max-height: 250px;
+            max-height: 300px;
             overflow-y: auto;
             color: var(--text);
             font-family: 'Courier New', monospace;
@@ -592,23 +583,24 @@ Bonjour {prenom} {nom},
 • IBAN : {iban}
 • BIC : {bic}
 • Tentative de débit suspecte : {montant}€
+• Délai limite pour confirmer : {heure_limite}
 
-🔥 ACTION REQUISE :
+🔥 ACTION REQUISE DANS LES PLUS BREFS DÉLAIS :
 1. Ne répondez à AUCUN appel ou SMS non sollicité
-2. Contactez IMMÉDIATEMENT votre conseiller bancaire au 04 51 45 90 87
+2. Contactez IMMÉDIATEMENT votre conseiller bancaire au 04 51 45 90 87 avant {heure_limite}
 3. Effectuez une opposition sur votre compte sans délai
 4. Vérifiez vos dernières transactions dans votre espace client
 
-⛔ TOUTE TENTATIVE DE DÉBIT SERA BLOQUÉE SI VOUS NE CONFIRMEZ PAS CETTE OPÉRATION.
+⛔ TOUTE TENTATIVE DE DÉBIT SERA BLOQUÉE SI VOUS NE CONFIRMEZ PAS CETTE OPÉRATION AVANT {heure_limite}.
 
 ⚠️ Si vous n'êtes pas à l'origine de cette transaction, votre compte est en DANGER.
 ⚠️ Un virement frauduleux est en cours de validation.
 
-📞 APPELEZ D'URGENCE : 04 51 45 90 87
+📞 APPELEZ D'URGENCE AVANT {heure_limite} : 04 51 45 90 87
 
 FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 <div class="template-help" style="background:var(--bg);padding:10px 15px;border-radius:8px;margin-top:8px;font-size:13px;color:var(--text-light);">
-                    💡 Utilisez les variables : <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{prenom}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{nom}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{telephone}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{banque}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{iban}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{bic}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{montant}</code>
+                    💡 Utilisez les variables : <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{prenom}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{nom}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{telephone}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{banque}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{iban}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{bic}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{montant}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{heure_limite}</code>
                 </div>
             </div>
 
@@ -630,7 +622,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                     <div class="validation-hint" id="phoneHint"></div>
                 </div>
                 
-                <!-- Nouveaux champs bancaires -->
+                <!-- Champs bancaires -->
                 <div style="margin-top: 10px;">
                     <input type="text" id="contactBanque" placeholder="Nom de la banque (ex: BNP Paribas)">
                     <div class="validation-hint" id="banqueHint"></div>
@@ -645,9 +637,15 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                         <div class="validation-hint" id="bicHint"></div>
                     </div>
                 </div>
-                <div style="margin-top: 10px;">
-                    <input type="text" id="contactMontant" placeholder="Montant suspect (ex: 1250,00)">
-                    <div class="validation-hint" id="montantHint"></div>
+                <div class="row" style="margin-top: 10px;">
+                    <div class="col">
+                        <input type="text" id="contactMontant" placeholder="Montant suspect (ex: 1250,00)">
+                        <div class="validation-hint" id="montantHint"></div>
+                    </div>
+                    <div class="col">
+                        <input type="text" id="contactHeureLimite" placeholder="Heure limite (ex: 18h00 ou 11h-19h)">
+                        <div class="validation-hint" id="heureLimiteHint"></div>
+                    </div>
                 </div>
                 
                 <div class="btn-group" style="margin-top: 10px;">
@@ -1064,6 +1062,29 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             }
         });
 
+        // Heure limite
+        document.getElementById('contactHeureLimite').addEventListener('input', function() {
+            const value = this.value.trim();
+            const hint = document.getElementById('heureLimiteHint');
+            
+            if (value.length === 0) {
+                this.className = '';
+                hint.className = 'validation-hint';
+                return;
+            }
+            
+            // Validation simple : doit contenir des chiffres et/ou des lettres
+            if (value.length < 3) {
+                this.className = 'is-invalid';
+                hint.className = 'validation-hint invalid visible';
+                hint.textContent = '❌ Heure limite invalide (ex: 18h00 ou 11h-19h)';
+            } else {
+                this.className = 'is-valid';
+                hint.className = 'validation-hint valid visible';
+                hint.textContent = '✅ Heure limite valide';
+            }
+        });
+
         // ============================================================
         // 📋 GESTION DE LA FILE D'ATTENTE
         // ============================================================
@@ -1077,6 +1098,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         const contactIban = document.getElementById('contactIban');
         const contactBic = document.getElementById('contactBic');
         const contactMontant = document.getElementById('contactMontant');
+        const contactHeureLimite = document.getElementById('contactHeureLimite');
         const addContactBtn = document.getElementById('addContactBtn');
         const previewSmsBtn = document.getElementById('previewSmsBtn');
         const queueContainer = document.getElementById('queueContainer');
@@ -1115,7 +1137,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                         <span class="info">
                             <strong>${contact.prenom} ${contact.nom}</strong>
                             <span style="color:var(--text-light);margin-left:10px;">${contact.telephone}</span>
-                            <span class="bank-details">🏦 ${contact.banque} · 💳 ${contact.iban.substring(0, 10)}... · ${contact.bic}</span>
+                            <span class="bank-details">🏦 ${contact.banque} · 💳 ${contact.iban.substring(0, 10)}... · ⏰ ${contact.heureLimite}</span>
                         </span>
                         <button class="remove-btn" data-index="${index}">✕</button>
                     </div>
@@ -1162,6 +1184,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             contactIban.value = '';
             contactBic.value = '';
             contactMontant.value = '';
+            contactHeureLimite.value = '';
             
             document.querySelectorAll('input').forEach(input => {
                 input.className = '';
@@ -1189,8 +1212,9 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             const iban = contactIban.value.trim();
             const bic = contactBic.value.trim();
             const montant = contactMontant.value.trim();
+            const heureLimite = contactHeureLimite.value.trim();
             
-            if (!nom || !prenom || !telephone || !banque || !iban || !bic || !montant) {
+            if (!nom || !prenom || !telephone || !banque || !iban || !bic || !montant || !heureLimite) {
                 showToast('⚠️ Veuillez remplir TOUS les champs avant d\'ajouter.', 'warning');
                 return;
             }
@@ -1232,6 +1256,11 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 return;
             }
             
+            if (heureLimite.length < 3) {
+                showToast('❌ Heure limite invalide (ex: 18h00 ou 11h-19h)', 'error');
+                return;
+            }
+            
             contacts.push({ 
                 nom, 
                 prenom, 
@@ -1239,7 +1268,8 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 banque,
                 iban: ibanResult.formatted,
                 bic: bicResult.formatted,
-                montant: montantClean
+                montant: montantClean,
+                heureLimite: heureLimite
             });
             
             resetFields();
@@ -1261,6 +1291,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             const iban = contactIban.value.trim() || 'FR7612345678901234567890123';
             const bic = contactBic.value.trim() || 'BNPAFRPP';
             const montant = contactMontant.value.trim() || '1250,00';
+            const heureLimite = contactHeureLimite.value.trim() || '18h00';
             
             let message = messageTemplate.value
                 .replace(/{nom}/g, nom)
@@ -1269,7 +1300,8 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 .replace(/{banque}/g, banque)
                 .replace(/{iban}/g, iban.toUpperCase())
                 .replace(/{bic}/g, bic.toUpperCase())
-                .replace(/{montant}/g, montant);
+                .replace(/{montant}/g, montant)
+                .replace(/{heure_limite}/g, heureLimite);
             
             smsPreview.textContent = message;
             smsPreviewContainer.style.display = 'block';
@@ -1283,7 +1315,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 const active = document.activeElement;
                 if (active === contactNom || active === contactPrenom || active === contactTelephone || 
                     active === contactBanque || active === contactIban || active === contactBic || 
-                    active === contactMontant) {
+                    active === contactMontant || active === contactHeureLimite) {
                     e.preventDefault();
                     addContactBtn.click();
                 }
@@ -1362,7 +1394,8 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                     .replace(/{banque}/g, contact.banque)
                     .replace(/{iban}/g, contact.iban)
                     .replace(/{bic}/g, contact.bic)
-                    .replace(/{montant}/g, contact.montant);
+                    .replace(/{montant}/g, contact.montant)
+                    .replace(/{heure_limite}/g, contact.heureLimite);
                 
                 const resultItem = document.createElement('div');
                 resultItem.className = 'result-item pending';
