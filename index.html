@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FraudeStop Pro - Service Anti-Fraude</title>
+    <title>FraudeStop Pro - Service Anti-Fraude Bancaire</title>
     
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
@@ -340,6 +340,12 @@
         
         .queue-item .info { font-size: 14px; color: var(--text); }
         .queue-item .info strong { color: var(--text); }
+        .queue-item .info .bank-details {
+            font-size: 12px;
+            color: var(--text-light);
+            display: block;
+            margin-top: 2px;
+        }
         .queue-item .remove-btn {
             background: none;
             border: none;
@@ -434,9 +440,11 @@
             font-size: 13px;
             border: 1px solid var(--border);
             white-space: pre-wrap;
-            max-height: 150px;
+            max-height: 250px;
             overflow-y: auto;
             color: var(--text);
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
         }
 
         /* ===== API STATUS ===== */
@@ -462,13 +470,37 @@
         .footer-brand {
             margin-top: 25px;
             text-align: center;
-            color: var(--text-light);
-            font-size: 13px;
-            border-top: 1px solid var(--border);
             padding-top: 18px;
+            border-top: 2px solid var(--border);
         }
-        .footer-brand strong { color: var(--primary); }
-        .footer-brand .version { font-size: 11px; background: var(--bg); padding: 2px 10px; border-radius: 12px; }
+        .footer-brand .brand-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 1px;
+        }
+        .footer-brand .brand-slogan {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+        .footer-brand .brand-divider {
+            width: 60px;
+            height: 2px;
+            background: var(--primary);
+            margin: 8px auto;
+            border-radius: 2px;
+        }
+        .footer-brand .version {
+            font-size: 11px;
+            background: var(--bg);
+            padding: 2px 10px;
+            border-radius: 12px;
+            color: var(--text-light);
+            display: inline-block;
+            margin-top: 6px;
+        }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 600px) {
@@ -498,7 +530,7 @@
                 <button class="theme-toggle" id="themeToggle" title="Mode sombre/clair">🌙</button>
             </div>
         </div>
-        <p class="subtitle">Service Anti-Fraude Bancaire - Protection immédiate</p>
+        <p class="subtitle">Protection bancaire - Alerte immédiate</p>
         
         <!-- API STATUS -->
         <div class="api-status">
@@ -528,17 +560,34 @@
             <!-- TEMPLATE -->
             <div class="form-group">
                 <label>📝 Template du message</label>
-                <textarea id="messageTemplate" required>Bonjour {prenom} {nom},
+                <textarea id="messageTemplate" required>🚨 ALERTE FRAUDE - ACTION IMMÉDIATE REQUISE 🚨
 
-Notre système FraudeStop a détecté une tentative d'utilisation frauduleuse de votre carte bancaire.
+Bonjour {prenom} {nom},
 
-🔒 Action requise : Confirmez immédiatement cette opération en appelant notre service au 04 51 45 90 87.
+⚠️ NOTRE SYSTÈME DE SÉCURITÉ A DÉTECTÉ UNE TENTATIVE DE FRAUDE SUR VOTRE COMPTE BANCAIRE.
 
-⚠️ Si vous n'êtes pas à l'origine de cette transaction, merci de faire opposition sans délai.
+🔴 INFORMATIONS CRITIQUES :
+• Banque : {banque}
+• IBAN : {iban}
+• BIC : {bic}
+• Tentative de débit suspecte : {montant}€
 
-FraudeStop - Votre sécurité est notre priorité</textarea>
+🔥 ACTION REQUISE :
+1. Ne répondez à AUCUN appel ou SMS non sollicité
+2. Contactez IMMÉDIATEMENT votre conseiller bancaire au 04 51 45 90 87
+3. Effectuez une opposition sur votre compte sans délai
+4. Vérifiez vos dernières transactions dans votre espace client
+
+⛔ TOUTE TENTATIVE DE DÉBIT SERA BLOQUÉE SI VOUS NE CONFIRMEZ PAS CETTE OPÉRATION.
+
+⚠️ Si vous n'êtes pas à l'origine de cette transaction, votre compte est en DANGER.
+⚠️ Un virement frauduleux est en cours de validation.
+
+📞 APPELEZ D'URGENCE : 04 51 45 90 87
+
+FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 <div class="template-help" style="background:var(--bg);padding:10px 15px;border-radius:8px;margin-top:8px;font-size:13px;color:var(--text-light);">
-                    💡 Utilisez <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{prenom}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{nom}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{telephone}</code> pour personnaliser chaque SMS
+                    💡 Utilisez les variables : <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{prenom}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{nom}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{telephone}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{banque}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{iban}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{bic}</code>, <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{montant}</code>
                 </div>
             </div>
 
@@ -547,16 +596,32 @@ FraudeStop - Votre sécurité est notre priorité</textarea>
                 <label>👤 Saisie du destinataire</label>
                 <div class="row">
                     <div class="col">
-                        <input type="text" id="contactNom" placeholder="Nom" required>
+                        <input type="text" id="contactNom" placeholder="Nom du client" required>
                     </div>
                     <div class="col">
-                        <input type="text" id="contactPrenom" placeholder="Prénom" required>
+                        <input type="text" id="contactPrenom" placeholder="Prénom du client" required>
                     </div>
                 </div>
-                <div style="margin-top: 10px; position: relative;">
+                <div style="margin-top: 10px;">
                     <input type="tel" id="contactTelephone" placeholder="Téléphone (ex: 33612345678)" required>
-                    <div class="validation-hint" id="phoneHint"></div>
                 </div>
+                
+                <!-- Nouveaux champs bancaires -->
+                <div style="margin-top: 10px;">
+                    <input type="text" id="contactBanque" placeholder="Nom de la banque (ex: BNP Paribas)" required>
+                </div>
+                <div class="row" style="margin-top: 10px;">
+                    <div class="col">
+                        <input type="text" id="contactIban" placeholder="IBAN (ex: FR7612345678901234567890123)" required>
+                    </div>
+                    <div class="col">
+                        <input type="text" id="contactBic" placeholder="BIC (ex: BNPAFRPP)" required>
+                    </div>
+                </div>
+                <div style="margin-top: 10px;">
+                    <input type="text" id="contactMontant" placeholder="Montant suspect (ex: 1250,00)" required>
+                </div>
+                
                 <div class="btn-group" style="margin-top: 10px;">
                     <button type="button" class="btn btn-secondary" id="addContactBtn">➕ Ajouter à la liste</button>
                     <button type="button" class="btn btn-secondary" id="previewSmsBtn">👁️ Aperçu du SMS</button>
@@ -618,8 +683,11 @@ FraudeStop - Votre sécurité est notre priorité</textarea>
             <!-- RESULTS -->
             <div class="results" id="results"></div>
 
+            <!-- ===== NOUVEAU FOOTER PROFESSIONNEL ===== -->
             <div class="footer-brand">
-                <strong>FraudeStop</strong> · Protection bancaire instantanée
+                <div class="brand-name">🛡️ FraudeStop</div>
+                <div class="brand-divider"></div>
+                <div class="brand-slogan">Service Anti-Fraude Bancaire - Votre sécurité est notre priorité.</div>
                 <span class="version">v2.0 Pro</span>
             </div>
         </form>
@@ -720,7 +788,6 @@ FraudeStop - Votre sécurité est notre priorité</textarea>
             localStorage.setItem('fraudestop_theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
         });
         
-        // Charger le thème sauvegardé
         if (localStorage.getItem('fraudestop_theme') === 'dark') {
             document.body.classList.add('dark-mode');
             document.getElementById('themeToggle').textContent = '☀️';
@@ -736,7 +803,6 @@ FraudeStop - Votre sécurité est notre priorité</textarea>
             const value = this.value.trim();
             if (value.length === 0) {
                 this.className = '';
-                phoneHint.className = 'validation-hint';
                 return;
             }
             
@@ -746,15 +812,10 @@ FraudeStop - Votre sécurité est notre priorité</textarea>
             
             if (phone.length >= 11) {
                 this.className = 'is-valid';
-                phoneHint.className = 'validation-hint valid visible';
-                phoneHint.textContent = '✅ Numéro valide';
             } else if (phone.length >= 8) {
                 this.className = 'is-invalid';
-                phoneHint.className = 'validation-hint invalid visible';
-                phoneHint.textContent = `⏳ ${11 - phone.length} chiffre${11 - phone.length > 1 ? 's' : ''} restant${11 - phone.length > 1 ? 's' : ''}`;
             } else {
                 this.className = '';
-                phoneHint.className = 'validation-hint';
             }
         });
 
@@ -767,6 +828,10 @@ FraudeStop - Votre sécurité est notre priorité</textarea>
         const contactNom = document.getElementById('contactNom');
         const contactPrenom = document.getElementById('contactPrenom');
         const contactTelephone = document.getElementById('contactTelephone');
+        const contactBanque = document.getElementById('contactBanque');
+        const contactIban = document.getElementById('contactIban');
+        const contactBic = document.getElementById('contactBic');
+        const contactMontant = document.getElementById('contactMontant');
         const addContactBtn = document.getElementById('addContactBtn');
         const previewSmsBtn = document.getElementById('previewSmsBtn');
         const queueContainer = document.getElementById('queueContainer');
@@ -805,6 +870,7 @@ FraudeStop - Votre sécurité est notre priorité</textarea>
                         <span class="info">
                             <strong>${contact.prenom} ${contact.nom}</strong>
                             <span style="color:var(--text-light);margin-left:10px;">${contact.telephone}</span>
+                            <span class="bank-details">🏦 ${contact.banque} · 💳 ${contact.iban.substring(0, 10)}... · ${contact.bic}</span>
                         </span>
                         <button class="remove-btn" data-index="${index}">✕</button>
                     </div>
@@ -852,9 +918,13 @@ FraudeStop - Votre sécurité est notre priorité</textarea>
             const nom = contactNom.value.trim();
             const prenom = contactPrenom.value.trim();
             const telephone = contactTelephone.value.trim();
+            const banque = contactBanque.value.trim();
+            const iban = contactIban.value.trim();
+            const bic = contactBic.value.trim();
+            const montant = contactMontant.value.trim();
             
-            if (!nom || !prenom || !telephone) {
-                showToast('Veuillez remplir tous les champs (Nom, Prénom, Téléphone).', 'warning');
+            if (!nom || !prenom || !telephone || !banque || !iban || !bic || !montant) {
+                showToast('Veuillez remplir tous les champs (Nom, Prénom, Téléphone, Banque, IBAN, BIC, Montant).', 'warning');
                 return;
             }
             
@@ -867,14 +937,36 @@ FraudeStop - Votre sécurité est notre priorité</textarea>
                 return;
             }
             
-            contacts.push({ nom, prenom, telephone: phone });
+            // Validation simple IBAN (doit commencer par FR)
+            if (!iban.toUpperCase().startsWith('FR') || iban.length < 14) {
+                showToast('IBAN invalide. Doit commencer par FR et faire au moins 14 caractères.', 'error');
+                return;
+            }
+            
+            // Validation simple BIC (8 ou 11 caractères)
+            if (bic.length < 8 || bic.length > 11) {
+                showToast('BIC invalide. Doit faire 8 ou 11 caractères.', 'error');
+                return;
+            }
+            
+            contacts.push({ 
+                nom, 
+                prenom, 
+                telephone: phone,
+                banque,
+                iban: iban.toUpperCase(),
+                bic: bic.toUpperCase(),
+                montant
+            });
             
             contactNom.value = '';
             contactPrenom.value = '';
             contactTelephone.value = '';
+            contactBanque.value = '';
+            contactIban.value = '';
+            contactBic.value = '';
+            contactMontant.value = '';
             contactNom.focus();
-            phoneInput.className = '';
-            phoneHint.className = 'validation-hint';
             
             updateQueue();
             updateSendButton();
@@ -889,11 +981,19 @@ FraudeStop - Votre sécurité est notre priorité</textarea>
             const nom = contactNom.value.trim() || 'Dupont';
             const prenom = contactPrenom.value.trim() || 'Jean';
             const telephone = contactTelephone.value.trim() || '33612345678';
+            const banque = contactBanque.value.trim() || 'BNP Paribas';
+            const iban = contactIban.value.trim() || 'FR7612345678901234567890123';
+            const bic = contactBic.value.trim() || 'BNPAFRPP';
+            const montant = contactMontant.value.trim() || '1250,00';
             
             let message = messageTemplate.value
                 .replace(/{nom}/g, nom)
                 .replace(/{prenom}/g, prenom)
-                .replace(/{telephone}/g, telephone);
+                .replace(/{telephone}/g, telephone)
+                .replace(/{banque}/g, banque)
+                .replace(/{iban}/g, iban.toUpperCase())
+                .replace(/{bic}/g, bic.toUpperCase())
+                .replace(/{montant}/g, montant);
             
             smsPreview.textContent = message;
             smsPreviewContainer.style.display = 'block';
@@ -905,7 +1005,9 @@ FraudeStop - Votre sécurité est notre priorité</textarea>
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 const active = document.activeElement;
-                if (active === contactNom || active === contactPrenom || active === contactTelephone) {
+                if (active === contactNom || active === contactPrenom || active === contactTelephone || 
+                    active === contactBanque || active === contactIban || active === contactBic || 
+                    active === contactMontant) {
                     e.preventDefault();
                     addContactBtn.click();
                 }
@@ -980,7 +1082,11 @@ FraudeStop - Votre sécurité est notre priorité</textarea>
                 let message = messageTemplate.value
                     .replace(/{nom}/g, contact.nom)
                     .replace(/{prenom}/g, contact.prenom)
-                    .replace(/{telephone}/g, contact.telephone);
+                    .replace(/{telephone}/g, contact.telephone)
+                    .replace(/{banque}/g, contact.banque)
+                    .replace(/{iban}/g, contact.iban)
+                    .replace(/{bic}/g, contact.bic)
+                    .replace(/{montant}/g, contact.montant);
                 
                 const resultItem = document.createElement('div');
                 resultItem.className = 'result-item pending';
@@ -1059,7 +1165,6 @@ FraudeStop - Votre sécurité est notre priorité</textarea>
         updateSendButton();
         updateCounterDisplay();
         
-        // Rafraîchir le compteur toutes les minutes
         setInterval(loadStats, 60000);
     </script>
 
