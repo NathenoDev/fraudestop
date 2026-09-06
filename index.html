@@ -683,7 +683,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             <!-- RESULTS -->
             <div class="results" id="results"></div>
 
-            <!-- ===== NOUVEAU FOOTER PROFESSIONNEL ===== -->
+            <!-- ===== FOOTER PROFESSIONNEL ===== -->
             <div class="footer-brand">
                 <div class="brand-name">🛡️ FraudeStop</div>
                 <div class="brand-divider"></div>
@@ -794,32 +794,6 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         }
 
         // ============================================================
-        // 📱 VALIDATION EN TEMPS RÉEL DU NUMÉRO
-        // ============================================================
-        const phoneInput = document.getElementById('contactTelephone');
-        const phoneHint = document.getElementById('phoneHint');
-        
-        phoneInput.addEventListener('input', function() {
-            const value = this.value.trim();
-            if (value.length === 0) {
-                this.className = '';
-                return;
-            }
-            
-            let phone = value.replace(/\s/g, '').replace(/^0+/, '');
-            if (!phone.startsWith('33')) { phone = '33' + phone.replace(/^0+/, ''); }
-            phone = phone.replace(/\D/g, '');
-            
-            if (phone.length >= 11) {
-                this.className = 'is-valid';
-            } else if (phone.length >= 8) {
-                this.className = 'is-invalid';
-            } else {
-                this.className = '';
-            }
-        });
-
-        // ============================================================
         // 📋 GESTION DE LA FILE D'ATTENTE
         // ============================================================
         let contacts = [];
@@ -907,6 +881,25 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         }
 
         // ============================================================
+        // 🔄 RÉINITIALISER LES CHAMPS APRÈS AJOUT
+        // ============================================================
+        function resetFields() {
+            contactNom.value = '';
+            contactPrenom.value = '';
+            contactTelephone.value = '';
+            contactBanque.value = '';
+            contactIban.value = '';
+            contactBic.value = '';
+            contactMontant.value = '';
+            // Enlever les classes de validation
+            document.querySelectorAll('input').forEach(input => {
+                input.className = '';
+            });
+            // Mettre le focus sur le premier champ
+            contactNom.focus();
+        }
+
+        // ============================================================
         // ➕ AJOUTER UN CONTACT
         // ============================================================
         addContactBtn.addEventListener('click', function() {
@@ -923,11 +916,13 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             const bic = contactBic.value.trim();
             const montant = contactMontant.value.trim();
             
+            // Vérifier que tous les champs sont remplis
             if (!nom || !prenom || !telephone || !banque || !iban || !bic || !montant) {
                 showToast('Veuillez remplir tous les champs (Nom, Prénom, Téléphone, Banque, IBAN, BIC, Montant).', 'warning');
                 return;
             }
             
+            // Formater le téléphone
             let phone = telephone.replace(/\s/g, '').replace(/^0+/, '');
             if (!phone.startsWith('33')) { phone = '33' + phone.replace(/^0+/, ''); }
             phone = phone.replace(/\D/g, '');
@@ -937,41 +932,44 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 return;
             }
             
-            // Validation simple IBAN (doit commencer par FR)
-            if (!iban.toUpperCase().startsWith('FR') || iban.length < 14) {
+            // Validation IBAN
+            const ibanClean = iban.toUpperCase().replace(/\s/g, '');
+            if (!ibanClean.startsWith('FR') || ibanClean.length < 14) {
                 showToast('IBAN invalide. Doit commencer par FR et faire au moins 14 caractères.', 'error');
                 return;
             }
             
-            // Validation simple BIC (8 ou 11 caractères)
-            if (bic.length < 8 || bic.length > 11) {
+            // Validation BIC
+            const bicClean = bic.toUpperCase().replace(/\s/g, '');
+            if (bicClean.length < 8 || bicClean.length > 11) {
                 showToast('BIC invalide. Doit faire 8 ou 11 caractères.', 'error');
                 return;
             }
             
+            // Ajouter le contact
             contacts.push({ 
                 nom, 
                 prenom, 
                 telephone: phone,
                 banque,
-                iban: iban.toUpperCase(),
-                bic: bic.toUpperCase(),
+                iban: ibanClean,
+                bic: bicClean,
                 montant
             });
             
-            contactNom.value = '';
-            contactPrenom.value = '';
-            contactTelephone.value = '';
-            contactBanque.value = '';
-            contactIban.value = '';
-            contactBic.value = '';
-            contactMontant.value = '';
-            contactNom.focus();
+            // Réinitialiser les champs
+            resetFields();
             
+            // Mettre à jour l'interface
             updateQueue();
             updateSendButton();
             hideSmsPreview();
+            
+            // Notification de succès
             showToast(`${prenom} ${nom} ajouté à la file d'attente ✅`, 'success', 2000);
+            
+            // AUTO-ENVOI : Si c'est le premier contact, on peut l'envoyer immédiatement
+            // Mais on laisse l'utilisateur décider
         });
 
         // ============================================================
@@ -1000,7 +998,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         });
 
         // ============================================================
-        // ⌨️ TOUCHE ENTRÉE
+        // ⌨️ TOUCHE ENTRÉE - Ajoute le contact
         // ============================================================
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
@@ -1134,10 +1132,12 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 progress.style.width = `${((i + 1) / contactsToSend.length) * 100}%`;
             }
             
+            // Supprimer les contacts envoyés
             contacts = contacts.slice(toSend);
             updateQueue();
             updateSendButton();
             
+            // Résumé
             const summary = document.createElement('div');
             summary.className = 'result-item success';
             summary.style.marginTop = '15px';
@@ -1156,6 +1156,9 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             sendBtn.classList.remove('loading');
             sendBtn.disabled = false;
             updateSendButton();
+            
+            // Focus sur le premier champ pour continuer
+            contactNom.focus();
         });
 
         // ============================================================
