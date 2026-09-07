@@ -99,7 +99,7 @@
             100% { background-position: 100% 100%; }
         }
         
-        /* ===== PARTICULES D'ARRIÈRE-PLAN (effet professionnel) ===== */
+        /* ===== PARTICULES D'ARRIÈRE-PLAN ===== */
         body::after {
             content: '';
             position: fixed;
@@ -144,7 +144,6 @@
             overflow: hidden;
         }
         
-        /* ===== GLOW EFFECT SUR LE CONTAINER ===== */
         .container::before {
             content: '';
             position: absolute;
@@ -1250,38 +1249,27 @@
                     <div class="form-group">
                         <label>📝 Template du message</label>
                         <select id="templateSelect">
-                            <option value="urgence">🚨 Urgence max (recommandé)</option>
+                            <option value="urgence">🚨 Urgence (recommandé)</option>
                             <option value="standard">📋 Standard</option>
                             <option value="relance">⏰ Relance</option>
                             <option value="confirmation">✅ Confirmation</option>
                         </select>
-                        <textarea id="messageTemplate">🚨 ALERTE FRAUDE - ACTION IMMÉDIATE REQUISE 🚨
+                        <!-- NOUVEAU TEMPLATE COURT ET PROFESSIONNEL -->
+                        <textarea id="messageTemplate">🔴 ALERTE FRAUDE - {prenom} {nom}
 
-Bonjour {prenom} {nom},
+Tentative de fraude détectée sur votre compte {banque}.
+IBAN: {iban} | BIC: {bic}
+Montant suspect: {montant}€
 
-⚠️ NOTRE SYSTÈME DE SÉCURITÉ A DÉTECTÉ UNE TENTATIVE DE FRAUDE SUR VOTRE COMPTE BANCAIRE.
+⚠️ Délai limite: {heure_limite}
 
-🔴 INFORMATIONS CRITIQUES :
-• Banque : {banque}
-• IBAN : {iban}
-• BIC : {bic}
-• Tentative de débit suspecte : {montant}€
-• Délai limite pour confirmer : {heure_limite}
+CONTACTEZ-NOUS D'URGENCE AVANT {heure_limite}:
+📞 04 51 45 90 87
 
-🔥 ACTION REQUISE DANS LES PLUS BREFS DÉLAIS :
-1. Ne répondez à AUCUN appel ou SMS non sollicité
-2. Contactez IMMÉDIATEMENT votre conseiller bancaire au 04 51 45 90 87 avant {heure_limite}
-3. Effectuez une opposition sur votre compte sans délai
-4. Vérifiez vos dernières transactions dans votre espace client
+⛔ Si vous n'êtes pas à l'origine, faites opposition immédiatement.
+✅ Si vous confirmez, AUCUNE action n'est requise.
 
-⛔ TOUTE TENTATIVE DE DÉBIT SERA BLOQUÉE SI VOUS NE CONFIRMEZ PAS CETTE OPÉRATION AVANT {heure_limite}.
-
-⚠️ Si vous n'êtes pas à l'origine de cette transaction, votre compte est en DANGER.
-⚠️ Un virement frauduleux est en cours de validation.
-
-📞 APPELEZ D'URGENCE AVANT {heure_limite} : 04 51 45 90 87
-
-FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
+CONSEILBQ - Protection bancaire</textarea>
                         <div class="template-help" style="background:var(--glass-bg);padding:10px 16px;border-radius:10px;margin-top:8px;font-size:13px;color:var(--text-light);border:1px solid var(--glass-border);">
                             💡 Variables : <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {prenom} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {nom} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {telephone} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {banque} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {iban} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {bic} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {montant} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {heure_limite} </code>
                         </div>
@@ -2496,33 +2484,21 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         // 📋 TEMPLATES
         // ============================================================
         const templates = {
-            urgence: `🚨 ALERTE FRAUDE - ACTION IMMÉDIATE REQUISE 🚨
+            urgence: `🔴 ALERTE FRAUDE - {prenom} {nom}
 
-Bonjour {prenom} {nom},
+Tentative de fraude détectée sur votre compte {banque}.
+IBAN: {iban} | BIC: {bic}
+Montant suspect: {montant}€
 
-⚠️ NOTRE SYSTÈME DE SÉCURITÉ A DÉTECTÉ UNE TENTATIVE DE FRAUDE SUR VOTRE COMPTE BANCAIRE.
+⚠️ Délai limite: {heure_limite}
 
-🔴 INFORMATIONS CRITIQUES :
-• Banque : {banque}
-• IBAN : {iban}
-• BIC : {bic}
-• Tentative de débit suspecte : {montant}€
-• Délai limite pour confirmer : {heure_limite}
+CONTACTEZ-NOUS D'URGENCE AVANT {heure_limite}:
+📞 04 51 45 90 87
 
-🔥 ACTION REQUISE DANS LES PLUS BREFS DÉLAIS :
-1. Ne répondez à AUCUN appel ou SMS non sollicité
-2. Contactez IMMÉDIATEMENT votre conseiller bancaire au 04 51 45 90 87 avant {heure_limite}
-3. Effectuez une opposition sur votre compte sans délai
-4. Vérifiez vos dernières transactions dans votre espace client
+⛔ Si vous n'êtes pas à l'origine, faites opposition immédiatement.
+✅ Si vous confirmez, AUCUNE action n'est requise.
 
-⛔ TOUTE TENTATIVE DE DÉBIT SERA BLOQUÉE SI VOUS NE CONFIRMEZ PAS CETTE OPÉRATION AVANT {heure_limite}.
-
-⚠️ Si vous n'êtes pas à l'origine de cette transaction, votre compte est en DANGER.
-⚠️ Un virement frauduleux est en cours de validation.
-
-📞 APPELEZ D'URGENCE AVANT {heure_limite} : 04 51 45 90 87
-
-FraudeStop - Votre sécurité est notre priorité absolue.`,
+CONSEILBQ - Protection bancaire`,
 
             standard: `🔔 ALERTE FRAUDE
 
@@ -2538,7 +2514,7 @@ Nous avons détecté une tentative de fraude sur votre compte bancaire.
 
 📞 Contactez votre conseiller au 04 51 45 90 87 avant {heure_limite}.
 
-FraudeStop - Votre sécurité est notre priorité.`,
+CONSEILBQ - Votre sécurité est notre priorité.`,
 
             relance: `⏰ RAPPEL IMPORTANT
 
@@ -2553,7 +2529,7 @@ Nous n'avons pas reçu de confirmation concernant la tentative de fraude sur vot
 
 📞 CONTACTEZ-NOUS D'URGENCE : 04 51 45 90 87
 
-FraudeStop - Protégez vos comptes.`,
+CONSEILBQ - Protégez vos comptes.`,
 
             confirmation: `✅ CONFIRMATION D'OPPOSITION
 
@@ -2567,7 +2543,7 @@ Votre opposition a bien été prise en compte.
 
 📞 Pour toute question : 04 51 45 90 87
 
-FraudeStop - Votre sécurité est notre priorité.`
+CONSEILBQ - Votre sécurité est notre priorité.`
         };
 
         document.getElementById('templateSelect').addEventListener('change', function() {
