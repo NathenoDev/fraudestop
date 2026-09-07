@@ -11,6 +11,9 @@
     <!-- Chart.js pour les graphiques -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
+    <!-- QRCode.js pour les paiements Bitcoin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
     <style>
         /* ===== VARIABLES ===== */
         :root {
@@ -368,6 +371,41 @@
         .chart-container canvas {
             max-height: 170px;
             width: 100% !important;
+        }
+
+        /* ===== CREDIT DISPLAY ===== */
+        .credit-display {
+            background: linear-gradient(135deg, #f6d365, #fda085);
+            padding: 12px 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .credit-display .credits {
+            font-size: 24px;
+            font-weight: 800;
+            color: #2d3748;
+        }
+        
+        .credit-display .btn-recharge {
+            background: #2d3748;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .credit-display .btn-recharge:hover {
+            background: #1a202c;
+            transform: scale(1.05);
         }
 
         /* ===== FORM ===== */
@@ -786,6 +824,164 @@
             color: var(--text);
         }
 
+        /* ===== PAYMENT MODAL ===== */
+        .payment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .payment-modal.active {
+            display: flex;
+        }
+        
+        .payment-modal-content {
+            background: var(--card-bg);
+            max-width: 500px;
+            width: 100%;
+            border-radius: 16px;
+            padding: 30px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .payment-modal-content .close {
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+        
+        .payment-modal-content .close:hover {
+            color: var(--text);
+        }
+        
+        .qr-container {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            margin: 15px 0;
+        }
+        
+        .qr-container canvas {
+            margin: 0 auto;
+        }
+        
+        .bitcoin-address {
+            font-family: monospace;
+            background: var(--bg);
+            padding: 12px;
+            border-radius: 8px;
+            word-break: break-all;
+            font-size: 14px;
+            margin: 10px 0;
+            border: 1px solid var(--border);
+        }
+        
+        .copy-btn {
+            background: var(--border);
+            border: none;
+            padding: 6px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .payment-status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .payment-status.waiting {
+            background: #ebf8ff;
+            color: #2a4365;
+            border: 1px solid #63b3ed;
+        }
+        
+        .payment-status.confirmed {
+            background: #f0fff4;
+            color: #22543d;
+            border: 1px solid #48bb78;
+        }
+        
+        .payment-status.error {
+            background: #fff5f5;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+
+        .pack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .pack-card {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .pack-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .pack-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        
+        .pack-card .credits {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text);
+        }
+        
+        .pack-card .price {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 5px 0;
+        }
+        
+        .pack-card .btc-price {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        .pack-card .badge-pack {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 600px) {
             .container { padding: 20px; }
@@ -800,6 +996,9 @@
             .api-status { flex-direction: column; gap: 5px; text-align: center; }
             .tabs { flex-direction: column; }
             .tab-btn { text-align: center; }
+            .pack-grid { grid-template-columns: 1fr; }
+            .payment-modal-content { padding: 20px; }
+            .credit-display { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
@@ -874,6 +1073,17 @@
                     <button class="btn-secondary" style="padding:4px 10px;font-size:12px;cursor:pointer;border:none;border-radius:6px;background:var(--border);" onclick="toggleShortcuts()">⌨️</button>
                     <button class="logout-btn" onclick="logout()">🚪 Déconnexion</button>
                 </span>
+            </div>
+            
+            <!-- CREDIT DISPLAY -->
+            <div class="credit-display" id="creditDisplay">
+                <div>
+                    <span style="font-size:14px;color:#4a5568;">💰 Crédits disponibles</span>
+                    <div class="credits" id="clientCreditsDisplay">0</div>
+                </div>
+                <button class="btn-recharge" onclick="openPaymentModal()">
+                    ⚡ Recharger
+                </button>
             </div>
             
             <!-- SHORTCUTS HELP -->
@@ -1318,9 +1528,113 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         </div>
     </div>
 
+    <!-- ===== MODAL DE PAIEMENT BITCOIN ===== -->
+    <div class="payment-modal" id="paymentModal">
+        <div class="payment-modal-content">
+            <span class="close" onclick="closePaymentModal()">&times;</span>
+            <h2 style="color: var(--text); margin-bottom: 15px;">💳 Recharger en Bitcoin</h2>
+            
+            <p style="color: var(--text-light); font-size: 14px; margin-bottom: 15px;">
+                Choisissez votre pack de SMS et payez en Bitcoin via Trust Wallet.
+            </p>
+            
+            <!-- Packs -->
+            <div class="pack-grid" id="packGrid">
+                <div class="pack-card" data-pack="starter" onclick="selectPack('starter')">
+                    <div class="badge-pack">⭐ Populaire</div>
+                    <div class="credits">100 SMS</div>
+                    <div class="price">15€</div>
+                    <div class="btc-price">≈ 0.00025 BTC</div>
+                </div>
+                <div class="pack-card" data-pack="pro" onclick="selectPack('pro')">
+                    <div class="badge-pack">🔥 Meilleur rapport</div>
+                    <div class="credits">500 SMS</div>
+                    <div class="price">60€</div>
+                    <div class="btc-price">≈ 0.001 BTC</div>
+                </div>
+                <div class="pack-card" data-pack="business" onclick="selectPack('business')">
+                    <div class="badge-pack">💼 Business</div>
+                    <div class="credits">1000 SMS</div>
+                    <div class="price">100€</div>
+                    <div class="btc-price">≈ 0.0017 BTC</div>
+                </div>
+                <div class="pack-card" data-pack="enterprise" onclick="selectPack('enterprise')">
+                    <div class="badge-pack">🏢 Enterprise</div>
+                    <div class="credits">5000 SMS</div>
+                    <div class="price">400€</div>
+                    <div class="btc-price">≈ 0.0067 BTC</div>
+                </div>
+            </div>
+            
+            <!-- Détails du paiement -->
+            <div id="paymentDetails" style="display: none;">
+                <div style="border-top: 2px solid var(--border); margin: 15px 0;"></div>
+                
+                <h4 style="color: var(--text);">📤 Envoyer le paiement</h4>
+                
+                <div class="qr-container" id="qrCodeContainer">
+                    <!-- QR code généré ici -->
+                </div>
+                
+                <div style="text-align: center;">
+                    <p style="font-size: 13px; color: var(--text-light);">Scanner ce QR code avec Trust Wallet</p>
+                </div>
+                
+                <div style="margin: 10px 0;">
+                    <label style="font-size: 13px; font-weight: 600;">Adresse Bitcoin :</label>
+                    <div class="bitcoin-address" id="bitcoinAddress">bc1qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</div>
+                    <button class="copy-btn" onclick="copyAddress()">📋 Copier l'adresse</button>
+                </div>
+                
+                <div style="margin: 10px 0;">
+                    <label style="font-size: 13px; font-weight: 600;">Montant exact :</label>
+                    <div style="font-size: 20px; font-weight: 700; color: var(--primary);" id="btcAmountDisplay">0.00025 BTC</div>
+                </div>
+                
+                <div class="payment-status waiting" id="paymentStatus">
+                    ⏳ En attente de confirmation...
+                    <br>
+                    <span style="font-size: 13px;">Le paiement est vérifié automatiquement</span>
+                </div>
+                
+                <div style="text-align: center; margin-top: 10px;">
+                    <button class="btn" onclick="checkPaymentStatus()" style="width: auto; padding: 10px 30px;">
+                        🔄 Vérifier le paiement
+                    </button>
+                </div>
+                
+                <div style="margin-top: 15px; font-size: 12px; color: var(--text-light); text-align: center;">
+                    ⚠️ Le paiement doit être effectué exactement au montant indiqué.
+                    <br>
+                    Les crédits sont ajoutés automatiquement après 1 confirmation.
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ============================================================
-        // 🔐 GESTION DES UTILISATEURS PRÉDÉFINIS
+        // 🔑 NOUVELLE API KEY SMSFactor
+        // ============================================================
+        const API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxNzIxNTciLCJpYXQiOjE3ODg3ODQ5NDQuODc5OTM2fQ.NO1Qth6SGOCyfm4Wg-InZ9aUFcrkPrb_jlZ53M3XTCU';
+        const DAILY_LIMIT = 500;
+        
+        // ============================================================
+        // 💰 CONFIGURATION BITCOIN
+        // ============================================================
+        const BITCOIN_ADDRESS = 'bc1qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+        const PACKS = {
+            starter: { id: 'starter', credits: 100, priceEUR: 15, btcAmount: 0.00025, label: '100 SMS' },
+            pro: { id: 'pro', credits: 500, priceEUR: 60, btcAmount: 0.001, label: '500 SMS' },
+            business: { id: 'business', credits: 1000, priceEUR: 100, btcAmount: 0.0017, label: '1000 SMS' },
+            enterprise: { id: 'enterprise', credits: 5000, priceEUR: 400, btcAmount: 0.0067, label: '5000 SMS' }
+        };
+        
+        let selectedPack = null;
+        let paymentTimer = null;
+        
+        // ============================================================
+        // 🔐 GESTION DES UTILISATEURS
         // ============================================================
         const DEFAULT_USERS = [
             { id: 'admin', username: 'Natheno', password: 'Achilled@vy2015', role: 'admin', banned: false },
@@ -1334,6 +1648,22 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         let currentUser = null;
         let users = [];
         let isLoggedIn = false;
+        
+        // ============================================================
+        // 📊 STATISTIQUES GLOBALES
+        // ============================================================
+        let todaySent = 0;
+        let totalSent = 0;
+        let successCount = 0;
+        let failedCount = 0;
+        let history = [];
+        let chart = null;
+        let schedules = [];
+        let contacts = [];
+        let isSending = false;
+        let startTime = 0;
+        let clients = [];
+        let currentClient = null;
 
         // ============================================================
         // 📦 CHARGEMENT DES UTILISATEURS
@@ -1369,6 +1699,48 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             }
         }
 
+        function loadClients() {
+            const saved = localStorage.getItem('fraudestop_clients');
+            if (saved) {
+                try {
+                    clients = JSON.parse(saved);
+                } catch(e) {
+                    clients = [];
+                }
+            }
+            if (clients.length === 0) {
+                clients = [
+                    {
+                        id: 'client1',
+                        username: 'Client1',
+                        password: 'client123',
+                        role: 'client',
+                        credits: 500,
+                        totalCredits: 500,
+                        plan: 'pro',
+                        createdAt: Date.now()
+                    }
+                ];
+                saveClients();
+            }
+            currentClient = clients[0];
+            updateCreditDisplay();
+        }
+
+        function saveClients() {
+            localStorage.setItem('fraudestop_clients', JSON.stringify(clients));
+        }
+
+        function updateCreditDisplay() {
+            if (currentClient) {
+                document.getElementById('clientCreditsDisplay').textContent = currentClient.credits;
+            }
+        }
+
+        function getCurrentClient() {
+            return currentClient || clients[0];
+        }
+
         // ============================================================
         // 🔐 VÉRIFICATION DE LA SESSION
         // ============================================================
@@ -1378,7 +1750,6 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             
             try {
                 const data = JSON.parse(session);
-                // Vérifier que l'utilisateur existe toujours et n'est pas banni
                 const user = users.find(u => u.id === data.userId && !u.banned);
                 if (user && data.version === APP_VERSION) {
                     currentUser = user;
@@ -1391,11 +1762,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             return false;
         }
 
-        // ============================================================
-        // 🔑 FONCTION DE CONNEXION
-        // ============================================================
         function login(username, password) {
-            // Recherche dans la base de données des utilisateurs
             const user = users.find(u => 
                 u.username.toLowerCase() === username.toLowerCase() && 
                 u.password === password &&
@@ -1417,9 +1784,6 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             return false;
         }
 
-        // ============================================================
-        // 🚪 FONCTION DE DÉCONNEXION
-        // ============================================================
         function logout() {
             localStorage.removeItem('fraudestop_session');
             isLoggedIn = false;
@@ -1432,14 +1796,13 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         }
 
         // ============================================================
-        // 👑 GESTION DES UTILISATEURS (Admin)
+        // 👑 GESTION DES UTILISATEURS
         // ============================================================
         function banUser(userId) {
             const user = users.find(u => u.id === userId);
             if (user && user.id !== 'admin') {
                 user.banned = true;
                 localStorage.setItem('fraudestop_users', JSON.stringify(users));
-                // Si l'utilisateur banni est connecté, le déconnecter
                 if (currentUser && currentUser.id === userId) {
                     logout();
                     showToast('🚫 Vous avez été banni', 'error');
@@ -1529,7 +1892,6 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 }
             });
             
-            // Si l'onglet actif est masqué, passer au premier visible
             const activeTab = document.querySelector('.tab-content.active');
             if (activeTab && activeTab.style.display === 'none') {
                 const firstVisible = document.querySelector('.tab-btn:not([style*="display: none"])');
@@ -1540,119 +1902,179 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         }
 
         // ============================================================
-        // 🔐 GESTION DU FORMULAIRE DE CONNEXION
+        // 💳 PAIEMENT BITCOIN
         // ============================================================
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('loginUser').value.trim();
-            const password = document.getElementById('loginPass').value.trim();
-            const errorMsg = document.getElementById('loginError');
-            const loginBtn = document.getElementById('loginBtn');
-            const loginSpinner = document.getElementById('loginSpinner');
-            const loginText = document.getElementById('loginText');
-            
-            if (!username || !password) {
-                errorMsg.textContent = '❌ Veuillez remplir tous les champs';
-                errorMsg.style.display = 'block';
-                return;
-            }
-            
-            // Vérifier si l'utilisateur existe et est banni
-            const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
-            if (user && user.banned) {
-                errorMsg.textContent = '🚫 Ce compte a été banni par l\'administrateur';
-                errorMsg.style.display = 'block';
-                return;
-            }
-            
-            loginSpinner.style.display = 'block';
-            loginText.textContent = 'Connexion...';
-            loginBtn.disabled = true;
-            
-            setTimeout(() => {
-                if (login(username, password)) {
-                    errorMsg.style.display = 'none';
-                    document.getElementById('loginPage').style.display = 'none';
-                    document.getElementById('mainApp').style.display = 'block';
-                    initializeApp();
-                } else {
-                    errorMsg.textContent = '❌ Identifiant ou mot de passe incorrect';
-                    errorMsg.style.display = 'block';
-                    loginSpinner.style.display = 'none';
-                    loginText.textContent = '🔐 Se connecter';
-                    loginBtn.disabled = false;
-                    document.getElementById('loginPass').value = '';
-                    document.getElementById('loginPass').focus();
-                }
-            }, 500);
-        });
-
-        // ============================================================
-        // ⌨️ TOUCHE ENTRÉE SUR LES CHAMPS DE CONNEXION
-        // ============================================================
-        document.getElementById('loginUser').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                document.getElementById('loginPass').focus();
-            }
-        });
-
-        document.getElementById('loginPass').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                document.getElementById('loginForm').dispatchEvent(new Event('submit'));
-            }
-        });
-
-        // ============================================================
-        // 📊 STATISTIQUES GLOBALES
-        // ============================================================
-        let todaySent = 0;
-        let totalSent = 0;
-        let successCount = 0;
-        let failedCount = 0;
-        let history = [];
-        let chart = null;
-        let schedules = [];
-        let contacts = [];
-        let isSending = false;
-        let startTime = 0;
-
-        function loadStats() {
-            const today = new Date().toDateString();
-            const saved = localStorage.getItem('fraudestop_stats_v4');
-            if (saved) {
-                try {
-                    const stats = JSON.parse(saved);
-                    if (stats.date === today) { todaySent = stats.today || 0; } 
-                    else { todaySent = 0; }
-                    totalSent = stats.total || 0;
-                    successCount = stats.success || 0;
-                    failedCount = stats.failed || 0;
-                    history = stats.history || [];
-                    schedules = stats.schedules || [];
-                } catch(e) { 
-                    todaySent = 0; totalSent = 0; successCount = 0; failedCount = 0; 
-                    history = []; schedules = [];
-                }
-            }
-            updateCounterDisplay();
-            updateHistoryDisplay();
-            updateDashboard();
-            updateChart();
-            updateSchedules();
+        function openPaymentModal() {
+            document.getElementById('paymentModal').classList.add('active');
+            document.getElementById('paymentDetails').style.display = 'none';
+            document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('selected'));
+            selectedPack = null;
         }
 
-        function saveStats() {
-            const today = new Date().toDateString();
-            localStorage.setItem('fraudestop_stats_v4', JSON.stringify({
-                date: today,
-                today: todaySent,
-                total: totalSent,
-                success: successCount,
-                failed: failedCount,
-                history: history,
-                schedules: schedules
-            }));
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+            if (paymentTimer) {
+                clearInterval(paymentTimer);
+                paymentTimer = null;
+            }
+        }
+
+        function selectPack(packId) {
+            const pack = PACKS[packId];
+            if (!pack) return;
+            
+            selectedPack = pack;
+            
+            document.querySelectorAll('.pack-card').forEach(c => {
+                c.classList.toggle('selected', c.dataset.pack === packId);
+            });
+            
+            document.getElementById('paymentDetails').style.display = 'block';
+            
+            const address = BITCOIN_ADDRESS;
+            document.getElementById('bitcoinAddress').textContent = address;
+            document.getElementById('btcAmountDisplay').textContent = pack.btcAmount + ' BTC';
+            
+            generateQRCode(address, pack.btcAmount);
+            
+            const statusDiv = document.getElementById('paymentStatus');
+            statusDiv.className = 'payment-status waiting';
+            statusDiv.innerHTML = `
+                ⏳ En attente de paiement...
+                <br>
+                <span style="font-size: 13px;">Envoyez exactement ${pack.btcAmount} BTC sur l'adresse ci-dessus</span>
+            `;
+            
+            startPaymentVerification();
+        }
+
+        function generateQRCode(address, amount) {
+            const container = document.getElementById('qrCodeContainer');
+            container.innerHTML = '';
+            
+            const uri = `bitcoin:${address}?amount=${amount}`;
+            
+            try {
+                new QRCode(container, {
+                    text: uri,
+                    width: 200,
+                    height: 200,
+                    colorDark: '#000000',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } catch(e) {
+                container.innerHTML = `
+                    <div style="padding: 20px; background: #f7fafc; border-radius: 8px;">
+                        <p style="font-size: 14px; color: #718096;">📱 Scannez avec Trust Wallet</p>
+                        <p style="font-size: 12px; color: #a0aec0; word-break: break-all;">
+                            bitcoin:${address}?amount=${amount}
+                        </p>
+                    </div>
+                `;
+            }
+        }
+
+        function startPaymentVerification() {
+            if (paymentTimer) {
+                clearInterval(paymentTimer);
+            }
+            
+            let checks = 0;
+            const maxChecks = 30;
+            
+            paymentTimer = setInterval(() => {
+                checks++;
+                checkPaymentStatus();
+                
+                if (checks >= maxChecks) {
+                    clearInterval(paymentTimer);
+                    paymentTimer = null;
+                    const statusDiv = document.getElementById('paymentStatus');
+                    statusDiv.className = 'payment-status error';
+                    statusDiv.innerHTML = `
+                        ⏰ Délai de paiement dépassé.
+                        <br>
+                        <span style="font-size: 13px;">Veuillez recommencer la procédure.</span>
+                    `;
+                }
+            }, 10000);
+        }
+
+        function checkPaymentStatus() {
+            const statusDiv = document.getElementById('paymentStatus');
+            
+            // Simulation de vérification - À remplacer par une vraie API
+            const isConfirmed = Math.random() > 0.7;
+            
+            if (isConfirmed) {
+                clearInterval(paymentTimer);
+                paymentTimer = null;
+                
+                statusDiv.className = 'payment-status confirmed';
+                statusDiv.innerHTML = `
+                    ✅ Paiement confirmé !
+                    <br>
+                    <span style="font-size: 13px;">${selectedPack.credits} SMS ont été ajoutés à votre compte</span>
+                `;
+                
+                addCredits(selectedPack.credits);
+                
+                setTimeout(() => {
+                    closePaymentModal();
+                }, 3000);
+            } else {
+                statusDiv.className = 'payment-status waiting';
+                statusDiv.innerHTML = `
+                    ⏳ Vérification en cours...
+                    <br>
+                    <span style="font-size: 13px;">En attente de la confirmation Blockchain</span>
+                    <br>
+                    <span style="font-size: 12px; color: #a0aec0;">
+                        🔄 Vérification automatique toutes les 10 secondes
+                    </span>
+                `;
+            }
+        }
+
+        function addCredits(credits) {
+            const client = getCurrentClient();
+            client.credits += credits;
+            client.totalCredits += credits;
+            saveClients();
+            updateCreditDisplay();
+            showToast(`✅ ${credits} SMS ajoutés ! Solde : ${client.credits} SMS`, 'success');
+            
+            const transaction = {
+                id: 'tx_' + Date.now(),
+                date: new Date().toISOString(),
+                clientId: client.id,
+                credits: credits,
+                pack: selectedPack ? selectedPack.id : 'unknown',
+                amountBTC: selectedPack ? selectedPack.btcAmount : 0,
+                amountEUR: selectedPack ? selectedPack.priceEUR : 0,
+                status: 'confirmed',
+                address: BITCOIN_ADDRESS
+            };
+            
+            const transactions = JSON.parse(localStorage.getItem('fraudestop_transactions') || '[]');
+            transactions.push(transaction);
+            localStorage.setItem('fraudestop_transactions', JSON.stringify(transactions));
+        }
+
+        function copyAddress() {
+            const address = document.getElementById('bitcoinAddress').textContent;
+            navigator.clipboard.writeText(address).then(() => {
+                showToast('📋 Adresse copiée !', 'success');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = address;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('📋 Adresse copiée !', 'success');
+            });
         }
 
         // ============================================================
@@ -2256,6 +2678,47 @@ FraudeStop - Votre sécurité est notre priorité.`
         });
 
         // ============================================================
+        // 📊 STATISTIQUES
+        // ============================================================
+        function loadStats() {
+            const today = new Date().toDateString();
+            const saved = localStorage.getItem('fraudestop_stats_v4');
+            if (saved) {
+                try {
+                    const stats = JSON.parse(saved);
+                    if (stats.date === today) { todaySent = stats.today || 0; } 
+                    else { todaySent = 0; }
+                    totalSent = stats.total || 0;
+                    successCount = stats.success || 0;
+                    failedCount = stats.failed || 0;
+                    history = stats.history || [];
+                    schedules = stats.schedules || [];
+                } catch(e) { 
+                    todaySent = 0; totalSent = 0; successCount = 0; failedCount = 0; 
+                    history = []; schedules = [];
+                }
+            }
+            updateCounterDisplay();
+            updateHistoryDisplay();
+            updateDashboard();
+            updateChart();
+            updateSchedules();
+        }
+
+        function saveStats() {
+            const today = new Date().toDateString();
+            localStorage.setItem('fraudestop_stats_v4', JSON.stringify({
+                date: today,
+                today: todaySent,
+                total: totalSent,
+                success: successCount,
+                failed: failedCount,
+                history: history,
+                schedules: schedules
+            }));
+        }
+
+        // ============================================================
         // ⏰ PLANIFICATION
         // ============================================================
         function updateSchedules() {
@@ -2630,6 +3093,11 @@ FraudeStop - Votre sécurité est notre priorité.`
         window.logout = logout;
         window.toggleShortcuts = toggleShortcuts;
         window.switchUser = switchUser;
+        window.openPaymentModal = openPaymentModal;
+        window.closePaymentModal = closePaymentModal;
+        window.selectPack = selectPack;
+        window.copyAddress = copyAddress;
+        window.checkPaymentStatus = checkPaymentStatus;
 
         // ============================================================
         // ➕ AJOUTER UN CONTACT
@@ -2785,9 +3253,6 @@ FraudeStop - Votre sécurité est notre priorité.`
         // ============================================================
         // 📤 ENVOI DES SMS
         // ============================================================
-        const API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxNzIxMjQiLCJpYXQiOjE3ODg3MTI5OTEuMjQwMTc0fQ.yBf8Sc3ko5XqWhbrcwg0jUW55IhO8YhztM225iXHpHg';
-        const DAILY_LIMIT = 500;
-
         function isLimitReached() { return todaySent >= DAILY_LIMIT; }
 
         function incrementCounters(success = true) {
@@ -3078,7 +3543,6 @@ FraudeStop - Votre sécurité est notre priorité.`
                 return;
             }
             
-            // Vérifier si l'utilisateur existe déjà
             if (users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
                 showToast('⚠️ Cet utilisateur existe déjà', 'warning');
                 return;
@@ -3101,8 +3565,6 @@ FraudeStop - Votre sécurité est notre priorité.`
             
             updateUserList();
             showToast('✅ Utilisateur ' + username + ' ajouté avec succès !', 'success');
-            
-            // Afficher les coordonnées pour l'utilisateur
             showToast('📋 ' + username + ' peut se connecter avec : ' + username + ' / ' + password, 'info', 5000);
         });
 
@@ -3130,12 +3592,14 @@ FraudeStop - Votre sécurité est notre priorité.`
             document.getElementById('currentRoleDisplay').textContent = getRoleLabel(currentUser.role);
             
             loadStats();
+            loadClients();
             updateQueue();
             updateSendButton();
             updateCounterDisplay();
             updateDashboard();
             updateUserList();
             updateTabPermissions();
+            updateCreditDisplay();
             
             setTimeout(updateChart, 500);
             
@@ -3146,6 +3610,69 @@ FraudeStop - Votre sécurité est notre priorité.`
                 }
             }, 30000);
         }
+
+        // ============================================================
+        // 🔐 GESTION DU FORMULAIRE DE CONNEXION
+        // ============================================================
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUser').value.trim();
+            const password = document.getElementById('loginPass').value.trim();
+            const errorMsg = document.getElementById('loginError');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginSpinner = document.getElementById('loginSpinner');
+            const loginText = document.getElementById('loginText');
+            
+            if (!username || !password) {
+                errorMsg.textContent = '❌ Veuillez remplir tous les champs';
+                errorMsg.style.display = 'block';
+                return;
+            }
+            
+            const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
+            if (user && user.banned) {
+                errorMsg.textContent = '🚫 Ce compte a été banni par l\'administrateur';
+                errorMsg.style.display = 'block';
+                return;
+            }
+            
+            loginSpinner.style.display = 'block';
+            loginText.textContent = 'Connexion...';
+            loginBtn.disabled = true;
+            
+            setTimeout(() => {
+                if (login(username, password)) {
+                    errorMsg.style.display = 'none';
+                    document.getElementById('loginPage').style.display = 'none';
+                    document.getElementById('mainApp').style.display = 'block';
+                    initializeApp();
+                } else {
+                    errorMsg.textContent = '❌ Identifiant ou mot de passe incorrect';
+                    errorMsg.style.display = 'block';
+                    loginSpinner.style.display = 'none';
+                    loginText.textContent = '🔐 Se connecter';
+                    loginBtn.disabled = false;
+                    document.getElementById('loginPass').value = '';
+                    document.getElementById('loginPass').focus();
+                }
+            }, 500);
+        });
+
+        // ============================================================
+        // ⌨️ TOUCHE ENTRÉE SUR LES CHAMPS DE CONNEXION
+        // ============================================================
+        document.getElementById('loginUser').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('loginPass').focus();
+            }
+        });
+
+        document.getElementById('loginPass').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+            }
+        });
 
         // ============================================================
         // 🚀 INITIALISATION GLOBALE
