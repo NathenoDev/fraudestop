@@ -8,6 +8,9 @@
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
     
+    <!-- GOOGLE FONTS - POLICE D'ENTREPRISE -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
     <!-- Chart.js pour les graphiques -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
@@ -15,32 +18,46 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
     <style>
+        /* ===== IMPORT DES POLICES ===== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
+
         /* ===== VARIABLES ===== */
         :root {
-            --primary: #dc3545;
-            --primary-dark: #8b0000;
-            --primary-light: #fdf2f2;
-            --bg: #f7fafc;
-            --card-bg: #ffffff;
-            --text: #2d3748;
-            --text-light: #718096;
-            --border: #e2e8f0;
-            --shadow: 0 20px 60px rgba(0,0,0,0.15);
+            --primary: #0a1628;
+            --primary-light: #1a2a4a;
+            --primary-dark: #050d1a;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-light: #3b82f6;
+            --gold: #f59e0b;
+            --gold-light: #fbbf24;
+            --bg: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text: #0f172a;
+            --text-light: #64748b;
+            --border: rgba(255, 255, 255, 0.15);
+            --shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
             --radius: 16px;
-            --transition: all 0.3s ease;
-            --success: #48bb78;
-            --error: #fc8181;
-            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --success: #10b981;
+            --error: #ef4444;
+            --font-family: 'Inter', 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
         }
         
         /* ===== MODE SOMBRE ===== */
         body.dark-mode {
-            --bg: #1a202c;
-            --card-bg: #2d3748;
-            --text: #f7fafc;
-            --text-light: #a0aec0;
-            --border: #4a5568;
-            --shadow: 0 20px 60px rgba(0,0,0,0.6);
+            --bg: #0f172a;
+            --card-bg: rgba(15, 23, 42, 0.95);
+            --text: #f1f5f9;
+            --text-light: #94a3b8;
+            --glass-bg: rgba(15, 23, 42, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --border: rgba(255, 255, 255, 0.05);
+            --shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -51,17 +68,98 @@
             min-height: 100vh;
             padding: 20px;
             transition: var(--transition);
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* ===== FOND D'ÉCRAN PROFESSIONNEL AVEC OVERLAY ===== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            background: 
+                linear-gradient(135deg, 
+                    rgba(10, 22, 40, 0.92) 0%,
+                    rgba(26, 42, 74, 0.88) 30%,
+                    rgba(37, 99, 235, 0.85) 60%,
+                    rgba(59, 130, 246, 0.80) 100%
+                ),
+                url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyek0zNiAyNHYySDI0di0yaDEyeiIvPjwvZz48L2c+PC9zdmc+');
+            background-size: cover, 60px 60px;
+            background-blend-mode: overlay;
+            animation: gradientMove 15s ease-in-out infinite alternate;
+        }
+        
+        @keyframes gradientMove {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+        
+        /* ===== PARTICULES D'ARRIÈRE-PLAN (effet professionnel) ===== */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            background-image: 
+                radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.15), transparent),
+                radial-gradient(2px 2px at 40% 70%, rgba(255,255,255,0.10), transparent),
+                radial-gradient(2px 2px at 60% 20%, rgba(255,255,255,0.12), transparent),
+                radial-gradient(2px 2px at 80% 80%, rgba(255,255,255,0.08), transparent),
+                radial-gradient(1px 1px at 10% 90%, rgba(255,255,255,0.15), transparent),
+                radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.10), transparent),
+                radial-gradient(1px 1px at 50% 50%, rgba(255,255,255,0.06), transparent);
+            background-size: 200px 200px, 300px 300px, 250px 250px, 350px 350px, 150px 150px, 180px 180px, 400px 400px;
+            animation: particlesFloat 20s ease-in-out infinite alternate;
+        }
+        
+        @keyframes particlesFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(-10px, 10px) scale(1.02); }
+            50% { transform: translate(10px, -5px) scale(0.98); }
+            75% { transform: translate(-5px, 15px) scale(1.01); }
+            100% { transform: translate(5px, -10px) scale(0.99); }
         }
         
         .container {
             max-width: 950px;
             margin: 0 auto;
-            background: var(--card-bg);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: var(--radius);
             padding: 35px;
-            box-shadow: var(--shadow);
+            box-shadow: var(--glass-shadow);
             transition: var(--transition);
             color: var(--text);
+            border: 1px solid var(--glass-border);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* ===== GLOW EFFECT SUR LE CONTAINER ===== */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 20%, rgba(37, 99, 235, 0.05), transparent 60%);
+            pointer-events: none;
+            animation: glowPulse 8s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glowPulse {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.5; }
+            100% { transform: scale(1.1) rotate(3deg); opacity: 1; }
         }
 
         /* ===== HEADER ===== */
@@ -72,6 +170,8 @@
             margin-bottom: 5px;
             flex-wrap: wrap;
             gap: 10px;
+            position: relative;
+            z-index: 1;
         }
         
         h1 {
@@ -80,15 +180,38 @@
             align-items: center;
             gap: 12px;
             color: var(--text);
+            font-weight: 800;
+            letter-spacing: -0.5px;
         }
         
         h1 .logo {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
             color: white;
-            padding: 6px 16px;
-            border-radius: 8px;
+            padding: 8px 18px;
+            border-radius: 10px;
             font-size: 22px;
-            font-weight: 700;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 .logo::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 6s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { transform: translateX(-100%) rotate(45deg); }
+            50% { transform: translateX(100%) rotate(45deg); }
         }
         
         .header-actions {
@@ -99,8 +222,9 @@
         }
         
         .theme-toggle {
-            background: var(--border);
-            border: none;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -110,25 +234,34 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            color: var(--text);
         }
         
         .theme-toggle:hover {
             transform: scale(1.1);
+            background: var(--accent);
+            color: white;
         }
         
         .badge {
-            background: var(--primary);
-            color: white;
-            padding: 4px 12px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            color: #0a1628;
+            padding: 4px 14px;
             border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
         }
 
         .subtitle {
             color: var(--text-light);
             margin-bottom: 25px;
             font-size: 15px;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
         }
 
         /* ===== STATUS BAR ===== */
@@ -138,32 +271,36 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 10px;
-            padding: 8px 15px;
-            background: var(--bg);
-            border-radius: 8px;
+            padding: 10px 18px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
             margin-bottom: 15px;
-            border: 1px solid var(--border);
+            border: 1px solid var(--glass-border);
             font-size: 13px;
             color: var(--text-light);
+            position: relative;
+            z-index: 1;
         }
         
-        .status-bar .online { color: var(--success); }
-        .status-bar .offline { color: var(--error); }
-        .status-bar .user { font-weight: 600; color: var(--text); }
+        .status-bar .online { color: var(--success); font-weight: 600; }
+        .status-bar .offline { color: var(--error); font-weight: 600; }
+        .status-bar .user { font-weight: 700; color: var(--text); }
         .status-bar .logout-btn {
-            background: var(--primary);
+            background: linear-gradient(135deg, #ef4444, #dc2626);
             color: white;
             border: none;
-            padding: 4px 15px;
-            border-radius: 6px;
+            padding: 6px 18px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 12px;
             font-weight: 600;
             transition: var(--transition);
+            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
         }
         .status-bar .logout-btn:hover {
-            opacity: 0.8;
             transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
         }
 
         /* ===== TOAST NOTIFICATIONS ===== */
@@ -180,25 +317,26 @@
         
         .toast {
             padding: 15px 20px;
-            border-radius: 10px;
+            border-radius: 12px;
             color: white;
             font-weight: 500;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            animation: slideInRight 0.4s ease;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             gap: 12px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
-        .toast.success { background: linear-gradient(135deg, #48bb78, #276749); }
-        .toast.error { background: linear-gradient(135deg, #fc8181, #dc3545); }
-        .toast.warning { background: linear-gradient(135deg, #ed8936, #c05621); }
-        .toast.info { background: linear-gradient(135deg, #63b3ed, #3182ce); }
-        .toast.notification { background: linear-gradient(135deg, #9f7aea, #6b46c1); }
+        .toast.success { background: linear-gradient(135deg, #10b981, #059669); }
+        .toast.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .toast.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .toast.info { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .toast.notification { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
         
         .toast .icon { font-size: 24px; }
-        .toast .message { flex: 1; }
+        .toast .message { flex: 1; font-size: 14px; }
         .toast .close-btn {
             background: none;
             border: none;
@@ -226,37 +364,40 @@
             border-bottom: 2px solid var(--border);
             padding-bottom: 5px;
             flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
         }
         
         .tab-btn {
-            padding: 10px 20px;
+            padding: 10px 22px;
             border: none;
             background: none;
             color: var(--text-light);
             font-weight: 600;
             font-size: 14px;
             cursor: pointer;
-            border-radius: 8px 8px 0 0;
+            border-radius: 10px 10px 0 0;
             transition: var(--transition);
             position: relative;
+            font-family: var(--font-family);
         }
         
         .tab-btn:hover {
-            background: var(--bg);
+            background: var(--glass-bg);
             color: var(--text);
         }
         
         .tab-btn.active {
-            color: var(--primary);
-            background: var(--primary-light);
-            border-bottom: 3px solid var(--primary);
+            color: var(--accent);
+            background: rgba(37, 99, 235, 0.1);
+            border-bottom: 3px solid var(--accent);
         }
         
         .tab-btn .badge-notif {
             position: absolute;
             top: -5px;
             right: -5px;
-            background: var(--primary);
+            background: var(--accent);
             color: white;
             font-size: 10px;
             border-radius: 50%;
@@ -275,7 +416,9 @@
         
         .tab-content {
             display: none;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
         }
         
         .tab-content.active {
@@ -283,8 +426,122 @@
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== TOKEN DISPLAY ===== */
+        .token-display {
+            background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 50%, #2563eb 100%);
+            padding: 20px 25px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            box-shadow: 0 10px 40px rgba(37, 99, 235, 0.3);
+        }
+        
+        .token-display::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15), transparent);
+            border-radius: 50%;
+            animation: tokenGlow 10s ease-in-out infinite alternate;
+        }
+        
+        @keyframes tokenGlow {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-50px, -30px) scale(1.2); }
+        }
+        
+        .token-display .token-info {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .token-display .token-item {
+            text-align: center;
+        }
+        
+        .token-display .token-item .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            opacity: 0.7;
+            letter-spacing: 1.5px;
+            font-weight: 500;
+        }
+        
+        .token-display .token-item .value {
+            font-size: 26px;
+            font-weight: 800;
+            display: block;
+            font-family: var(--font-family);
+        }
+        
+        .token-display .token-item .value.warning {
+            color: var(--gold-light);
+        }
+        
+        .token-display .token-item .value.danger {
+            color: #f87171;
+        }
+        
+        .token-display .token-actions {
+            display: flex;
+            gap: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .token-display .btn-token {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 9px 22px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            font-family: var(--font-family);
+        }
+        
+        .token-display .btn-token:hover {
+            background: rgba(255,255,255,0.25);
+            transform: scale(1.05);
+        }
+        
+        .token-display .btn-token.primary {
+            background: white;
+            color: #0a1628;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .token-display .btn-token.primary:hover {
+            background: var(--gold-light);
+            transform: scale(1.05);
+        }
+        
+        .token-display .btn-token:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         /* ===== COUNTER ===== */
@@ -293,39 +550,45 @@
             gap: 15px;
             margin-bottom: 25px;
             padding: 15px;
-            background: var(--bg);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
             border-radius: 12px;
-            border: 1px solid var(--border);
+            border: 1px solid var(--glass-border);
             flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
         }
         
         .counter-item {
             flex: 1;
             text-align: center;
             padding: 10px;
-            background: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             min-width: 80px;
+            border: 1px solid var(--glass-border);
         }
         
         .counter-item .number {
             font-size: 28px;
             font-weight: 800;
             display: block;
+            font-family: var(--font-family);
         }
-        .counter-item .number.today { color: var(--primary); }
+        .counter-item .number.today { color: var(--accent); }
         .counter-item .number.total { color: var(--text); }
-        .counter-item .number.limit { color: #48bb78; }
-        .counter-item .number.limit-warning { color: #ed8936; }
-        .counter-item .number.limit-danger { color: #fc8181; }
-        .counter-item .number.success-rate { color: #48bb78; }
+        .counter-item .number.limit { color: var(--success); }
+        .counter-item .number.limit-warning { color: var(--gold); }
+        .counter-item .number.limit-danger { color: var(--error); }
+        .counter-item .number.success-rate { color: var(--success); }
         .counter-item .label {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-light);
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
             margin-top: 2px;
         }
         .counter-divider { width: 1px; background: var(--border); }
@@ -339,31 +602,41 @@
         }
         
         .stat-card {
-            background: var(--bg);
-            border-radius: 10px;
-            padding: 15px;
-            border: 1px solid var(--border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid var(--glass-border);
             text-align: center;
+            transition: var(--transition);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
         
         .stat-card .stat-number {
             font-size: 32px;
             font-weight: 800;
-            color: var(--primary);
+            color: var(--accent);
             display: block;
+            font-family: var(--font-family);
         }
         
         .stat-card .stat-label {
             font-size: 13px;
             color: var(--text-light);
             margin-top: 4px;
+            font-weight: 500;
         }
 
         .chart-container {
-            background: var(--bg);
-            border-radius: 10px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
             padding: 15px;
-            border: 1px solid var(--border);
+            border: 1px solid var(--glass-border);
             margin-top: 15px;
             height: 200px;
         }
@@ -371,41 +644,6 @@
         .chart-container canvas {
             max-height: 170px;
             width: 100% !important;
-        }
-
-        /* ===== CREDIT DISPLAY ===== */
-        .credit-display {
-            background: linear-gradient(135deg, #f6d365, #fda085);
-            padding: 12px 20px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .credit-display .credits {
-            font-size: 24px;
-            font-weight: 800;
-            color: #2d3748;
-        }
-        
-        .credit-display .btn-recharge {
-            background: #2d3748;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-        
-        .credit-display .btn-recharge:hover {
-            background: #1a202c;
-            transform: scale(1.05);
         }
 
         /* ===== FORM ===== */
@@ -417,28 +655,31 @@
             color: var(--text);
             margin-bottom: 6px;
             font-size: 14px;
+            font-family: var(--font-family);
         }
         
         input, textarea, select {
             width: 100%;
-            padding: 12px 15px;
+            padding: 12px 16px;
             border: 2px solid var(--border);
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 14px;
             transition: var(--transition);
-            background: var(--card-bg);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
             color: var(--text);
+            font-family: var(--font-family);
         }
         
         input:focus, textarea:focus, select:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
         }
         
         input.is-valid {
             border-color: var(--success);
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2348bb78' stroke-width='2'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 10px center;
             background-size: 20px;
@@ -447,14 +688,14 @@
         
         input.is-invalid {
             border-color: var(--error);
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23fc8181' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 10px center;
             background-size: 20px;
             padding-right: 40px;
         }
         
-        textarea { resize: vertical; min-height: 100px; font-family: inherit; }
+        textarea { resize: vertical; min-height: 100px; font-family: var(--font-family); }
         
         .row { display: flex; gap: 15px; }
         .row .col { flex: 1; }
@@ -464,78 +705,45 @@
             margin-top: 4px;
             display: none;
             padding: 4px 10px;
-            border-radius: 4px;
+            border-radius: 6px;
+            font-weight: 500;
         }
         .validation-hint.visible { display: block; }
         .validation-hint.valid { 
             color: var(--success); 
-            background: #f0fff4;
+            background: rgba(16, 185, 129, 0.1);
             display: block;
         }
         .validation-hint.invalid { 
             color: var(--error); 
-            background: #fff5f5;
+            background: rgba(239, 68, 68, 0.1);
             display: block;
-        }
-
-        /* ===== AUTO-COMPLETE ===== */
-        .autocomplete-wrapper {
-            position: relative;
-        }
-        
-        .autocomplete-suggestions {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: var(--card-bg);
-            border: 2px solid var(--border);
-            border-top: none;
-            border-radius: 0 0 8px 8px;
-            max-height: 150px;
-            overflow-y: auto;
-            z-index: 100;
-            display: none;
-        }
-        
-        .autocomplete-suggestions.active {
-            display: block;
-        }
-        
-        .autocomplete-suggestions .suggestion {
-            padding: 10px 15px;
-            cursor: pointer;
-            transition: var(--transition);
-            color: var(--text);
-        }
-        
-        .autocomplete-suggestions .suggestion:hover {
-            background: var(--primary-light);
-            color: var(--primary);
         }
 
         /* ===== BUTTONS ===== */
         .btn {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
+            padding: 12px 28px;
+            border-radius: 10px;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
             position: relative;
             overflow: hidden;
+            font-family: var(--font-family);
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
         }
         
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.4);
         }
         
         .btn:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
@@ -557,10 +765,18 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         
         .btn-secondary {
-            background: var(--border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
             color: var(--text);
+            border: 1px solid var(--glass-border);
+            box-shadow: none;
         }
-        .btn-secondary:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .btn-secondary:hover {
+            background: var(--glass-bg);
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
         
         .btn-group { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
         .btn-group .btn { flex: 1; min-width: 120px; }
@@ -570,17 +786,19 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 15px;
-            background: var(--bg);
-            border-radius: 6px;
+            padding: 12px 18px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
             margin-bottom: 6px;
-            border-left: 3px solid #63b3ed;
+            border-left: 3px solid var(--accent);
             flex-wrap: wrap;
             gap: 5px;
+            border: 1px solid var(--glass-border);
         }
         
         .queue-item .info { font-size: 14px; color: var(--text); }
-        .queue-item .info strong { color: var(--text); }
+        .queue-item .info strong { color: var(--text); font-weight: 700; }
         .queue-item .info .bank-details {
             font-size: 12px;
             color: var(--text-light);
@@ -590,33 +808,37 @@
         .queue-item .remove-btn {
             background: none;
             border: none;
-            color: #fc8181;
+            color: var(--error);
             cursor: pointer;
             font-size: 18px;
             padding: 0 5px;
             transition: var(--transition);
+            opacity: 0.6;
         }
-        .queue-item .remove-btn:hover { color: var(--primary); transform: scale(1.2); }
+        .queue-item .remove-btn:hover { opacity: 1; transform: scale(1.2); }
         
         .empty-state {
             text-align: center;
-            padding: 20px;
+            padding: 30px;
             color: var(--text-light);
         }
-        .empty-state .icon { font-size: 40px; display: block; margin-bottom: 10px; }
+        .empty-state .icon { font-size: 48px; display: block; margin-bottom: 10px; opacity: 0.5; }
         
         .clear-btn {
             background: none;
             border: none;
-            color: #fc8181;
+            color: var(--error);
             cursor: pointer;
             font-size: 13px;
             text-decoration: underline;
             padding: 5px;
+            opacity: 0.6;
+            transition: var(--transition);
+            font-family: var(--font-family);
         }
-        .clear-btn:hover { color: var(--primary); }
+        .clear-btn:hover { opacity: 1; color: var(--error); }
 
-        /* ===== RESULTS / HISTORIQUE ===== */
+        /* ===== RESULTS ===== */
         .results, .history-list {
             margin-top: 25px;
             max-height: 400px;
@@ -624,21 +846,24 @@
         }
         
         .result-item, .history-item {
-            padding: 12px 15px;
+            padding: 12px 18px;
             margin-bottom: 8px;
-            border-radius: 8px;
+            border-radius: 10px;
             border-left: 4px solid;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            animation: slideIn 0.3s ease;
+            animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             flex-wrap: wrap;
             gap: 5px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
         }
         
-        .result-item.success, .history-item.success { background: #f0fff4; border-color: #48bb78; color: #22543d; }
-        .result-item.error, .history-item.error { background: #fff5f5; border-color: #fc8181; color: #742a2a; }
-        .result-item.pending { background: #ebf8ff; border-color: #63b3ed; color: #2a4365; }
+        .result-item.success, .history-item.success { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
+        .result-item.error, .history-item.error { border-color: var(--error); background: rgba(239, 68, 68, 0.05); }
+        .result-item.pending { border-color: var(--accent); background: rgba(37, 99, 235, 0.05); }
         .result-item .name, .history-item .name { font-weight: 600; }
         .result-item .status, .history-item .status { font-size: 13px; }
         .result-item .date, .history-item .date { font-size: 11px; color: var(--text-light); }
@@ -650,7 +875,7 @@
             width: 100%;
             margin-top: 4px;
             padding-top: 4px;
-            border-top: 1px dashed var(--border);
+            border-top: 1px solid var(--border);
         }
         
         @keyframes slideIn {
@@ -662,32 +887,37 @@
         .stats {
             margin: 15px 0;
             padding: 15px;
-            background: var(--bg);
-            border-radius: 8px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
             display: flex;
             justify-content: space-around;
             text-align: center;
             flex-wrap: wrap;
+            border: 1px solid var(--glass-border);
         }
         .stats div { flex: 1; min-width: 60px; }
-        .stats .number { font-size: 22px; font-weight: 700; color: var(--text); }
-        .stats .label { font-size: 13px; color: var(--text-light); }
+        .stats .number { font-size: 22px; font-weight: 700; color: var(--text); font-family: var(--font-family); }
+        .stats .label { font-size: 13px; color: var(--text-light); font-weight: 500; }
 
         /* ===== PROGRESS ===== */
         .progress-bar {
             width: 100%;
-            height: 8px;
+            height: 6px;
             background: var(--border);
             border-radius: 4px;
             margin: 15px 0;
             overflow: hidden;
             display: none;
+            position: relative;
+            z-index: 1;
         }
         .progress-bar .progress {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-            transition: width 0.3s;
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             width: 0%;
+            border-radius: 4px;
         }
         
         .progress-info {
@@ -696,47 +926,55 @@
             font-size: 13px;
             color: var(--text-light);
             margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
         }
         .progress-info.visible { display: flex; }
         .progress-info .time-remaining { font-weight: 600; color: var(--text); }
 
         /* ===== PREVIEW ===== */
         .sms-preview {
-            background: var(--bg);
-            padding: 12px 15px;
-            border-radius: 8px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            padding: 15px 18px;
+            border-radius: 10px;
             margin-top: 10px;
             font-size: 13px;
-            border: 1px solid var(--border);
+            border: 1px solid var(--glass-border);
             white-space: pre-wrap;
             max-height: 300px;
             overflow-y: auto;
             color: var(--text);
             font-family: 'Courier New', monospace;
-            line-height: 1.6;
+            line-height: 1.8;
         }
 
         /* ===== API STATUS ===== */
         .api-status {
-            background: #f0fff4;
-            padding: 8px 15px;
-            border-radius: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            padding: 10px 18px;
+            border-radius: 10px;
             margin-bottom: 20px;
-            border-left: 4px solid #48bb78;
+            border-left: 4px solid var(--success);
             font-size: 14px;
-            color: #22543d;
+            color: var(--text);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            position: relative;
+            z-index: 1;
         }
         .api-status .key-hidden {
-            background: var(--border);
-            padding: 2px 10px;
-            border-radius: 4px;
+            background: var(--glass-bg);
+            padding: 2px 12px;
+            border-radius: 6px;
             font-family: monospace;
             font-size: 12px;
             color: var(--text-light);
+            border: 1px solid var(--glass-border);
         }
 
         /* ===== FOOTER ===== */
@@ -745,241 +983,39 @@
             text-align: center;
             padding-top: 18px;
             border-top: 2px solid var(--border);
+            position: relative;
+            z-index: 1;
         }
         .footer-brand .brand-name {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--primary);
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--accent);
             letter-spacing: 1px;
+            font-family: var(--font-family);
         }
         .footer-brand .brand-slogan {
             font-size: 14px;
             color: var(--text-light);
             margin-top: 4px;
-            font-weight: 500;
+            font-weight: 400;
+            letter-spacing: 0.3px;
         }
         .footer-brand .brand-divider {
             width: 60px;
             height: 2px;
-            background: var(--primary);
-            margin: 8px auto;
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            margin: 10px auto;
             border-radius: 2px;
         }
         .footer-brand .version {
             font-size: 11px;
-            background: var(--bg);
-            padding: 2px 10px;
+            background: var(--glass-bg);
+            padding: 2px 14px;
             border-radius: 12px;
             color: var(--text-light);
             display: inline-block;
             margin-top: 6px;
-        }
-
-        /* ===== SCHEDULER ===== */
-        .scheduler-box {
-            background: var(--bg);
-            border-radius: 8px;
-            padding: 15px;
-            border: 1px solid var(--border);
-            margin-top: 10px;
-            display: none;
-        }
-        .scheduler-box.visible { display: block; }
-
-        /* ===== PERSONNALISATION ===== */
-        .customization-box {
-            background: var(--bg);
-            border-radius: 8px;
-            padding: 15px;
-            border: 1px solid var(--border);
-            margin-top: 10px;
-        }
-        .customization-box .color-picker {
-            width: 50px;
-            height: 40px;
-            padding: 0;
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        /* ===== SHORTCUTS HELP ===== */
-        .shortcuts-help {
-            background: var(--bg);
-            border-radius: 8px;
-            padding: 10px 15px;
-            border: 1px solid var(--border);
-            margin-top: 10px;
-            font-size: 13px;
-            color: var(--text-light);
-            display: none;
-        }
-        .shortcuts-help.visible { display: block; }
-        .shortcuts-help kbd {
-            background: var(--border);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 12px;
-            color: var(--text);
-        }
-
-        /* ===== PAYMENT MODAL ===== */
-        .payment-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .payment-modal.active {
-            display: flex;
-        }
-        
-        .payment-modal-content {
-            background: var(--card-bg);
-            max-width: 500px;
-            width: 100%;
-            border-radius: 16px;
-            padding: 30px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .payment-modal-content .close {
-            float: right;
-            font-size: 28px;
-            cursor: pointer;
-            color: var(--text-light);
-        }
-        
-        .payment-modal-content .close:hover {
-            color: var(--text);
-        }
-        
-        .qr-container {
-            text-align: center;
-            padding: 20px;
-            background: white;
-            border-radius: 12px;
-            margin: 15px 0;
-        }
-        
-        .qr-container canvas {
-            margin: 0 auto;
-        }
-        
-        .bitcoin-address {
-            font-family: monospace;
-            background: var(--bg);
-            padding: 12px;
-            border-radius: 8px;
-            word-break: break-all;
-            font-size: 14px;
-            margin: 10px 0;
-            border: 1px solid var(--border);
-        }
-        
-        .copy-btn {
-            background: var(--border);
-            border: none;
-            padding: 6px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-        }
-        
-        .copy-btn:hover {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .payment-status {
-            text-align: center;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-        }
-        
-        .payment-status.waiting {
-            background: #ebf8ff;
-            color: #2a4365;
-            border: 1px solid #63b3ed;
-        }
-        
-        .payment-status.confirmed {
-            background: #f0fff4;
-            color: #22543d;
-            border: 1px solid #48bb78;
-        }
-        
-        .payment-status.error {
-            background: #fff5f5;
-            color: #742a2a;
-            border: 1px solid #fc8181;
-        }
-
-        .pack-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-        
-        .pack-card {
-            background: var(--bg);
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .pack-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        
-        .pack-card.selected {
-            border-color: var(--primary);
-            background: var(--primary-light);
-        }
-        
-        .pack-card .credits {
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--text);
-        }
-        
-        .pack-card .price {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary);
-            margin: 5px 0;
-        }
-        
-        .pack-card .btc-price {
-            font-size: 14px;
-            color: var(--text-light);
-        }
-        
-        .pack-card .badge-pack {
-            display: inline-block;
-            background: var(--primary);
-            color: white;
-            padding: 2px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            margin-top: 5px;
+            border: 1px solid var(--glass-border);
         }
 
         /* ===== RESPONSIVE ===== */
@@ -996,9 +1032,69 @@
             .api-status { flex-direction: column; gap: 5px; text-align: center; }
             .tabs { flex-direction: column; }
             .tab-btn { text-align: center; }
-            .pack-grid { grid-template-columns: 1fr; }
-            .payment-modal-content { padding: 20px; }
-            .credit-display { flex-direction: column; text-align: center; }
+            .token-display { flex-direction: column; text-align: center; }
+            .token-display .token-info { justify-content: center; }
+            .token-input-group { flex-direction: column; }
+            body { padding: 10px; }
+        }
+
+        /* ===== SCROLLBAR PERSONNALISÉE ===== */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-light);
+        }
+
+        /* ===== LOGIN PAGE PROFESSIONNELLE ===== */
+        #loginPage {
+            background: 
+                linear-gradient(135deg, 
+                    rgba(10, 22, 40, 0.95) 0%,
+                    rgba(26, 42, 74, 0.90) 30%,
+                    rgba(37, 99, 235, 0.88) 60%,
+                    rgba(59, 130, 246, 0.85) 100%
+                ),
+                url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyek0zNiAyNHYySDI0di0yaDEyeiIvPjwvZz48L2c+PC9zdmc+');
+            background-size: cover, 60px 60px;
+            background-blend-mode: overlay;
+        }
+        
+        #loginPage > div {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #loginPage > div::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at 70% 30%, rgba(37, 99, 235, 0.1), transparent 70%);
+            pointer-events: none;
+        }
+        
+        #loginPage > div .login-shield {
+            font-size: 60px;
+            display: block;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 10px 30px rgba(37, 99, 235, 0.3));
         }
     </style>
 </head>
@@ -1008,42 +1104,42 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- ===== PAGE DE CONNEXION ===== -->
-    <div id="loginPage" style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,#dc3545 0%,#8b0000 100%);">
-        <div style="max-width:420px;width:100%;background:#ffffff;border-radius:16px;padding:40px 35px;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:fadeIn 0.5s ease;">
-            <div style="text-align:center;margin-bottom:30px;">
-                <span style="font-size:60px;display:block;margin-bottom:10px;">🛡️</span>
-                <h1 style="font-size:32px;font-weight:800;color:#dc3545;letter-spacing:1px;">FraudeStop</h1>
-                <div style="font-size:14px;color:#718096;margin-top:4px;">Service Anti-Fraude Bancaire</div>
+    <div id="loginPage" style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;">
+        <div style="max-width:420px;width:100%;border-radius:20px;padding:45px 40px;">
+            <div style="text-align:center;margin-bottom:30px;position:relative;z-index:1;">
+                <span class="login-shield">🛡️</span>
+                <h1 style="font-size:34px;font-weight:900;color:white;letter-spacing:-0.5px;text-shadow:0 2px 20px rgba(0,0,0,0.2);">FraudeStop</h1>
+                <div style="font-size:14px;color:rgba(255,255,255,0.7);margin-top:4px;font-weight:400;letter-spacing:0.5px;">Service Anti-Fraude Bancaire</div>
             </div>
             
-            <div style="height:2px;background:linear-gradient(90deg,#dc3545,transparent);margin:20px 0;border-radius:2px;"></div>
+            <div style="height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);margin:20px 0;border-radius:2px;"></div>
             
-            <div id="loginError" style="background:#fff5f5;color:#dc3545;padding:12px 15px;border-radius:8px;border-left:4px solid #dc3545;margin-bottom:15px;font-size:14px;display:none;animation:shake 0.4s ease;">
+            <div id="loginError" style="background:rgba(239,68,68,0.15);color:#f87171;padding:12px 16px;border-radius:10px;border-left:4px solid #ef4444;margin-bottom:15px;font-size:14px;display:none;animation:shake 0.4s ease;">
                 ❌ Identifiant ou mot de passe incorrect
             </div>
             
-            <form id="loginForm" autocomplete="off">
+            <form id="loginForm" autocomplete="off" style="position:relative;z-index:1;">
                 <div style="margin-bottom:20px;">
-                    <label style="display:block;font-weight:600;color:#2d3748;margin-bottom:6px;font-size:14px;">👤 Identifiant</label>
-                    <input type="text" id="loginUser" placeholder="Entrez votre identifiant" style="width:100%;padding:14px 18px;border:2px solid #e2e8f0;border-radius:10px;font-size:15px;transition:all 0.3s ease;background:#f7fafc;color:#2d3748;" autofocus>
+                    <label style="display:block;font-weight:600;color:rgba(255,255,255,0.8);margin-bottom:8px;font-size:14px;">👤 Identifiant</label>
+                    <input type="text" id="loginUser" placeholder="Entrez votre identifiant" style="width:100%;padding:14px 18px;border:2px solid rgba(255,255,255,0.1);border-radius:12px;font-size:15px;transition:all 0.3s ease;background:rgba(255,255,255,0.05);color:white;backdrop-filter:blur(10px);" autofocus>
                 </div>
                 
                 <div style="margin-bottom:20px;">
-                    <label style="display:block;font-weight:600;color:#2d3748;margin-bottom:6px;font-size:14px;">🔑 Mot de passe</label>
-                    <input type="password" id="loginPass" placeholder="Entrez votre mot de passe" style="width:100%;padding:14px 18px;border:2px solid #e2e8f0;border-radius:10px;font-size:15px;transition:all 0.3s ease;background:#f7fafc;color:#2d3748;">
+                    <label style="display:block;font-weight:600;color:rgba(255,255,255,0.8);margin-bottom:8px;font-size:14px;">🔑 Mot de passe</label>
+                    <input type="password" id="loginPass" placeholder="Entrez votre mot de passe" style="width:100%;padding:14px 18px;border:2px solid rgba(255,255,255,0.1);border-radius:12px;font-size:15px;transition:all 0.3s ease;background:rgba(255,255,255,0.05);color:white;backdrop-filter:blur(10px);">
                 </div>
                 
-                <button type="submit" id="loginBtn" style="width:100%;padding:14px;background:linear-gradient(135deg,#dc3545,#8b0000);color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.3s ease;letter-spacing:0.5px;">
+                <button type="submit" id="loginBtn" style="width:100%;padding:16px;background:linear-gradient(135deg,#2563eb,#3b82f6);color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.3s ease;letter-spacing:0.5px;box-shadow:0 4px 20px rgba(37,99,235,0.3);">
                     <span id="loginSpinner" style="display:none;width:20px;height:20px;border:3px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;"></span>
                     <span id="loginText">🔐 Se connecter</span>
                 </button>
             </form>
             
-            <div style="background:#f7fafc;padding:12px 15px;border-radius:8px;font-size:12px;color:#718096;margin-top:15px;border:1px dashed #e2e8f0;text-align:center;">
+            <div style="background:rgba(255,255,255,0.05);padding:12px 16px;border-radius:10px;font-size:12px;color:rgba(255,255,255,0.5);margin-top:15px;border:1px solid rgba(255,255,255,0.05);text-align:center;position:relative;z-index:1;">
                 💡 Contactez votre administrateur pour vos identifiants
             </div>
             
-            <div style="font-size:11px;color:#718096;text-align:center;margin-top:15px;">v4.0 Pro - Sécurisé</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.3);text-align:center;margin-top:15px;position:relative;z-index:1;">v4.0 Pro - Sécurisé</div>
         </div>
     </div>
 
@@ -1067,23 +1163,33 @@
                 <span>
                     <span id="connectionStatus" class="online">● En ligne</span>
                     <span style="margin-left:15px;">👤 <span class="user" id="currentUserDisplay">Admin</span></span>
-                    <span id="currentRoleDisplay" style="margin-left:10px;background:#f7fafc;padding:2px 10px;border-radius:12px;font-size:12px;">👑 Administrateur</span>
+                    <span id="currentRoleDisplay" style="margin-left:10px;background:rgba(255,255,255,0.05);padding:2px 12px;border-radius:12px;font-size:12px;border:1px solid var(--glass-border);">👑 Administrateur</span>
                 </span>
                 <span style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-                    <button class="btn-secondary" style="padding:4px 10px;font-size:12px;cursor:pointer;border:none;border-radius:6px;background:var(--border);" onclick="toggleShortcuts()">⌨️</button>
+                    <button class="btn-secondary" style="padding:6px 14px;font-size:12px;cursor:pointer;border:none;border-radius:8px;background:var(--glass-bg);border:1px solid var(--glass-border);" onclick="toggleShortcuts()">⌨️</button>
                     <button class="logout-btn" onclick="logout()">🚪 Déconnexion</button>
                 </span>
             </div>
             
-            <!-- CREDIT DISPLAY -->
-            <div class="credit-display" id="creditDisplay">
-                <div>
-                    <span style="font-size:14px;color:#4a5568;">💰 Crédits disponibles</span>
-                    <div class="credits" id="clientCreditsDisplay">0</div>
+            <!-- TOKEN DISPLAY -->
+            <div class="token-display" id="tokenDisplay">
+                <div class="token-info">
+                    <div class="token-item">
+                        <span class="label">🎯 Tokens SMS disponibles</span>
+                        <span class="value" id="tokenSmsCount">0</span>
+                    </div>
+                    <div class="token-item">
+                        <span class="label">📅 Jours restants</span>
+                        <span class="value" id="tokenDaysLeft">0</span>
+                    </div>
+                    <div class="token-item">
+                        <span class="label">📊 Total SMS utilisés</span>
+                        <span class="value" id="tokenTotalUsed">0</span>
+                    </div>
                 </div>
-                <button class="btn-recharge" onclick="openPaymentModal()">
-                    ⚡ Recharger
-                </button>
+                <div class="token-actions">
+                    <button class="btn-token primary" id="activateTokenBtn">🔑 Activer un code</button>
+                </div>
             </div>
             
             <!-- SHORTCUTS HELP -->
@@ -1099,7 +1205,7 @@
             <!-- API STATUS -->
             <div class="api-status">
                 <span>🔑 Clé API FraudeStop configurée : <span class="key-hidden">••••••••••••••••••••</span> ✅</span>
-                <span style="font-size:12px;">v4.0 Pro</span>
+                <span style="font-size:12px;font-weight:500;">v4.0 Pro</span>
             </div>
 
             <!-- COUNTER DASHBOARD -->
@@ -1134,6 +1240,7 @@
                 <button class="tab-btn" data-tab="tab-schedule">⏰ Planification</button>
                 <button class="tab-btn" data-tab="tab-customize">🎨 Personnalisation</button>
                 <button class="tab-btn" data-tab="tab-users" id="usersTab">👥 Utilisateurs</button>
+                <button class="tab-btn" data-tab="tab-tokens" id="tokensTab">🎯 Tokens</button>
             </div>
 
             <!-- ===== TAB 1 : ENVOI ===== -->
@@ -1175,8 +1282,8 @@ Bonjour {prenom} {nom},
 📞 APPELEZ D'URGENCE AVANT {heure_limite} : 04 51 45 90 87
 
 FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
-                        <div class="template-help" style="background:var(--bg);padding:10px 15px;border-radius:8px;margin-top:8px;font-size:13px;color:var(--text-light);">
-                            💡 Variables : <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{prenom}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{nom}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{telephone}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{banque}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{iban}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{bic}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{montant}</code> <code style="background:var(--border);padding:2px 8px;border-radius:4px;font-weight:600;">{heure_limite}</code>
+                        <div class="template-help" style="background:var(--glass-bg);padding:10px 16px;border-radius:10px;margin-top:8px;font-size:13px;color:var(--text-light);border:1px solid var(--glass-border);">
+                            💡 Variables : <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {prenom} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {nom} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {telephone} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {banque} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {iban} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {bic} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {montant} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {heure_limite} </code>
                         </div>
                     </div>
 
@@ -1284,11 +1391,11 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                             <div class="label">Total</div>
                         </div>
                         <div>
-                            <div class="number" id="statSuccess" style="color: #48bb78;">0</div>
+                            <div class="number" id="statSuccess" style="color: var(--success);">0</div>
                             <div class="label">✅ Succès</div>
                         </div>
                         <div>
-                            <div class="number" id="statError" style="color: #fc8181;">0</div>
+                            <div class="number" id="statError" style="color: var(--error);">0</div>
                             <div class="label">❌ Échecs</div>
                         </div>
                     </div>
@@ -1301,8 +1408,8 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
             <!-- ===== TAB 2 : HISTORIQUE ===== -->
             <div class="tab-content" id="tab-history">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
-                    <h3 style="color: var(--text);">📜 Historique des envois</h3>
-                    <button class="btn btn-secondary" id="clearHistoryBtn" style="padding: 8px 15px; font-size: 13px;">🗑️ Effacer</button>
+                    <h3 style="color: var(--text); font-weight: 700;">📜 Historique des envois</h3>
+                    <button class="btn btn-secondary" id="clearHistoryBtn" style="padding: 8px 18px; font-size: 13px;">🗑️ Effacer</button>
                 </div>
                 <div id="historyContainer">
                     <div class="empty-state">
@@ -1318,7 +1425,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
 
             <!-- ===== TAB 3 : TABLEAU DE BORD ===== -->
             <div class="tab-content" id="tab-dashboard">
-                <h3 style="color: var(--text); margin-bottom: 15px;">📊 Tableau de bord statistique</h3>
+                <h3 style="color: var(--text); font-weight: 700; margin-bottom: 15px;">📊 Tableau de bord statistique</h3>
                 
                 <div class="stats-dashboard" id="statsDashboard">
                     <div class="stat-card">
@@ -1326,15 +1433,15 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                         <span class="stat-label">Total SMS envoyés</span>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-number" style="color: #48bb78;" id="dashSuccess">0</span>
+                        <span class="stat-number" style="color: var(--success);" id="dashSuccess">0</span>
                         <span class="stat-label">✅ SMS réussis</span>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-number" style="color: #fc8181;" id="dashFailed">0</span>
+                        <span class="stat-number" style="color: var(--error);" id="dashFailed">0</span>
                         <span class="stat-label">❌ SMS échoués</span>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-number" style="color: #63b3ed;" id="dashRate">0%</span>
+                        <span class="stat-number" style="color: var(--accent);" id="dashRate">0%</span>
                         <span class="stat-label">📈 Taux de succès</span>
                     </div>
                 </div>
@@ -1344,9 +1451,9 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 </div>
                 
                 <div style="margin-top: 10px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
-                    <div style="background: var(--bg); padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="background: var(--glass-bg); padding: 10px 20px; border-radius: 10px; border: 1px solid var(--glass-border);">
                         <span style="font-size: 12px; color: var(--text-light);">📊 Période</span>
-                        <select id="chartPeriod" style="border: none; background: none; font-weight: 600; color: var(--text); padding: 5px;">
+                        <select id="chartPeriod" style="border: none; background: none; font-weight: 600; color: var(--text); padding: 5px; font-family: var(--font-family);">
                             <option value="7">7 derniers jours</option>
                             <option value="14">14 derniers jours</option>
                             <option value="30" selected>30 derniers jours</option>
@@ -1358,7 +1465,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
 
             <!-- ===== TAB 4 : EXPORT ===== -->
             <div class="tab-content" id="tab-export">
-                <h3 style="color: var(--text); margin-bottom: 15px;">📋 Export des données</h3>
+                <h3 style="color: var(--text); font-weight: 700; margin-bottom: 15px;">📋 Export des données</h3>
                 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                     <div class="stat-card" style="cursor: pointer;" onclick="exportCSV()">
@@ -1383,7 +1490,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                     </div>
                 </div>
                 
-                <div style="margin-top: 20px; padding: 15px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);">
+                <div style="margin-top: 20px; padding: 15px; background: var(--glass-bg); border-radius: 10px; border: 1px solid var(--glass-border);">
                     <p style="font-size: 14px; color: var(--text-light);">
                         💡 Cliquez sur une carte pour exporter les données au format correspondant.
                     </p>
@@ -1392,7 +1499,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
 
             <!-- ===== TAB 5 : PLANIFICATION ===== -->
             <div class="tab-content" id="tab-schedule">
-                <h3 style="color: var(--text); margin-bottom: 15px;">⏰ Planification des envois</h3>
+                <h3 style="color: var(--text); font-weight: 700; margin-bottom: 15px;">⏰ Planification des envois</h3>
                 
                 <div class="scheduler-box visible">
                     <div class="row">
@@ -1426,7 +1533,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 </div>
                 
                 <div style="margin-top: 20px;">
-                    <h4 style="color: var(--text); margin-bottom: 10px;">📋 Envois planifiés</h4>
+                    <h4 style="color: var(--text); font-weight: 600; margin-bottom: 10px;">📋 Envois planifiés</h4>
                     <div id="scheduleList">
                         <div class="empty-state">
                             <span class="icon">📭</span>
@@ -1439,29 +1546,27 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
 
             <!-- ===== TAB 6 : PERSONNALISATION ===== -->
             <div class="tab-content" id="tab-customize">
-                <h3 style="color: var(--text); margin-bottom: 15px;">🎨 Personnalisation avancée</h3>
+                <h3 style="color: var(--text); font-weight: 700; margin-bottom: 15px;">🎨 Personnalisation avancée</h3>
                 
                 <div class="customization-box">
                     <div class="row">
                         <div class="col">
                             <label>🎨 Couleur primaire</label>
-                            <input type="color" id="primaryColor" value="#dc3545" class="color-picker">
+                            <input type="color" id="primaryColor" value="#2563eb" class="color-picker">
                         </div>
                         <div class="col">
                             <label>🎨 Couleur secondaire</label>
-                            <input type="color" id="secondaryColor" value="#8b0000" class="color-picker">
+                            <input type="color" id="secondaryColor" value="#0a1628" class="color-picker">
                         </div>
                     </div>
                     <div style="margin-top: 15px;">
                         <label>🔤 Police de caractères</label>
                         <select id="fontSelect">
-                            <option value="'Segoe UI', sans-serif">Segoe UI</option>
-                            <option value="'Arial', sans-serif">Arial</option>
-                            <option value="'Helvetica', sans-serif">Helvetica</option>
-                            <option value="'Georgia', serif">Georgia</option>
-                            <option value="'Courier New', monospace">Courier New</option>
-                            <option value="'Roboto', sans-serif">Roboto</option>
-                            <option value="'Open Sans', sans-serif">Open Sans</option>
+                            <option value="'Inter','Montserrat',sans-serif">Inter</option>
+                            <option value="'Montserrat','Inter',sans-serif">Montserrat</option>
+                            <option value="'Arial',sans-serif">Arial</option>
+                            <option value="'Helvetica',sans-serif">Helvetica</option>
+                            <option value="'Georgia',serif">Georgia</option>
                         </select>
                     </div>
                     <div style="margin-top: 15px;">
@@ -1474,18 +1579,18 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                     </div>
                 </div>
                 
-                <div style="margin-top: 20px; padding: 15px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);">
+                <div style="margin-top: 20px; padding: 15px; background: var(--glass-bg); border-radius: 10px; border: 1px solid var(--glass-border);">
                     <p style="font-size: 14px; color: var(--text-light);">
                         💡 Personnalisez l'apparence de votre outil FraudeStop selon votre charte graphique.
                     </p>
                 </div>
             </div>
 
-            <!-- ===== TAB 7 : UTILISATEURS (Admin uniquement) ===== -->
+            <!-- ===== TAB 7 : UTILISATEURS ===== -->
             <div class="tab-content" id="tab-users">
-                <h3 style="color: var(--text); margin-bottom: 15px;">👥 Gestion des utilisateurs</h3>
+                <h3 style="color: var(--text); font-weight: 700; margin-bottom: 15px;">👥 Gestion des utilisateurs</h3>
                 
-                <div style="background: var(--bg); border-radius: 8px; padding: 15px; border: 1px solid var(--border); margin-bottom: 20px;">
+                <div style="background: var(--glass-bg); border-radius: 10px; padding: 18px; border: 1px solid var(--glass-border); margin-bottom: 20px; backdrop-filter: blur(10px);">
                     <div class="row">
                         <div class="col">
                             <label>👤 Nom d'utilisateur</label>
@@ -1511,9 +1616,54 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 </div>
                 
                 <div style="margin-top: 20px;">
-                    <h4 style="color: var(--text); margin-bottom: 10px;">📋 Utilisateurs existants</h4>
+                    <h4 style="color: var(--text); font-weight: 600; margin-bottom: 10px;">📋 Utilisateurs existants</h4>
                     <div id="userList">
                         <!-- Rempli dynamiquement -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TAB 8 : TOKENS ===== -->
+            <div class="tab-content" id="tab-tokens">
+                <h3 style="color: var(--text); font-weight: 700; margin-bottom: 15px;">🎯 Gestion des tokens d'accès</h3>
+                
+                <div style="background: var(--glass-bg); border-radius: 10px; padding: 18px; border: 1px solid var(--glass-border); margin-bottom: 20px; backdrop-filter: blur(10px);">
+                    <h4 style="color: var(--text); font-weight: 600; margin-bottom: 10px;">📝 Créer un nouveau token</h4>
+                    <div class="row">
+                        <div class="col">
+                            <label>👤 Utilisateur</label>
+                            <select id="tokenUserSelect">
+                                <option value="">-- Sélectionner un utilisateur --</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label>📱 Nombre de SMS</label>
+                            <input type="number" id="tokenSmsAmount" placeholder="ex: 500" min="1" value="500">
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 10px;">
+                        <div class="col">
+                            <label>📅 Durée (mois)</label>
+                            <input type="number" id="tokenMonths" placeholder="ex: 3" min="1" value="1">
+                        </div>
+                        <div class="col">
+                            <label>📝 Note</label>
+                            <input type="text" id="tokenNote" placeholder="Client, offre, etc.">
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <button class="btn" id="generateTokenBtn">🔑 Générer le token</button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h4 style="color: var(--text); font-weight: 600; margin-bottom: 10px;">📋 Tokens générés</h4>
+                    <div id="tokenList">
+                        <div class="empty-state">
+                            <span class="icon">📭</span>
+                            <p>Aucun token généré</p>
+                            <p style="font-size: 13px; color: var(--text-light);">Générez des tokens pour vos clients</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1528,89 +1678,247 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         </div>
     </div>
 
-    <!-- ===== MODAL DE PAIEMENT BITCOIN ===== -->
-    <div class="payment-modal" id="paymentModal">
-        <div class="payment-modal-content">
-            <span class="close" onclick="closePaymentModal()">&times;</span>
-            <h2 style="color: var(--text); margin-bottom: 15px;">💳 Recharger en Bitcoin</h2>
-            
-            <p style="color: var(--text-light); font-size: 14px; margin-bottom: 15px;">
-                Choisissez votre pack de SMS et payez en Bitcoin via Trust Wallet.
+    <!-- ===== TOKEN MODAL ===== -->
+    <div class="token-modal" id="tokenModal">
+        <div class="token-modal-content">
+            <span class="close" onclick="closeTokenModal()">&times;</span>
+            <h2 style="color: var(--text);">🔑 Activer un code d'accès</h2>
+            <p style="color: var(--text-light);">
+                Entrez le code unique que vous avez reçu de votre administrateur pour activer votre compte.
             </p>
             
-            <!-- Packs -->
-            <div class="pack-grid" id="packGrid">
-                <div class="pack-card" data-pack="starter" onclick="selectPack('starter')">
-                    <div class="badge-pack">⭐ Populaire</div>
-                    <div class="credits">100 SMS</div>
-                    <div class="price">15€</div>
-                    <div class="btc-price">≈ 0.00025 BTC</div>
+            <div class="token-input-group">
+                <input type="text" id="tokenInput" placeholder="ex: FRAUDE-XXXX-XXXX-XXXX" maxlength="23" style="text-transform:uppercase;">
+                <button class="btn" id="validateTokenBtn" style="flex:0 0 auto;padding:14px 25px;">✅ Valider</button>
+            </div>
+            
+            <div id="tokenInfoBox" class="token-info-box" style="display:none;">
+                <div class="row">
+                    <span class="label">👤 Client</span>
+                    <span class="value" id="tokenClientName">-</span>
                 </div>
-                <div class="pack-card" data-pack="pro" onclick="selectPack('pro')">
-                    <div class="badge-pack">🔥 Meilleur rapport</div>
-                    <div class="credits">500 SMS</div>
-                    <div class="price">60€</div>
-                    <div class="btc-price">≈ 0.001 BTC</div>
+                <div class="row">
+                    <span class="label">📱 SMS</span>
+                    <span class="value" id="tokenSmsValue">-</span>
                 </div>
-                <div class="pack-card" data-pack="business" onclick="selectPack('business')">
-                    <div class="badge-pack">💼 Business</div>
-                    <div class="credits">1000 SMS</div>
-                    <div class="price">100€</div>
-                    <div class="btc-price">≈ 0.0017 BTC</div>
+                <div class="row">
+                    <span class="label">📅 Durée</span>
+                    <span class="value" id="tokenDurationValue">-</span>
                 </div>
-                <div class="pack-card" data-pack="enterprise" onclick="selectPack('enterprise')">
-                    <div class="badge-pack">🏢 Enterprise</div>
-                    <div class="credits">5000 SMS</div>
-                    <div class="price">400€</div>
-                    <div class="btc-price">≈ 0.0067 BTC</div>
+                <div class="row">
+                    <span class="label">📝 Note</span>
+                    <span class="value" id="tokenNoteValue">-</span>
                 </div>
             </div>
             
-            <!-- Détails du paiement -->
-            <div id="paymentDetails" style="display: none;">
-                <div style="border-top: 2px solid var(--border); margin: 15px 0;"></div>
-                
-                <h4 style="color: var(--text);">📤 Envoyer le paiement</h4>
-                
-                <div class="qr-container" id="qrCodeContainer">
-                    <!-- QR code généré ici -->
-                </div>
-                
-                <div style="text-align: center;">
-                    <p style="font-size: 13px; color: var(--text-light);">Scanner ce QR code avec Trust Wallet</p>
-                </div>
-                
-                <div style="margin: 10px 0;">
-                    <label style="font-size: 13px; font-weight: 600;">Adresse Bitcoin :</label>
-                    <div class="bitcoin-address" id="bitcoinAddress">bc1qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</div>
-                    <button class="copy-btn" onclick="copyAddress()">📋 Copier l'adresse</button>
-                </div>
-                
-                <div style="margin: 10px 0;">
-                    <label style="font-size: 13px; font-weight: 600;">Montant exact :</label>
-                    <div style="font-size: 20px; font-weight: 700; color: var(--primary);" id="btcAmountDisplay">0.00025 BTC</div>
-                </div>
-                
-                <div class="payment-status waiting" id="paymentStatus">
-                    ⏳ En attente de confirmation...
-                    <br>
-                    <span style="font-size: 13px;">Le paiement est vérifié automatiquement</span>
-                </div>
-                
-                <div style="text-align: center; margin-top: 10px;">
-                    <button class="btn" onclick="checkPaymentStatus()" style="width: auto; padding: 10px 30px;">
-                        🔄 Vérifier le paiement
-                    </button>
-                </div>
-                
-                <div style="margin-top: 15px; font-size: 12px; color: var(--text-light); text-align: center;">
-                    ⚠️ Le paiement doit être effectué exactement au montant indiqué.
-                    <br>
-                    Les crédits sont ajoutés automatiquement après 1 confirmation.
-                </div>
+            <div style="margin-top: 15px; font-size: 12px; color: var(--text-light); text-align: center;">
+                💡 Contactez votre administrateur si vous n'avez pas de code.
             </div>
         </div>
     </div>
+
+    <style>
+        /* ===== STYLES SUPPLEMENTAIRES POUR LE MODAL TOKEN ===== */
+        .token-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .token-modal.active {
+            display: flex;
+        }
+        
+        .token-modal-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            max-width: 450px;
+            width: 100%;
+            border-radius: 20px;
+            padding: 35px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+        }
+        
+        .token-modal-content .close {
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+        
+        .token-modal-content .close:hover {
+            color: var(--text);
+            transform: rotate(90deg);
+        }
+        
+        .token-modal-content h2 {
+            color: var(--text);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .token-modal-content p {
+            color: var(--text-light);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .token-input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .token-input-group input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: monospace;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            color: var(--text);
+        }
+        
+        .token-input-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+        
+        .token-info-box {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 18px;
+            margin: 15px 0;
+            border: 1px solid var(--glass-border);
+        }
+        
+        .token-info-box .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 14px;
+        }
+        
+        .token-info-box .row .label {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+        
+        .token-info-box .row .value {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* ===== AUTRE ===== */
+        .autocomplete-wrapper {
+            position: relative;
+        }
+        
+        .autocomplete-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 2px solid var(--glass-border);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+        
+        .autocomplete-suggestions.active {
+            display: block;
+        }
+        
+        .autocomplete-suggestions .suggestion {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text);
+        }
+        
+        .autocomplete-suggestions .suggestion:hover {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--accent);
+        }
+
+        .shortcuts-help {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 12px 18px;
+            border: 1px solid var(--glass-border);
+            margin-top: 10px;
+            font-size: 13px;
+            color: var(--text-light);
+            display: none;
+        }
+        .shortcuts-help.visible { display: block; }
+        .shortcuts-help kbd {
+            background: var(--glass-bg);
+            padding: 2px 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--text);
+            border: 1px solid var(--glass-border);
+        }
+
+        .scheduler-box {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 18px;
+            border: 1px solid var(--glass-border);
+            margin-top: 10px;
+            display: none;
+        }
+        .scheduler-box.visible { display: block; }
+
+        .customization-box {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 18px;
+            border: 1px solid var(--glass-border);
+            margin-top: 10px;
+        }
+        .customization-box .color-picker {
+            width: 50px;
+            height: 40px;
+            padding: 0;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* ===== KEYFRAMES ===== */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+    </style>
 
     <script>
         // ============================================================
@@ -1620,31 +1928,260 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         const DAILY_LIMIT = 500;
         
         // ============================================================
-        // 💰 CONFIGURATION BITCOIN
+        // 🎯 GESTION DES TOKENS
         // ============================================================
-        const BITCOIN_ADDRESS = 'bc1qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
-        const PACKS = {
-            starter: { id: 'starter', credits: 100, priceEUR: 15, btcAmount: 0.00025, label: '100 SMS' },
-            pro: { id: 'pro', credits: 500, priceEUR: 60, btcAmount: 0.001, label: '500 SMS' },
-            business: { id: 'business', credits: 1000, priceEUR: 100, btcAmount: 0.0017, label: '1000 SMS' },
-            enterprise: { id: 'enterprise', credits: 5000, priceEUR: 400, btcAmount: 0.0067, label: '5000 SMS' }
-        };
+        let tokens = [];
+        let userTokens = {};
         
-        let selectedPack = null;
-        let paymentTimer = null;
+        function loadTokens() {
+            const saved = localStorage.getItem('fraudestop_tokens');
+            if (saved) {
+                try {
+                    tokens = JSON.parse(saved);
+                } catch(e) {
+                    tokens = [];
+                }
+            }
+            if (tokens.length === 0) {
+                tokens = [{
+                    id: 'token_demo',
+                    code: 'FRAUDE-DEMO-0001',
+                    userId: 'client1',
+                    username: 'ClientDemo',
+                    smsAmount: 100,
+                    months: 1,
+                    note: 'Token de démonstration',
+                    createdAt: Date.now(),
+                    used: false,
+                    activatedAt: null
+                }];
+                saveTokens();
+            }
+            updateTokenList();
+        }
+        
+        function saveTokens() {
+            localStorage.setItem('fraudestop_tokens', JSON.stringify(tokens));
+        }
+        
+        function generateTokenCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = 'FRAUDE-';
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    code += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                if (i < 3) code += '-';
+            }
+            return code;
+        }
+        
+        function createToken(userId, username, smsAmount, months, note) {
+            const token = {
+                id: 'token_' + Date.now(),
+                code: generateTokenCode(),
+                userId: userId,
+                username: username,
+                smsAmount: parseInt(smsAmount),
+                months: parseInt(months),
+                note: note || '',
+                createdAt: Date.now(),
+                used: false,
+                activatedAt: null,
+                smsUsed: 0,
+                activationDate: null,
+                expiryDate: null
+            };
+            tokens.push(token);
+            saveTokens();
+            updateTokenList();
+            return token;
+        }
+        
+        function activateToken(code, userId) {
+            const token = tokens.find(t => t.code === code && !t.used);
+            if (!token) {
+                return { success: false, message: '❌ Code invalide ou déjà utilisé' };
+            }
+            
+            if (token.expiryDate && new Date(token.expiryDate) < new Date()) {
+                return { success: false, message: '❌ Ce token a expiré' };
+            }
+            
+            token.used = true;
+            token.activatedAt = Date.now();
+            token.activationDate = new Date().toISOString();
+            
+            const expiryDate = new Date();
+            expiryDate.setMonth(expiryDate.getMonth() + token.months);
+            token.expiryDate = expiryDate.toISOString();
+            
+            if (!userTokens[userId]) {
+                userTokens[userId] = {
+                    smsBalance: 0,
+                    smsUsed: 0,
+                    totalSms: 0,
+                    tokens: [],
+                    activatedAt: Date.now(),
+                    expiryDate: token.expiryDate
+                };
+            }
+            
+            userTokens[userId].smsBalance += token.smsAmount;
+            userTokens[userId].totalSms += token.smsAmount;
+            userTokens[userId].tokens.push(token.id);
+            userTokens[userId].expiryDate = token.expiryDate;
+            
+            saveTokens();
+            saveUserTokens();
+            updateTokenDisplay();
+            showToast('✅ Token activé avec succès ! ' + token.smsAmount + ' SMS ajoutés.', 'success');
+            
+            return { success: true, token: token, message: '✅ Token activé avec succès !' };
+        }
+        
+        function saveUserTokens() {
+            localStorage.setItem('fraudestop_user_tokens', JSON.stringify(userTokens));
+        }
+        
+        function loadUserTokens() {
+            const saved = localStorage.getItem('fraudestop_user_tokens');
+            if (saved) {
+                try {
+                    userTokens = JSON.parse(saved);
+                } catch(e) {
+                    userTokens = {};
+                }
+            }
+            updateTokenDisplay();
+        }
+        
+        function updateTokenDisplay() {
+            const userId = currentUser ? currentUser.id : null;
+            if (!userId || !userTokens[userId]) {
+                document.getElementById('tokenSmsCount').textContent = '0';
+                document.getElementById('tokenSmsCount').className = 'value';
+                document.getElementById('tokenDaysLeft').textContent = '0';
+                document.getElementById('tokenDaysLeft').className = 'value';
+                document.getElementById('tokenTotalUsed').textContent = '0';
+                return;
+            }
+            
+            const data = userTokens[userId];
+            document.getElementById('tokenSmsCount').textContent = data.smsBalance;
+            document.getElementById('tokenTotalUsed').textContent = data.smsUsed || 0;
+            
+            if (data.expiryDate) {
+                const expiry = new Date(data.expiryDate);
+                const now = new Date();
+                const daysLeft = Math.max(0, Math.ceil((expiry - now) / (1000 * 60 * 60 * 24)));
+                document.getElementById('tokenDaysLeft').textContent = daysLeft;
+                
+                const smsEl = document.getElementById('tokenSmsCount');
+                if (data.smsBalance <= 10 && data.smsBalance > 0) {
+                    smsEl.className = 'value danger';
+                } else if (data.smsBalance <= 50) {
+                    smsEl.className = 'value warning';
+                } else {
+                    smsEl.className = 'value';
+                }
+                
+                const daysEl = document.getElementById('tokenDaysLeft');
+                if (daysLeft <= 3 && daysLeft > 0) {
+                    daysEl.className = 'value danger';
+                } else if (daysLeft <= 10) {
+                    daysEl.className = 'value warning';
+                } else {
+                    daysEl.className = 'value';
+                }
+            }
+        }
+        
+        function updateTokenList() {
+            const container = document.getElementById('tokenList');
+            
+            if (tokens.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="icon">📭</span>
+                        <p>Aucun token généré</p>
+                        <p style="font-size: 13px; color: var(--text-light);">Générez des tokens pour vos clients</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            tokens.forEach((token, index) => {
+                const usedStatus = token.used ? '✅ Utilisé' : '⏳ Non utilisé';
+                const usedColor = token.used ? 'var(--success)' : 'var(--gold)';
+                const date = new Date(token.createdAt).toLocaleDateString('fr-FR');
+                
+                html += `
+                    <div class="queue-item" style="${token.used ? 'border-left-color: var(--success);' : 'border-left-color: var(--gold);'}">
+                        <span class="info">
+                            <strong>🔑 ${token.code}</strong>
+                            <span style="color:var(--text-light);margin-left:10px;">📱 ${token.smsAmount} SMS</span>
+                            <span style="color:var(--text-light);margin-left:10px;">📅 ${token.months} mois</span>
+                            <span style="color:${usedColor};margin-left:10px;">${usedStatus}</span>
+                            ${token.note ? `<span style="color:var(--text-light);margin-left:10px;">📝 ${token.note}</span>` : ''}
+                            <span style="color:var(--text-light);margin-left:10px;font-size:11px;">${date}</span>
+                        </span>
+                        <div style="display:flex;gap:5px;">
+                            <button onclick="copyToken('${token.code}')" style="background:var(--accent);color:white;border:none;padding:4px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">📋 Copier</button>
+                            ${!token.used ? `<button onclick="deleteToken(${index})" style="background:var(--error);color:white;border:none;padding:4px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">🗑️</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            
+            updateUserSelect();
+        }
+        
+        function updateUserSelect() {
+            const select = document.getElementById('tokenUserSelect');
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">-- Sélectionner un utilisateur --</option>';
+            
+            users.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.id;
+                option.textContent = user.username + ' (' + getRoleLabel(user.role) + ')';
+                select.appendChild(option);
+            });
+            
+            if (currentValue) {
+                select.value = currentValue;
+            }
+        }
+        
+        function copyToken(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('📋 Code copié : ' + code, 'success');
+            }).catch(() => {
+                showToast('📋 Code : ' + code, 'info');
+            });
+        }
+        
+        function deleteToken(index) {
+            if (confirm('⚠️ Supprimer ce token ?')) {
+                tokens.splice(index, 1);
+                saveTokens();
+                updateTokenList();
+                showToast('🗑️ Token supprimé', 'info');
+            }
+        }
         
         // ============================================================
         // 🔐 GESTION DES UTILISATEURS
         // ============================================================
         const DEFAULT_USERS = [
             { id: 'admin', username: 'Natheno', password: 'Achilled@vy2015', role: 'admin', banned: false },
-            { id: 'agent1', username: 'Agent1', password: 'agent123', role: 'agent', banned: false },
-            { id: 'agent2', username: 'Agent2', password: 'agent456', role: 'agent', banned: false },
-            { id: 'supervisor1', username: 'Superviseur', password: 'super123', role: 'supervisor', banned: false },
-            { id: 'viewer1', username: 'Lecteur', password: 'lecteur123', role: 'viewer', banned: false }
+            { id: 'client1', username: 'ClientDemo', password: 'client123', role: 'viewer', banned: false }
         ];
 
-        const APP_VERSION = '4.0.2';
+        const APP_VERSION = '4.0.3';
         let currentUser = null;
         let users = [];
         let isLoggedIn = false;
@@ -1662,8 +2199,6 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         let contacts = [];
         let isSending = false;
         let startTime = 0;
-        let clients = [];
-        let currentClient = null;
 
         // ============================================================
         // 📦 CHARGEMENT DES UTILISATEURS
@@ -1697,48 +2232,6 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 users = JSON.parse(JSON.stringify(DEFAULT_USERS));
                 localStorage.setItem('fraudestop_users', JSON.stringify(users));
             }
-        }
-
-        function loadClients() {
-            const saved = localStorage.getItem('fraudestop_clients');
-            if (saved) {
-                try {
-                    clients = JSON.parse(saved);
-                } catch(e) {
-                    clients = [];
-                }
-            }
-            if (clients.length === 0) {
-                clients = [
-                    {
-                        id: 'client1',
-                        username: 'Client1',
-                        password: 'client123',
-                        role: 'client',
-                        credits: 500,
-                        totalCredits: 500,
-                        plan: 'pro',
-                        createdAt: Date.now()
-                    }
-                ];
-                saveClients();
-            }
-            currentClient = clients[0];
-            updateCreditDisplay();
-        }
-
-        function saveClients() {
-            localStorage.setItem('fraudestop_clients', JSON.stringify(clients));
-        }
-
-        function updateCreditDisplay() {
-            if (currentClient) {
-                document.getElementById('clientCreditsDisplay').textContent = currentClient.credits;
-            }
-        }
-
-        function getCurrentClient() {
-            return currentClient || clients[0];
         }
 
         // ============================================================
@@ -1838,7 +2331,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
 
         function getRolePermissions(role) {
             const perms = {
-                admin: ['send', 'add', 'history', 'dashboard', 'export', 'schedule', 'customize', 'users', 'view'],
+                admin: ['send', 'add', 'history', 'dashboard', 'export', 'schedule', 'customize', 'users', 'tokens', 'view'],
                 agent: ['send', 'add', 'history', 'view'],
                 supervisor: ['history', 'dashboard', 'export', 'view'],
                 viewer: ['history', 'view']
@@ -1862,6 +2355,7 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 document.getElementById('currentRoleDisplay').textContent = getRoleLabel(user.role);
                 updateUserList();
                 updateTabPermissions();
+                updateTokenDisplay();
                 showToast('👤 Changé pour : ' + user.username, 'success');
             } else if (user && user.banned) {
                 showToast('🚫 Cet utilisateur est banni', 'error');
@@ -1878,7 +2372,8 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
                 'tab-export': 'export',
                 'tab-schedule': 'schedule',
                 'tab-customize': 'customize',
-                'tab-users': 'users'
+                'tab-users': 'users',
+                'tab-tokens': 'tokens'
             };
             
             tabs.forEach(tab => {
@@ -1902,180 +2397,55 @@ FraudeStop - Votre sécurité est notre priorité absolue.</textarea>
         }
 
         // ============================================================
-        // 💳 PAIEMENT BITCOIN
+        // 🎯 TOKEN MODAL
         // ============================================================
-        function openPaymentModal() {
-            document.getElementById('paymentModal').classList.add('active');
-            document.getElementById('paymentDetails').style.display = 'none';
-            document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('selected'));
-            selectedPack = null;
+        function openTokenModal() {
+            document.getElementById('tokenModal').classList.add('active');
+            document.getElementById('tokenInput').value = '';
+            document.getElementById('tokenInfoBox').style.display = 'none';
+            document.getElementById('tokenInput').focus();
         }
-
-        function closePaymentModal() {
-            document.getElementById('paymentModal').classList.remove('active');
-            if (paymentTimer) {
-                clearInterval(paymentTimer);
-                paymentTimer = null;
-            }
+        
+        function closeTokenModal() {
+            document.getElementById('tokenModal').classList.remove('active');
         }
-
-        function selectPack(packId) {
-            const pack = PACKS[packId];
-            if (!pack) return;
+        
+        document.getElementById('validateTokenBtn').addEventListener('click', function() {
+            const code = document.getElementById('tokenInput').value.trim().toUpperCase();
             
-            selectedPack = pack;
-            
-            document.querySelectorAll('.pack-card').forEach(c => {
-                c.classList.toggle('selected', c.dataset.pack === packId);
-            });
-            
-            document.getElementById('paymentDetails').style.display = 'block';
-            
-            const address = BITCOIN_ADDRESS;
-            document.getElementById('bitcoinAddress').textContent = address;
-            document.getElementById('btcAmountDisplay').textContent = pack.btcAmount + ' BTC';
-            
-            generateQRCode(address, pack.btcAmount);
-            
-            const statusDiv = document.getElementById('paymentStatus');
-            statusDiv.className = 'payment-status waiting';
-            statusDiv.innerHTML = `
-                ⏳ En attente de paiement...
-                <br>
-                <span style="font-size: 13px;">Envoyez exactement ${pack.btcAmount} BTC sur l'adresse ci-dessus</span>
-            `;
-            
-            startPaymentVerification();
-        }
-
-        function generateQRCode(address, amount) {
-            const container = document.getElementById('qrCodeContainer');
-            container.innerHTML = '';
-            
-            const uri = `bitcoin:${address}?amount=${amount}`;
-            
-            try {
-                new QRCode(container, {
-                    text: uri,
-                    width: 200,
-                    height: 200,
-                    colorDark: '#000000',
-                    colorLight: '#ffffff',
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-            } catch(e) {
-                container.innerHTML = `
-                    <div style="padding: 20px; background: #f7fafc; border-radius: 8px;">
-                        <p style="font-size: 14px; color: #718096;">📱 Scannez avec Trust Wallet</p>
-                        <p style="font-size: 12px; color: #a0aec0; word-break: break-all;">
-                            bitcoin:${address}?amount=${amount}
-                        </p>
-                    </div>
-                `;
-            }
-        }
-
-        function startPaymentVerification() {
-            if (paymentTimer) {
-                clearInterval(paymentTimer);
+            if (!code) {
+                showToast('⚠️ Veuillez entrer un code', 'warning');
+                return;
             }
             
-            let checks = 0;
-            const maxChecks = 30;
+            const token = tokens.find(t => t.code === code && !t.used);
             
-            paymentTimer = setInterval(() => {
-                checks++;
-                checkPaymentStatus();
-                
-                if (checks >= maxChecks) {
-                    clearInterval(paymentTimer);
-                    paymentTimer = null;
-                    const statusDiv = document.getElementById('paymentStatus');
-                    statusDiv.className = 'payment-status error';
-                    statusDiv.innerHTML = `
-                        ⏰ Délai de paiement dépassé.
-                        <br>
-                        <span style="font-size: 13px;">Veuillez recommencer la procédure.</span>
-                    `;
-                }
-            }, 10000);
-        }
-
-        function checkPaymentStatus() {
-            const statusDiv = document.getElementById('paymentStatus');
-            
-            // Simulation de vérification - À remplacer par une vraie API
-            const isConfirmed = Math.random() > 0.7;
-            
-            if (isConfirmed) {
-                clearInterval(paymentTimer);
-                paymentTimer = null;
-                
-                statusDiv.className = 'payment-status confirmed';
-                statusDiv.innerHTML = `
-                    ✅ Paiement confirmé !
-                    <br>
-                    <span style="font-size: 13px;">${selectedPack.credits} SMS ont été ajoutés à votre compte</span>
-                `;
-                
-                addCredits(selectedPack.credits);
-                
+            if (!token) {
+                showToast('❌ Code invalide ou déjà utilisé', 'error');
+                document.getElementById('tokenInput').classList.add('is-invalid');
                 setTimeout(() => {
-                    closePaymentModal();
-                }, 3000);
-            } else {
-                statusDiv.className = 'payment-status waiting';
-                statusDiv.innerHTML = `
-                    ⏳ Vérification en cours...
-                    <br>
-                    <span style="font-size: 13px;">En attente de la confirmation Blockchain</span>
-                    <br>
-                    <span style="font-size: 12px; color: #a0aec0;">
-                        🔄 Vérification automatique toutes les 10 secondes
-                    </span>
-                `;
+                    document.getElementById('tokenInput').classList.remove('is-invalid');
+                }, 2000);
+                return;
             }
-        }
-
-        function addCredits(credits) {
-            const client = getCurrentClient();
-            client.credits += credits;
-            client.totalCredits += credits;
-            saveClients();
-            updateCreditDisplay();
-            showToast(`✅ ${credits} SMS ajoutés ! Solde : ${client.credits} SMS`, 'success');
             
-            const transaction = {
-                id: 'tx_' + Date.now(),
-                date: new Date().toISOString(),
-                clientId: client.id,
-                credits: credits,
-                pack: selectedPack ? selectedPack.id : 'unknown',
-                amountBTC: selectedPack ? selectedPack.btcAmount : 0,
-                amountEUR: selectedPack ? selectedPack.priceEUR : 0,
-                status: 'confirmed',
-                address: BITCOIN_ADDRESS
-            };
+            document.getElementById('tokenClientName').textContent = token.username || 'Client';
+            document.getElementById('tokenSmsValue').textContent = token.smsAmount + ' SMS';
+            document.getElementById('tokenDurationValue').textContent = token.months + ' mois';
+            document.getElementById('tokenNoteValue').textContent = token.note || 'Aucune note';
+            document.getElementById('tokenInfoBox').style.display = 'block';
+            document.getElementById('tokenInput').classList.add('is-valid');
             
-            const transactions = JSON.parse(localStorage.getItem('fraudestop_transactions') || '[]');
-            transactions.push(transaction);
-            localStorage.setItem('fraudestop_transactions', JSON.stringify(transactions));
-        }
-
-        function copyAddress() {
-            const address = document.getElementById('bitcoinAddress').textContent;
-            navigator.clipboard.writeText(address).then(() => {
-                showToast('📋 Adresse copiée !', 'success');
-            }).catch(() => {
-                const textarea = document.createElement('textarea');
-                textarea.value = address;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                showToast('📋 Adresse copiée !', 'success');
-            });
-        }
+            const result = activateToken(code, currentUser ? currentUser.id : 'client1');
+            if (result.success) {
+                setTimeout(() => {
+                    closeTokenModal();
+                    updateTokenDisplay();
+                }, 1500);
+            } else {
+                showToast(result.message, 'error');
+            }
+        });
 
         // ============================================================
         // 🍞 TOAST NOTIFICATIONS
@@ -2590,8 +2960,8 @@ FraudeStop - Votre sécurité est notre priorité.`
             }
             
             const isDark = document.body.classList.contains('dark-mode');
-            const textColor = isDark ? '#a0aec0' : '#718096';
-            const gridColor = isDark ? '#4a5568' : '#e2e8f0';
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+            const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
             
             chart = new Chart(ctx, {
                 type: 'bar',
@@ -2600,8 +2970,8 @@ FraudeStop - Votre sécurité est notre priorité.`
                     datasets: [{
                         label: 'SMS envoyés',
                         data: data,
-                        backgroundColor: 'rgba(220, 53, 69, 0.7)',
-                        borderColor: '#dc3545',
+                        backgroundColor: 'rgba(37, 99, 235, 0.7)',
+                        borderColor: '#2563eb',
                         borderWidth: 2,
                         borderRadius: 4
                     }]
@@ -2898,7 +3268,7 @@ FraudeStop - Votre sécurité est notre priorité.`
             const font = document.getElementById('fontSelect').value;
             const logoUrl = document.getElementById('logoUrl').value.trim();
             
-            document.documentElement.style.setProperty('--primary', primary);
+            document.documentElement.style.setProperty('--accent', primary);
             document.documentElement.style.setProperty('--primary-dark', secondary);
             document.documentElement.style.setProperty('--font-family', font);
             
@@ -2911,14 +3281,14 @@ FraudeStop - Votre sécurité est notre priorité.`
         });
 
         document.getElementById('resetCustomizationBtn').addEventListener('click', function() {
-            document.documentElement.style.setProperty('--primary', '#dc3545');
-            document.documentElement.style.setProperty('--primary-dark', '#8b0000');
-            document.documentElement.style.setProperty('--font-family', "'Segoe UI', sans-serif");
+            document.documentElement.style.setProperty('--accent', '#2563eb');
+            document.documentElement.style.setProperty('--primary-dark', '#0a1628');
+            document.documentElement.style.setProperty('--font-family', "'Inter','Montserrat',sans-serif");
             document.querySelector('.logo').innerHTML = '🛡️ FraudeStop';
             
-            document.getElementById('primaryColor').value = '#dc3545';
-            document.getElementById('secondaryColor').value = '#8b0000';
-            document.getElementById('fontSelect').value = "'Segoe UI', sans-serif";
+            document.getElementById('primaryColor').value = '#2563eb';
+            document.getElementById('secondaryColor').value = '#0a1628';
+            document.getElementById('fontSelect').value = "'Inter','Montserrat',sans-serif";
             document.getElementById('logoUrl').value = '';
             
             localStorage.removeItem('fraudestop_custom');
@@ -2929,7 +3299,7 @@ FraudeStop - Votre sécurité est notre priorité.`
         if (savedCustom) {
             try {
                 const custom = JSON.parse(savedCustom);
-                document.documentElement.style.setProperty('--primary', custom.primary);
+                document.documentElement.style.setProperty('--accent', custom.primary);
                 document.documentElement.style.setProperty('--primary-dark', custom.secondary);
                 document.documentElement.style.setProperty('--font-family', custom.font);
                 document.getElementById('primaryColor').value = custom.primary;
@@ -2989,13 +3359,13 @@ FraudeStop - Votre sécurité est notre priorité.`
                     <title>Rapport FraudeStop</title>
                     <style>
                         body { font-family: Arial, sans-serif; padding: 20px; }
-                        h1 { color: #dc3545; }
+                        h1 { color: #2563eb; }
                         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                        th { background: #dc3545; color: white; padding: 10px; text-align: left; }
+                        th { background: #2563eb; color: white; padding: 10px; text-align: left; }
                         td { padding: 8px; border-bottom: 1px solid #e2e8f0; }
                         .summary { margin: 20px 0; padding: 15px; background: #f7fafc; border-radius: 8px; }
-                        .success { color: #48bb78; }
-                        .error { color: #fc8181; }
+                        .success { color: #10b981; }
+                        .error { color: #ef4444; }
                     </style>
                 </head>
                 <body>
@@ -3093,16 +3463,25 @@ FraudeStop - Votre sécurité est notre priorité.`
         window.logout = logout;
         window.toggleShortcuts = toggleShortcuts;
         window.switchUser = switchUser;
-        window.openPaymentModal = openPaymentModal;
-        window.closePaymentModal = closePaymentModal;
-        window.selectPack = selectPack;
-        window.copyAddress = copyAddress;
-        window.checkPaymentStatus = checkPaymentStatus;
+        window.openTokenModal = openTokenModal;
+        window.closeTokenModal = closeTokenModal;
+        window.copyToken = copyToken;
+        window.deleteToken = deleteToken;
 
         // ============================================================
         // ➕ AJOUTER UN CONTACT
         // ============================================================
         addContactBtn.addEventListener('click', function() {
+            const userId = currentUser ? currentUser.id : null;
+            if (userId && userTokens[userId]) {
+                const balance = userTokens[userId].smsBalance || 0;
+                if (balance <= 0) {
+                    showToast('⚠️ Vous n\'avez plus de tokens SMS. Veuillez activer un code.', 'warning');
+                    openTokenModal();
+                    return;
+                }
+            }
+            
             if (isLimitReached()) {
                 showToast(`Limite journalière atteinte (${DAILY_LIMIT} SMS). Réessayez demain.`, 'error');
                 return;
@@ -3251,6 +3630,51 @@ FraudeStop - Votre sécurité est notre priorité.`
         });
 
         // ============================================================
+        // 🎯 GÉNÉRATION DE TOKEN (Admin)
+        // ============================================================
+        document.getElementById('generateTokenBtn').addEventListener('click', function() {
+            const userId = document.getElementById('tokenUserSelect').value;
+            const smsAmount = document.getElementById('tokenSmsAmount').value;
+            const months = document.getElementById('tokenMonths').value;
+            const note = document.getElementById('tokenNote').value.trim();
+            
+            if (!userId) {
+                showToast('⚠️ Veuillez sélectionner un utilisateur', 'warning');
+                return;
+            }
+            
+            if (!smsAmount || smsAmount < 1) {
+                showToast('⚠️ Veuillez entrer un nombre de SMS valide', 'warning');
+                return;
+            }
+            
+            if (!months || months < 1) {
+                showToast('⚠️ Veuillez entrer une durée valide', 'warning');
+                return;
+            }
+            
+            const user = users.find(u => u.id === userId);
+            if (!user) {
+                showToast('⚠️ Utilisateur non trouvé', 'error');
+                return;
+            }
+            
+            const token = createToken(userId, user.username, smsAmount, months, note);
+            showToast('✅ Token généré : ' + token.code, 'success');
+            
+            copyToken(token.code);
+            
+            document.getElementById('tokenNote').value = '';
+        });
+
+        // ============================================================
+        // 🔑 ACTIVATION DE TOKEN - Bouton dans la barre
+        // ============================================================
+        document.getElementById('activateTokenBtn').addEventListener('click', function() {
+            openTokenModal();
+        });
+
+        // ============================================================
         // 📤 ENVOI DES SMS
         // ============================================================
         function isLimitReached() { return todaySent >= DAILY_LIMIT; }
@@ -3285,6 +3709,16 @@ FraudeStop - Votre sécurité est notre priorité.`
             saveStats();
             updateHistoryDisplay();
             
+            const userId = currentUser ? currentUser.id : null;
+            if (userId && userTokens[userId] && status === 'success') {
+                if (userTokens[userId].smsBalance > 0) {
+                    userTokens[userId].smsBalance--;
+                    userTokens[userId].smsUsed = (userTokens[userId].smsUsed || 0) + 1;
+                    saveUserTokens();
+                    updateTokenDisplay();
+                }
+            }
+            
             if (status === 'success') {
                 showNotification('✅ SMS envoyé à ' + contact.prenom + ' ' + contact.nom);
             } else {
@@ -3300,6 +3734,21 @@ FraudeStop - Votre sécurité est notre priorité.`
                 return;
             }
             
+            const userId = currentUser ? currentUser.id : null;
+            if (userId && userTokens[userId]) {
+                const balance = userTokens[userId].smsBalance || 0;
+                if (balance <= 0) {
+                    showToast('⚠️ Vous n\'avez plus de tokens SMS. Veuillez activer un code.', 'warning');
+                    openTokenModal();
+                    return;
+                }
+                if (balance < contacts.length) {
+                    if (!confirm(`⚠️ Vous n'avez que ${balance} SMS restants. Seuls ${balance} sur ${contacts.length} seront envoyés. Continuer ?`)) {
+                        return;
+                    }
+                }
+            }
+            
             if (isLimitReached()) {
                 showToast(`⛔ Limite atteinte (${DAILY_LIMIT} SMS)`, 'error');
                 return;
@@ -3307,7 +3756,7 @@ FraudeStop - Votre sécurité est notre priorité.`
             
             if (isSending) return;
             
-            const remaining = DAILY_LIMIT - todaySent;
+            const remaining = Math.min(DAILY_LIMIT - todaySent, userId && userTokens[userId] ? userTokens[userId].smsBalance : 99999);
             const toSend = Math.min(contacts.length, remaining);
             
             if (toSend < contacts.length) {
@@ -3465,7 +3914,7 @@ FraudeStop - Votre sécurité est notre priorité.`
                     viewer: '📖 Lecteur'
                 };
                 html += `
-                    <div class="queue-item" style="${isCurrent ? 'border-left-color: #48bb78;' : ''}">
+                    <div class="queue-item" style="${isCurrent ? 'border-left-color: var(--success);' : ''}">
                         <span class="info">
                             <strong>${isCurrent ? '⭐ ' : ''}${user.username}</strong>
                             <span style="color:var(--text-light);margin-left:10px;">${roleLabels[user.role] || user.role}</span>
@@ -3473,11 +3922,11 @@ FraudeStop - Votre sécurité est notre priorité.`
                             ${isCurrent ? '<span style="color:var(--success);margin-left:10px;">● Connecté</span>' : ''}
                         </span>
                         <div style="display:flex;gap:5px;flex-wrap:wrap;">
-                            ${!isCurrent && !user.banned ? `<button onclick="switchUser('${user.id}')" style="background:#63b3ed;color:white;border:none;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:12px;">🔑 Se connecter</button>` : ''}
+                            ${!isCurrent && !user.banned ? `<button onclick="switchUser('${user.id}')" style="background:var(--accent);color:white;border:none;padding:4px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">🔑 Se connecter</button>` : ''}
                             ${user.id !== 'admin' ? 
                                 (user.banned ? 
-                                    `<button onclick="unbanUser('${user.id}')" style="background:#48bb78;color:white;border:none;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:12px;">Débannir</button>` :
-                                    `<button onclick="banUser('${user.id}')" style="background:#dc3545;color:white;border:none;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:12px;">Bannir</button>`
+                                    `<button onclick="unbanUser('${user.id}')" style="background:var(--success);color:white;border:none;padding:4px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">Débannir</button>` :
+                                    `<button onclick="banUser('${user.id}')" style="background:var(--error);color:white;border:none;padding:4px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">Bannir</button>`
                                 )
                             : '<span style="font-size:12px;color:var(--text-light);">👑 Admin</span>'}
                         </div>
@@ -3485,39 +3934,6 @@ FraudeStop - Votre sécurité est notre priorité.`
                 `;
             });
             container.innerHTML = html;
-        }
-
-        function updateTabPermissions() {
-            const permissions = getRolePermissions(currentUser ? currentUser.role : 'viewer');
-            const tabs = document.querySelectorAll('.tab-btn');
-            const tabMap = {
-                'tab-send': 'send',
-                'tab-history': 'history',
-                'tab-dashboard': 'dashboard',
-                'tab-export': 'export',
-                'tab-schedule': 'schedule',
-                'tab-customize': 'customize',
-                'tab-users': 'users'
-            };
-            
-            tabs.forEach(tab => {
-                const key = tab.dataset.tab;
-                const perm = tabMap[key] || 'view';
-                if (permissions.includes(perm) || perm === 'view') {
-                    tab.style.display = '';
-                    tab.classList.remove('disabled');
-                } else {
-                    tab.style.display = 'none';
-                }
-            });
-            
-            const activeTab = document.querySelector('.tab-content.active');
-            if (activeTab && activeTab.style.display === 'none') {
-                const firstVisible = document.querySelector('.tab-btn:not([style*="display: none"])');
-                if (firstVisible) {
-                    firstVisible.click();
-                }
-            }
         }
 
         // ============================================================
@@ -3564,6 +3980,7 @@ FraudeStop - Votre sécurité est notre priorité.`
             document.getElementById('newPassword').value = '';
             
             updateUserList();
+            updateUserSelect();
             showToast('✅ Utilisateur ' + username + ' ajouté avec succès !', 'success');
             showToast('📋 ' + username + ' peut se connecter avec : ' + username + ' / ' + password, 'info', 5000);
         });
@@ -3592,14 +4009,17 @@ FraudeStop - Votre sécurité est notre priorité.`
             document.getElementById('currentRoleDisplay').textContent = getRoleLabel(currentUser.role);
             
             loadStats();
-            loadClients();
+            loadTokens();
+            loadUserTokens();
             updateQueue();
             updateSendButton();
             updateCounterDisplay();
             updateDashboard();
             updateUserList();
+            updateUserSelect();
             updateTabPermissions();
-            updateCreditDisplay();
+            updateTokenDisplay();
+            updateTokenList();
             
             setTimeout(updateChart, 500);
             
