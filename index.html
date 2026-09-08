@@ -1249,33 +1249,27 @@
                     <div class="form-group">
                         <label>📝 Template du message</label>
                         <select id="templateSelect">
-                            <option value="urgence">🚨 Urgence (recommandé)</option>
+                            <option value="urgence">⚠️ Alerte Fraude</option>
                             <option value="standard">📋 Standard</option>
                             <option value="relance">⏰ Relance</option>
                             <option value="confirmation">✅ Confirmation</option>
                         </select>
-                        <!-- NOUVEAU TEMPLATE COURT ET PROFESSIONNEL -->
-                        <textarea id="messageTemplate">🔴 ALERTE FRAUDE - {prenom} {nom}
+                        <!-- NOUVEAU TEMPLATE ULTRA-COURT -->
+                        <textarea id="messageTemplate">⚠️ ALERTE  - {prenom} {nom}
 
-Tentative de fraude détectée sur votre compte {banque}.
-IBAN: {iban} | BIC: {bic}
-Montant suspect: {montant}€
+Tentative de fraude en cours.
+Délai critique : {heure_limite}
 
-⚠️ Délai limite: {heure_limite}
+📞 CONTACTEZ-NOUS IMMÉDIATEMENT :
+04 51 45 90 87
 
-CONTACTEZ-NOUS D'URGENCE AVANT {heure_limite}:
-📞 04 51 45 90 87
-
-⛔ Si vous n'êtes pas à l'origine, faites opposition immédiatement.
-✅ Si vous confirmez, AUCUNE action n'est requise.
-
-CONSEILBQ - Protection bancaire</textarea>
+CONSEILBQ - Protection</textarea>
                         <div class="template-help" style="background:var(--glass-bg);padding:10px 16px;border-radius:10px;margin-top:8px;font-size:13px;color:var(--text-light);border:1px solid var(--glass-border);">
-                            💡 Variables : <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {prenom} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {nom} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {telephone} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {banque} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {iban} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {bic} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {montant} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {heure_limite} </code>
+                            💡 Variables : <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {prenom} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {nom} </code> <code style="background:var(--glass-bg);padding:2px 10px;border-radius:6px;font-weight:600;border:1px solid var(--glass-border);"> {heure_limite} </code>
                         </div>
                     </div>
 
-                    <!-- SAISIE CONTACT -->
+                    <!-- SAISIE CONTACT - SIMPLIFIÉE -->
                     <div class="form-group">
                         <label>👤 Saisie du destinataire</label>
                         <div class="row">
@@ -1293,32 +1287,10 @@ CONSEILBQ - Protection bancaire</textarea>
                             <div class="validation-hint" id="phoneHint"></div>
                         </div>
                         
+                        <!-- Heure limite uniquement -->
                         <div style="margin-top: 10px;">
-                            <div class="autocomplete-wrapper">
-                                <input type="text" id="contactBanque" placeholder="Nom de la banque (ex: BNP Paribas)">
-                                <div class="autocomplete-suggestions" id="banqueSuggestions"></div>
-                            </div>
-                            <div class="validation-hint" id="banqueHint"></div>
-                        </div>
-                        <div class="row" style="margin-top: 10px;">
-                            <div class="col">
-                                <input type="text" id="contactIban" placeholder="IBAN (ex: FR76 1234 5678 9012 3456 7890 123)">
-                                <div class="validation-hint" id="ibanHint"></div>
-                            </div>
-                            <div class="col">
-                                <input type="text" id="contactBic" placeholder="BIC (ex: BNPAFRPP)">
-                                <div class="validation-hint" id="bicHint"></div>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top: 10px;">
-                            <div class="col">
-                                <input type="text" id="contactMontant" placeholder="Montant suspect (ex: 1250,00)">
-                                <div class="validation-hint" id="montantHint"></div>
-                            </div>
-                            <div class="col">
-                                <input type="text" id="contactHeureLimite" placeholder="Heure limite (ex: 18h00 ou 11h-19h)">
-                                <div class="validation-hint" id="heureLimiteHint"></div>
-                            </div>
+                            <input type="text" id="contactHeureLimite" placeholder="Heure limite (ex: 18h00 ou 11h-19h)">
+                            <div class="validation-hint" id="heureLimiteHint"></div>
                         </div>
                         
                         <div style="margin-top: 10px;">
@@ -2484,66 +2456,47 @@ CONSEILBQ - Protection bancaire</textarea>
         // 📋 TEMPLATES
         // ============================================================
         const templates = {
-            urgence: `🔴 ALERTE FRAUDE - {prenom} {nom}
+            urgence: `⚠️ ALERTE  - {prenom} {nom}
 
-Tentative de fraude détectée sur votre compte {banque}.
-IBAN: {iban} | BIC: {bic}
-Montant suspect: {montant}€
+Tentative de fraude en cours.
+Délai critique : {heure_limite}
 
-⚠️ Délai limite: {heure_limite}
+📞 CONTACTEZ-NOUS IMMÉDIATEMENT :
+04 51 45 90 87
 
-CONTACTEZ-NOUS D'URGENCE AVANT {heure_limite}:
-📞 04 51 45 90 87
-
-⛔ Si vous n'êtes pas à l'origine, faites opposition immédiatement.
-✅ Si vous confirmez, AUCUNE action n'est requise.
-
-CONSEILBQ - Protection bancaire`,
+CONSEILBQ - Protection`,
 
             standard: `🔔 ALERTE FRAUDE
 
 Bonjour {prenom} {nom},
 
-Nous avons détecté une tentative de fraude sur votre compte bancaire.
+Tentative de fraude détectée.
+Délai : {heure_limite}
 
-🔴 Détails :
-• Banque : {banque}
-• IBAN : {iban}
-• BIC : {bic}
-• Montant : {montant}€
+📞 Contactez-nous : 04 51 45 90 87
 
-📞 Contactez votre conseiller au 04 51 45 90 87 avant {heure_limite}.
-
-CONSEILBQ - Votre sécurité est notre priorité.`,
+CONSEILBQ`,
 
             relance: `⏰ RAPPEL IMPORTANT
 
 Bonjour {prenom} {nom},
 
-Nous n'avons pas reçu de confirmation concernant la tentative de fraude sur votre compte.
+Nous n'avons pas reçu de confirmation.
+Délai limite : {heure_limite}
 
-🔴 Détails :
-• Banque : {banque}
-• Montant : {montant}€
-• Délai limite : {heure_limite}
+📞 CONTACT : 04 51 45 90 87
 
-📞 CONTACTEZ-NOUS D'URGENCE : 04 51 45 90 87
+CONSEILBQ`,
 
-CONSEILBQ - Protégez vos comptes.`,
-
-            confirmation: `✅ CONFIRMATION D'OPPOSITION
+            confirmation: `✅ CONFIRMATION
 
 Bonjour {prenom} {nom},
 
-Votre opposition a bien été prise en compte.
+Opposition prise en compte.
 
-🔐 Sécurité renforcée pour :
-• Banque : {banque}
-• IBAN : {iban}
+📞 04 51 45 90 87
 
-📞 Pour toute question : 04 51 45 90 87
-
-CONSEILBQ - Votre sécurité est notre priorité.`
+CONSEILBQ`
         };
 
         document.getElementById('templateSelect').addEventListener('change', function() {
@@ -2577,81 +2530,6 @@ CONSEILBQ - Votre sécurité est notre priorité.`
             return { valid: true, formatted: clean, message: '✅ Numéro français valide' };
         }
 
-        function validateFrenchIBAN(iban) {
-            let clean = iban.toUpperCase().replace(/\s/g, '');
-            if (!clean.startsWith('FR')) {
-                return { valid: false, formatted: clean, message: '❌ L\'IBAN doit commencer par FR' };
-            }
-            if (clean.length !== 27) {
-                return { valid: false, formatted: clean, message: '❌ L\'IBAN français doit faire 27 caractères' };
-            }
-            if (!/^[A-Z0-9]+$/.test(clean)) {
-                return { valid: false, formatted: clean, message: '❌ L\'IBAN ne doit contenir que des lettres et chiffres' };
-            }
-            return { valid: true, formatted: clean, message: '✅ IBAN français valide' };
-        }
-
-        function validateBIC(bic) {
-            let clean = bic.toUpperCase().replace(/\s/g, '');
-            if (clean.length !== 8 && clean.length !== 11) {
-                return { valid: false, formatted: clean, message: '❌ Le BIC doit faire 8 ou 11 caractères' };
-            }
-            if (!/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(clean)) {
-                return { valid: false, formatted: clean, message: '❌ Format BIC invalide' };
-            }
-            return { valid: true, formatted: clean, message: '✅ BIC valide' };
-        }
-
-        // ============================================================
-        // 🏦 AUTO-COMPLÉTION DES BANQUES
-        // ============================================================
-        const banquesList = [
-            'BNP Paribas', 'Société Générale', 'Crédit Agricole', 'LCL',
-            'Caisse d\'Epargne', 'Banque Populaire', 'La Banque Postale',
-            'HSBC France', 'CIC', 'Crédit Mutuel', 'Natixis', 'AXA Banque',
-            'ING Direct', 'Boursorama', 'Hello Bank', 'Fortuneo',
-            'Monabanq', 'Orange Bank', 'Revolut', 'N26'
-        ];
-
-        document.getElementById('contactBanque').addEventListener('input', function() {
-            const value = this.value.toLowerCase();
-            const suggestions = document.getElementById('banqueSuggestions');
-            
-            if (value.length < 2) {
-                suggestions.className = 'autocomplete-suggestions';
-                suggestions.innerHTML = '';
-                return;
-            }
-            
-            const matches = banquesList.filter(b => b.toLowerCase().includes(value));
-            
-            if (matches.length === 0) {
-                suggestions.className = 'autocomplete-suggestions';
-                suggestions.innerHTML = '';
-                return;
-            }
-            
-            suggestions.className = 'autocomplete-suggestions active';
-            suggestions.innerHTML = matches.map(m => 
-                `<div class="suggestion" data-value="${m}">${m}</div>`
-            ).join('');
-            
-            suggestions.querySelectorAll('.suggestion').forEach(el => {
-                el.addEventListener('click', function() {
-                    document.getElementById('contactBanque').value = this.dataset.value;
-                    suggestions.className = 'autocomplete-suggestions';
-                    suggestions.innerHTML = '';
-                    document.getElementById('contactBanque').dispatchEvent(new Event('input'));
-                });
-            });
-        });
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.autocomplete-wrapper')) {
-                document.getElementById('banqueSuggestions').className = 'autocomplete-suggestions';
-            }
-        });
-
         // ============================================================
         // 📱 VALIDATION EN TEMPS RÉEL
         // ============================================================
@@ -2660,38 +2538,6 @@ CONSEILBQ - Votre sécurité est notre priorité.`
             const hint = document.getElementById('phoneHint');
             if (value.length === 0) { this.className = ''; hint.className = 'validation-hint'; return; }
             const result = validateFrenchPhone(value);
-            if (result.valid) {
-                this.className = 'is-valid';
-                hint.className = 'validation-hint valid visible';
-                hint.textContent = result.message;
-            } else {
-                this.className = 'is-invalid';
-                hint.className = 'validation-hint invalid visible';
-                hint.textContent = result.message;
-            }
-        });
-
-        document.getElementById('contactIban').addEventListener('input', function() {
-            const value = this.value.trim();
-            const hint = document.getElementById('ibanHint');
-            if (value.length === 0) { this.className = ''; hint.className = 'validation-hint'; return; }
-            const result = validateFrenchIBAN(value);
-            if (result.valid) {
-                this.className = 'is-valid';
-                hint.className = 'validation-hint valid visible';
-                hint.textContent = result.message;
-            } else {
-                this.className = 'is-invalid';
-                hint.className = 'validation-hint invalid visible';
-                hint.textContent = result.message;
-            }
-        });
-
-        document.getElementById('contactBic').addEventListener('input', function() {
-            const value = this.value.trim();
-            const hint = document.getElementById('bicHint');
-            if (value.length === 0) { this.className = ''; hint.className = 'validation-hint'; return; }
-            const result = validateBIC(value);
             if (result.valid) {
                 this.className = 'is-valid';
                 hint.className = 'validation-hint valid visible';
@@ -2733,37 +2579,6 @@ CONSEILBQ - Votre sécurité est notre priorité.`
             }
         });
 
-        document.getElementById('contactBanque').addEventListener('input', function() {
-            const value = this.value.trim();
-            const hint = document.getElementById('banqueHint');
-            if (value.length === 0) { this.className = ''; hint.className = 'validation-hint'; return; }
-            if (value.length < 3) {
-                this.className = 'is-invalid';
-                hint.className = 'validation-hint invalid visible';
-                hint.textContent = '❌ Le nom de la banque doit faire au moins 3 caractères';
-            } else {
-                this.className = 'is-valid';
-                hint.className = 'validation-hint valid visible';
-                hint.textContent = '✅ Banque valide';
-            }
-        });
-
-        document.getElementById('contactMontant').addEventListener('input', function() {
-            const value = this.value.trim();
-            const hint = document.getElementById('montantHint');
-            if (value.length === 0) { this.className = ''; hint.className = 'validation-hint'; return; }
-            const clean = value.replace(',', '.').replace(/[^0-9.]/g, '');
-            if (clean.length === 0 || isNaN(parseFloat(clean)) || parseFloat(clean) <= 0) {
-                this.className = 'is-invalid';
-                hint.className = 'validation-hint invalid visible';
-                hint.textContent = '❌ Montant invalide (ex: 1250,00)';
-            } else {
-                this.className = 'is-valid';
-                hint.className = 'validation-hint valid visible';
-                hint.textContent = '✅ Montant valide';
-            }
-        });
-
         document.getElementById('contactHeureLimite').addEventListener('input', function() {
             const value = this.value.trim();
             const hint = document.getElementById('heureLimiteHint');
@@ -2785,10 +2600,6 @@ CONSEILBQ - Votre sécurité est notre priorité.`
         const contactNom = document.getElementById('contactNom');
         const contactPrenom = document.getElementById('contactPrenom');
         const contactTelephone = document.getElementById('contactTelephone');
-        const contactBanque = document.getElementById('contactBanque');
-        const contactIban = document.getElementById('contactIban');
-        const contactBic = document.getElementById('contactBic');
-        const contactMontant = document.getElementById('contactMontant');
         const contactHeureLimite = document.getElementById('contactHeureLimite');
         const contactNote = document.getElementById('contactNote');
         const addContactBtn = document.getElementById('addContactBtn');
@@ -2832,7 +2643,7 @@ CONSEILBQ - Votre sécurité est notre priorité.`
                         <span class="info">
                             <strong>${contact.prenom} ${contact.nom}</strong>
                             <span style="color:var(--text-light);margin-left:10px;">${contact.telephone}</span>
-                            <span class="bank-details">🏦 ${contact.banque} · 💳 ${contact.iban.substring(0, 10)}... · ⏰ ${contact.heureLimite}</span>
+                            <span class="bank-details">⏰ ${contact.heureLimite}</span>
                             ${contact.note ? `<span class="bank-details">📝 ${contact.note.substring(0, 30)}${contact.note.length > 30 ? '...' : ''}</span>` : ''}
                         </span>
                         <button class="remove-btn" data-index="${index}">✕</button>
@@ -2873,10 +2684,6 @@ CONSEILBQ - Votre sécurité est notre priorité.`
             contactNom.value = '';
             contactPrenom.value = '';
             contactTelephone.value = '';
-            contactBanque.value = '';
-            contactIban.value = '';
-            contactBic.value = '';
-            contactMontant.value = '';
             contactHeureLimite.value = '';
             contactNote.value = '';
             
@@ -3296,9 +3103,9 @@ CONSEILBQ - Votre sécurité est notre priorité.`
                 return;
             }
             
-            let csv = 'Nom,Prénom,Téléphone,Banque,IBAN,BIC,Montant,Heure Limite,Statut,Date,Note\n';
+            let csv = 'Nom,Prénom,Téléphone,Heure Limite,Statut,Date,Note\n';
             history.forEach(entry => {
-                csv += `"${entry.nom}","${entry.prenom}","${entry.telephone}","${entry.banque}","${entry.iban}","${entry.bic}","${entry.montant}","${entry.heureLimite}","${entry.status}","${new Date(entry.date).toLocaleString('fr-FR')}","${entry.note}"\n`;
+                csv += `"${entry.nom}","${entry.prenom}","${entry.telephone}","${entry.heureLimite}","${entry.status}","${new Date(entry.date).toLocaleString('fr-FR')}","${entry.note}"\n`;
             });
             
             downloadFile(csv, 'fraudestop_contacts.csv', 'text/csv');
@@ -3466,14 +3273,10 @@ CONSEILBQ - Votre sécurité est notre priorité.`
             const nom = contactNom.value.trim();
             const prenom = contactPrenom.value.trim();
             const telephone = contactTelephone.value.trim();
-            const banque = contactBanque.value.trim();
-            const iban = contactIban.value.trim();
-            const bic = contactBic.value.trim();
-            const montant = contactMontant.value.trim();
             const heureLimite = contactHeureLimite.value.trim();
             const note = contactNote.value.trim();
             
-            if (!nom || !prenom || !telephone || !banque || !iban || !bic || !montant || !heureLimite) {
+            if (!nom || !prenom || !telephone || !heureLimite) {
                 showToast('⚠️ Veuillez remplir TOUS les champs avant d\'ajouter.', 'warning');
                 return;
             }
@@ -3484,34 +3287,12 @@ CONSEILBQ - Votre sécurité est notre priorité.`
                 return;
             }
             
-            const ibanResult = validateFrenchIBAN(iban);
-            if (!ibanResult.valid) {
-                showToast(`❌ ${ibanResult.message}`, 'error');
-                return;
-            }
-            
-            const bicResult = validateBIC(bic);
-            if (!bicResult.valid) {
-                showToast(`❌ ${bicResult.message}`, 'error');
-                return;
-            }
-            
             if (nom.length < 2) {
                 showToast('❌ Le nom doit faire au moins 2 caractères', 'error');
                 return;
             }
             if (prenom.length < 2) {
                 showToast('❌ Le prénom doit faire au moins 2 caractères', 'error');
-                return;
-            }
-            if (banque.length < 3) {
-                showToast('❌ Le nom de la banque doit faire au moins 3 caractères', 'error');
-                return;
-            }
-            
-            const montantClean = montant.replace(',', '.').replace(/[^0-9.]/g, '');
-            if (montantClean.length === 0 || isNaN(parseFloat(montantClean)) || parseFloat(montantClean) <= 0) {
-                showToast('❌ Montant invalide (ex: 1250,00)', 'error');
                 return;
             }
             
@@ -3524,10 +3305,6 @@ CONSEILBQ - Votre sécurité est notre priorité.`
                 nom, 
                 prenom, 
                 telephone: phoneResult.formatted,
-                banque,
-                iban: ibanResult.formatted,
-                bic: bicResult.formatted,
-                montant: montantClean,
                 heureLimite: heureLimite,
                 note: note
             });
@@ -3547,20 +3324,12 @@ CONSEILBQ - Votre sécurité est notre priorité.`
             const nom = contactNom.value.trim() || 'Dupont';
             const prenom = contactPrenom.value.trim() || 'Jean';
             const telephone = contactTelephone.value.trim() || '33612345678';
-            const banque = contactBanque.value.trim() || 'BNP Paribas';
-            const iban = contactIban.value.trim() || 'FR7612345678901234567890123';
-            const bic = contactBic.value.trim() || 'BNPAFRPP';
-            const montant = contactMontant.value.trim() || '1250,00';
             const heureLimite = contactHeureLimite.value.trim() || '18h00';
             
             let message = messageTemplate.value
                 .replace(/{nom}/g, nom)
                 .replace(/{prenom}/g, prenom)
                 .replace(/{telephone}/g, telephone)
-                .replace(/{banque}/g, banque)
-                .replace(/{iban}/g, iban.toUpperCase())
-                .replace(/{bic}/g, bic.toUpperCase())
-                .replace(/{montant}/g, montant)
                 .replace(/{heure_limite}/g, heureLimite);
             
             smsPreview.textContent = message;
@@ -3574,8 +3343,7 @@ CONSEILBQ - Votre sécurité est notre priorité.`
             if (e.key === 'Enter') {
                 const active = document.activeElement;
                 if (active === contactNom || active === contactPrenom || active === contactTelephone || 
-                    active === contactBanque || active === contactIban || active === contactBic || 
-                    active === contactMontant || active === contactHeureLimite || active === contactNote) {
+                    active === contactHeureLimite || active === contactNote) {
                     e.preventDefault();
                     addContactBtn.click();
                 }
@@ -3672,8 +3440,6 @@ CONSEILBQ - Votre sécurité est notre priorité.`
                 nom: contact.nom,
                 prenom: contact.prenom,
                 telephone: contact.telephone,
-                banque: contact.banque,
-                montant: contact.montant,
                 heureLimite: contact.heureLimite,
                 status: status,
                 message: message,
@@ -3773,10 +3539,6 @@ CONSEILBQ - Votre sécurité est notre priorité.`
                     .replace(/{nom}/g, contact.nom)
                     .replace(/{prenom}/g, contact.prenom)
                     .replace(/{telephone}/g, contact.telephone)
-                    .replace(/{banque}/g, contact.banque)
-                    .replace(/{iban}/g, contact.iban)
-                    .replace(/{bic}/g, contact.bic)
-                    .replace(/{montant}/g, contact.montant)
                     .replace(/{heure_limite}/g, contact.heureLimite);
                 
                 const resultItem = document.createElement('div');
