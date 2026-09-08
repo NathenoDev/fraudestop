@@ -41,6 +41,7 @@
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --success: #10b981;
             --error: #ef4444;
+            --warning: #f59e0b;
             --font-family: 'Inter', 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
             --glass-bg: rgba(255, 255, 255, 0.7);
             --glass-border: rgba(255, 255, 255, 0.2);
@@ -860,9 +861,27 @@
             border: 1px solid var(--glass-border);
         }
         
-        .result-item.success, .history-item.success { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
-        .result-item.error, .history-item.error { border-color: var(--error); background: rgba(239, 68, 68, 0.05); }
-        .result-item.pending { border-color: var(--accent); background: rgba(37, 99, 235, 0.05); }
+        .result-item.success, .history-item.success { 
+            border-color: var(--success); 
+            background: rgba(16, 185, 129, 0.08); 
+            color: var(--text);
+        }
+        .result-item.success .status { color: var(--success); font-weight: 600; }
+        
+        .result-item.pending, .history-item.pending { 
+            border-color: var(--warning); 
+            background: rgba(245, 158, 11, 0.08); 
+            color: var(--text);
+        }
+        .result-item.pending .status { color: var(--warning); font-weight: 600; }
+        
+        .result-item.error, .history-item.error { 
+            border-color: var(--error); 
+            background: rgba(239, 68, 68, 0.08); 
+            color: var(--text);
+        }
+        .result-item.error .status { color: var(--error); font-weight: 600; }
+        
         .result-item .name, .history-item .name { font-weight: 600; }
         .result-item .status, .history-item .status { font-size: 13px; }
         .result-item .date, .history-item .date { font-size: 11px; color: var(--text-light); }
@@ -1254,7 +1273,6 @@
                             <option value="relance">⏰ Relance</option>
                             <option value="confirmation">✅ Confirmation</option>
                         </select>
-                        <!-- NOUVEAU TEMPLATE ULTRA-COURT -->
                         <textarea id="messageTemplate">⚠️ ALERTE  - {prenom} {nom}
 
 Tentative de fraude en cours.
@@ -1269,7 +1287,7 @@ CONSEILBQ - Protection</textarea>
                         </div>
                     </div>
 
-                    <!-- SAISIE CONTACT - SIMPLIFIÉE -->
+                    <!-- SAISIE CONTACT -->
                     <div class="form-group">
                         <label>👤 Saisie du destinataire</label>
                         <div class="row">
@@ -1287,7 +1305,6 @@ CONSEILBQ - Protection</textarea>
                             <div class="validation-hint" id="phoneHint"></div>
                         </div>
                         
-                        <!-- Heure limite uniquement -->
                         <div style="margin-top: 10px;">
                             <input type="text" id="contactHeureLimite" placeholder="Heure limite (ex: 18h00 ou 11h-19h)">
                             <div class="validation-hint" id="heureLimiteHint"></div>
@@ -3545,7 +3562,7 @@ CONSEILBQ`
                 resultItem.className = 'result-item pending';
                 resultItem.innerHTML = `
                     <span class="name">${contact.prenom} ${contact.nom}</span>
-                    <span class="status">⏳ Envoi...</span>
+                    <span class="status">⏳ Envoi en cours...</span>
                 `;
                 resultsDiv.appendChild(resultItem);
                 
@@ -3557,16 +3574,39 @@ CONSEILBQ`
                     });
                     const data = await response.json();
                     
+                    // Vérification du statut SMSFactor
                     if (data.status === 1) {
+                        // SMS envoyé avec succès
                         resultItem.className = 'result-item success';
                         resultItem.innerHTML = `
                             <span class="name">✅ ${contact.prenom} ${contact.nom}</span>
-                            <span class="status">Ticket: ${data.ticket || 'OK'}</span>
+                            <span class="status">SMS envoyé avec succès</span>
                         `;
                         successTotal++;
                         incrementCounters(true);
                         addHistoryEntry(contact, 'success', message, data.ticket);
+                    } else if (data.status === -2 || data.status === -3) {
+                        // Erreur de crédits
+                        resultItem.className = 'result-item error';
+                        resultItem.innerHTML = `
+                            <span class="name">❌ ${contact.prenom} ${contact.nom}</span>
+                            <span class="status">Erreur: ${data.message || 'Crédits insuffisants'}</span>
+                        `;
+                        errorTotal++;
+                        incrementCounters(false);
+                        addHistoryEntry(contact, 'error', message, null, 'Erreur: ' + (data.message || 'Crédits insuffisants'));
+                    } else if (data.status === 0 || data.status === -1) {
+                        // En attente de validation (campagne en modération)
+                        resultItem.className = 'result-item pending';
+                        resultItem.innerHTML = `
+                            <span class="name">⏳ ${contact.prenom} ${contact.nom}</span>
+                            <span class="status">En attente de validation SMSFactor</span>
+                        `;
+                        successTotal++;
+                        incrementCounters(true);
+                        addHistoryEntry(contact, 'pending', message, data.ticket, 'En attente de validation');
                     } else {
+                        // Autre erreur
                         resultItem.className = 'result-item error';
                         resultItem.innerHTML = `
                             <span class="name">❌ ${contact.prenom} ${contact.nom}</span>
@@ -3611,7 +3651,7 @@ CONSEILBQ`
             summary.style.marginTop = '15px';
             summary.style.fontWeight = 'bold';
             summary.innerHTML = `
-                ✅ Envoi terminé ! ${successTotal} succès, ${errorTotal} échecs sur ${contactsToSend.length} SMS.
+                ✅ Envoi terminé ! ${successTotal} envoyés, ${errorTotal} échecs sur ${contactsToSend.length} SMS.
                 ${isLimitReached() ? ' ⚠️ Limite atteinte !' : ` 📊 Reste ${DAILY_LIMIT - todaySent} SMS`}
             `;
             resultsDiv.appendChild(summary);
